@@ -1,5 +1,6 @@
 
 import FusionCategory.Basic
+import FusionCategory.PFDim
 import Mathlib.Analysis.Real.Sqrt
 
 /-!
@@ -17,6 +18,7 @@ AnyonWiki; the simplified pentagon here is satisfied by the
 namespace FusionCategory.Examples
 
 open FusionRing
+open FusionCategory
 
 def fibDual : Fin 2 → Fin 2
   | 0 => 0
@@ -93,5 +95,24 @@ noncomputable def FibonacciFPData : FibonacciRing.FPData where
   unit_one := fibFPdim_unit_one
   eigenvector := fibFPdim_eigenvector
   dual_eq := fibFPdim_dual_eq
+
+-- PF-uniqueness for Fibonacci: any positive normalized eigenvector equals φ
+theorem FibonacciPFUnique : ∀ (v : Fin 2 → ℝ), (∀ i, 0 < v i) → (∀ hn : 0 < 2, v ⟨0, hn⟩ = 1) → (∀ i k_, (∑ j : Fin 2, (FibonacciRing.N i j k_ : ℝ) * v j) = v i * v k_) → v = FibonacciFPData.fpdim := by
+  intro v hv_pos hv_one heig
+  have hv0 : v (0 : Fin 2) = 1 := by
+    have h := hv_one (by omega : 0 < 2)
+    have : (⟨0, by omega⟩ : Fin 2) = (0 : Fin 2) := rfl
+    rw [this] at h; exact h
+  have h11 := heig (1 : Fin 2) (1 : Fin 2)
+  simp only [Fin.sum_univ_two] at h11
+  have hN101 : (FibonacciRing.N 1 0 1 : ℕ) = 1 := by simp [FibonacciRing, fibN]
+  have hN111 : (FibonacciRing.N 1 1 1 : ℕ) = 1 := by simp [FibonacciRing, fibN]
+  have h11p : v (0 : Fin 2) + v (1 : Fin 2) = v (1 : Fin 2) * v (1 : Fin 2) := by
+    rw [hN101, hN111] at h11; simp at h11; linarith
+  have hv1_sq : v (1 : Fin 2) ^ 2 = v (1 : Fin 2) + 1 := by nlinarith [h11p, hv0]
+  have hv1_eq_phi : v (1 : Fin 2) = phi := phi_unique _ (hv_pos 1) hv1_sq
+  ext i; fin_cases i
+  · simp [hv0, FibonacciFPData, fibFPdim]
+  · simp [hv1_eq_phi, FibonacciFPData, fibFPdim, phi]
 
 end FusionCategory.Examples

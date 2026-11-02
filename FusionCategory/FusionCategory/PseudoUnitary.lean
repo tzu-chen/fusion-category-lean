@@ -224,17 +224,6 @@ def IsPseudoUnitary [Algebra ℝ k] (d : CategoricalDimData (S := S))
     (h : S.ring.FPData) : Prop :=
   globalCategoricalDim d = algebraMap ℝ k h.globalDim
 
-/-- PF-uniqueness hypothesis (to be discharged by PF chain).
-
-If `v : Fin n → ℝ` is positive, normalized `v 0 =1` and satisfies the
-fusion eigenvector equations, then `v = FPdim`.
-This is `pft_irreducible` + `exists_positive_eigenvector` + uniqueness.
--/
-def PFUnique (R : FusionRing n) (h : R.FPData) : Prop :=
-  ∀ (v : Fin n → ℝ), (∀ i, 0 < v i) → (∀ hn : 0 < n, v ⟨0, hn⟩ = 1) →
-    (∀ i k_, (∑ j : Fin n, (R.N i j k_ : ℝ) * v j) = v i * v k_) →
-    v = h.fpdim
-
 /-!
 ### ENO Prop 8.23 (skeletal)
 

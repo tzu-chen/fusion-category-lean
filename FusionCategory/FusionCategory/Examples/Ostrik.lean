@@ -1,4 +1,5 @@
 import FusionCategory.Basic
+import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 
 /-!
@@ -11,6 +12,7 @@ globalDim 6, cover 12.  See PLAN §6.
 namespace FusionCategory.Examples
 
 open FusionRing
+open FusionCategory
 
 def k2210Dual : Fin 3 → Fin 3
   | 0 => 0
@@ -107,5 +109,46 @@ theorem K2210_cover_globalDim :
   change (∑ i : Fin 6, (K2210FPData.fpdim (⟨i.val / 2, by omega⟩ : Fin 3) ^ 2 : ℝ)) = 12
   simp only [K2210FPData, k2210FPdim, Fin.sum_univ_six]
   norm_num
+-- PF-uniqueness for K2210: positive normalized eigenvector forced to (1,2,1)
+theorem K2210PFUnique : ∀ (v : Fin 3 → ℝ), (∀ i, 0 < v i) → (∀ hn : 0 < 3, v ⟨0, hn⟩ = 1) → (∀ i k_, (∑ j : Fin 3, (K2210Ring.N i j k_ : ℝ) * v j) = v i * v k_) → v = K2210FPData.fpdim := by
+  intro v hv_pos hv_one heig
+  have hv0 : v (0 : Fin 3) = 1 := by
+    have h := hv_one (by omega)
+    have : (⟨0, by omega⟩ : Fin 3) = (0 : Fin 3) := rfl
+    rw [this] at h; exact h
+  have h11 := heig (1 : Fin 3) (1 : Fin 3)
+  simp only [Fin.sum_univ_three] at h11
+  have hN101 : (K2210Ring.N 1 0 1 : ℕ) = 1 := by simp [K2210Ring, k2210N]
+  have hN111 : (K2210Ring.N 1 1 1 : ℕ) = 1 := by simp [K2210Ring, k2210N]
+  have hN121 : (K2210Ring.N 1 2 1 : ℕ) = 1 := by simp [K2210Ring, k2210N]
+  have h12 := heig (1 : Fin 3) (2 : Fin 3)
+  simp only [Fin.sum_univ_three] at h12
+  have hN102 : (K2210Ring.N 1 0 2 : ℕ) = 0 := by simp [K2210Ring, k2210N]
+  have hN112 : (K2210Ring.N 1 1 2 : ℕ) = 1 := by simp [K2210Ring, k2210N]
+  have hN122 : (K2210Ring.N 1 2 2 : ℕ) = 0 := by simp [K2210Ring, k2210N]
+  have hv2_eq : v (2 : Fin 3) = 1 := by
+    have h12' := h12
+    rw [hN102, hN112, hN122] at h12'
+    simp at h12'
+    have hmul : v 1 * (v 2 - 1) = 0 := by nlinarith
+    have hor : v 1 = 0 ∨ v 2 - 1 = 0 := mul_eq_zero.mp hmul
+    cases hor with
+    | inl h => exact absurd h (ne_of_gt (hv_pos 1))
+    | inr h => linarith
+  have hv1_eq : v (1 : Fin 3) = 2 := by
+    have h11' := h11
+    rw [hN101, hN111, hN121] at h11'
+    simp at h11'
+    rw [hv0, hv2_eq] at h11'
+    have h_eq : v 1 * v 1 - v 1 - 2 = 0 := by linarith
+    have h_factor : (v 1 - 2) * (v 1 + 1) = 0 := by nlinarith [sq_nonneg (v 1)]
+    have hor : v 1 - 2 = 0 ∨ v 1 + 1 = 0 := mul_eq_zero.mp h_factor
+    cases hor with
+    | inl h => linarith
+    | inr h => linarith [hv_pos 1]
+  ext i; fin_cases i
+  · simp [hv0, K2210FPData, k2210FPdim]
+  · simp [hv1_eq, K2210FPData, k2210FPdim]
+  · simp [hv2_eq, K2210FPData, k2210FPdim]
 
 end FusionCategory.Examples

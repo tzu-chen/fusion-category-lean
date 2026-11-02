@@ -6,4 +6,5 @@ import FusionCategory.Grading
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples
+import FusionCategory.Examples.PseudoUnitaryInstances
 import FusionCategory.Step4Checks

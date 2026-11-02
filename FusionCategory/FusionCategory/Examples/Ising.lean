@@ -1,5 +1,6 @@
 
 import FusionCategory.Basic
+import FusionCategory.PFDim
 import Mathlib.Analysis.Real.Sqrt
 
 /-!
@@ -16,6 +17,7 @@ See PLAN.md §6.
 namespace FusionCategory.Examples
 
 open FusionRing
+open FusionCategory
 
 def isingDual : Fin 3 → Fin 3
   | 0 => 0
@@ -95,5 +97,43 @@ noncomputable def IsingFPData : IsingRing.FPData where
   unit_one := isingFPdim_unit_one
   eigenvector := isingFPdim_eigenvector
   dual_eq := isingFPdim_dual_eq
+
+
+-- PF-uniqueness for Ising: positive normalized eigenvector forced to (1,1,√2)
+theorem IsingPFUnique : ∀ (v : Fin 3 → ℝ), (∀ i, 0 < v i) → (∀ hn : 0 < 3, v ⟨0, hn⟩ = 1) → (∀ i k_, (∑ j : Fin 3, (IsingRing.N i j k_ : ℝ) * v j) = v i * v k_) → v = IsingFPData.fpdim := by
+  intro v hv_pos hv_one heig
+  have hv0 : v (0 : Fin 3) = 1 := by
+    have h := hv_one (by omega)
+    have : (⟨0, by omega⟩ : Fin 3) = (0 : Fin 3) := rfl
+    rw [this] at h; exact h
+  have h11 := heig (1 : Fin 3) (1 : Fin 3)
+  simp only [Fin.sum_univ_three] at h11
+  have hN101 : (IsingRing.N 1 0 1 : ℕ) = 1 := by simp [IsingRing, isingN]
+  have hN111 : (IsingRing.N 1 1 1 : ℕ) = 0 := by simp [IsingRing, isingN]
+  have hN121 : (IsingRing.N 1 2 1 : ℕ) = 0 := by simp [IsingRing, isingN]
+  have hv1_eq : v (1 : Fin 3) = 1 := by
+    have h11' := h11
+    rw [hN101, hN111, hN121] at h11'
+    simp at h11'
+    have hv1_sq : v 1 ^ 2 = 1 := by linarith [hv0]
+    nlinarith [sq_nonneg (v 1 - 1), hv1_sq, hv_pos 1]
+  have h22 := heig (2 : Fin 3) (2 : Fin 3)
+  simp only [Fin.sum_univ_three] at h22
+  have hN202 : (IsingRing.N 2 0 2 : ℕ) = 1 := by simp [IsingRing, isingN]
+  have hN212 : (IsingRing.N 2 1 2 : ℕ) = 1 := by simp [IsingRing, isingN]
+  have hN222 : (IsingRing.N 2 2 2 : ℕ) = 0 := by simp [IsingRing, isingN]
+  have hv2_sq : v (2 : Fin 3) ^ 2 = 2 := by
+    have h22' := h22
+    rw [hN202, hN212, hN222] at h22'
+    simp at h22'
+    linarith [hv0, hv1_eq]
+  have hv2_eq : v (2 : Fin 3) = Real.sqrt 2 := by
+    have hsq : Real.sqrt 2 * Real.sqrt 2 = 2 := Real.mul_self_sqrt (by norm_num)
+    nlinarith [sq_nonneg (v 2 - Real.sqrt 2), hv2_sq, hsq, Real.sqrt_nonneg 2, hv_pos 2]
+  ext i; fin_cases i
+  · simp [hv0, IsingFPData, isingFPdim]
+  · simp [hv1_eq, IsingFPData, isingFPdim]
+  · simp [hv2_eq, IsingFPData, isingFPdim]
+
 
 end FusionCategory.Examples
