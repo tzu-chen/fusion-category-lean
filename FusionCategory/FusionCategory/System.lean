@@ -335,4 +335,106 @@ def system : FusionSystem 2 ℚ where
 
 end VecZ2
 
+/-! ## A second witness: `Vec_{Z/2}` with the non-trivial cocycle
+
+The trivial-cocycle witness above has `F ≡ 1`, so it cannot detect anything
+about the associator.  This one has `F = -1` on the all-`g` block and `1` on the
+unit-leg blocks, i.e. the associator of `Vec^ω_{Z/2}` for the non-trivial
+3-cocycle `ω`.  It is also the first witness with `κ ≠ 1`: the snake equations
+force `κ g = -1`, so `dim g = -1` while `FPdim g = 1`.
+
+That last point is the reason to keep it: this `FusionSystem` is *not*
+pseudo-unitary, and ENO 8.23's conclusion (`dim = FPdim`, spherical) fails for
+it — `p ≡ 1` is pivotal, `J ≡ 1`, and `dim g = -1 ≠ 1 = FPdim g`.  So the
+hypothesis of ENO 8.23 is not vacuous, and the two witnesses differ in exactly
+the invariant the theorem is about. -/
+
+namespace VecZ2Twisted
+
+/-- The associator of `Vec^ω_{Z/2}` for the non-trivial cocycle: `-1` on the
+`g ⊗ g ⊗ g → g` block, `1` on every block with a unit leg. -/
+def F (a b c d e f : Fin 2) : ℚ :=
+  if 0 < VecZ2.ring.N a b e ∧ 0 < VecZ2.ring.N e c d ∧
+      0 < VecZ2.ring.N b c f ∧ 0 < VecZ2.ring.N a f d then
+    (if a = 1 ∧ b = 1 ∧ c = 1 ∧ d = 1 then -1 else 1)
+  else 0
+
+set_option maxHeartbeats 4000000 in
+/-- The pentagon holds: for the cocycle on `Z/2` the only non-trivial identity
+is `ω(g,g,g)² = 1`, satisfied by `-1`. -/
+theorem F_pentagon : ∀ a b c d e i j r x : Fin 2,
+    (∑ k : Fin 2, F a b c x e k * F a k d r x j * F b c d j k i) =
+      F e c d r x i * F a b i r e j := by
+  intro a b c d e i j r x
+  fin_cases a <;> fin_cases b <;> fin_cases c <;> fin_cases d <;> fin_cases e <;>
+    fin_cases i <;> fin_cases j <;> fin_cases r <;> fin_cases x <;>
+    norm_num [F, VecZ2.ring, VecZ2.N]
+
+/-- `Vec^ω_{Z/2}` for the non-trivial cocycle, as a skeletal fusion system. -/
+def system : FusionSystem 2 ℚ where
+  ring := VecZ2.ring
+  mult_free := by
+    intro i j kk
+    fin_cases i <;> fin_cases j <;> fin_cases kk <;> decide
+  F := F
+  F_support := by
+    intro a b c d e f h
+    simp only [F]
+    exact if_neg h
+  pentagon := F_pentagon
+  F_unit_left := by
+    intro _ b c d f _
+    fin_cases b <;> fin_cases c <;> fin_cases d <;> fin_cases f <;>
+      simp_all [F, VecZ2.ring, VecZ2.N]
+  F_unit_right := by
+    intro _ a b d e _
+    fin_cases a <;> fin_cases b <;> fin_cases d <;> fin_cases e <;>
+      simp_all [F, VecZ2.ring, VecZ2.N]
+  Finv := fun a b c d f e => F a b c d e f
+  Finv_support := by
+    intro a b c d f e h
+    simp only [F]
+    exact if_neg (fun hc => h ⟨hc.2.2.1, hc.2.2.2, hc.1, hc.2.1⟩)
+  Finv_comp := by
+    intro a b c d f' f _ _ _ _
+    fin_cases a <;> fin_cases b <;> fin_cases c <;> fin_cases d <;>
+      fin_cases f' <;> fin_cases f <;>
+      simp only [Fin.sum_univ_two, F] <;> simp_all [VecZ2.N, VecZ2.ring]
+  F_comp_inv := by
+    intro a b c d e' e _ _ _ _
+    fin_cases a <;> fin_cases b <;> fin_cases c <;> fin_cases d <;>
+      fin_cases e' <;> fin_cases e <;>
+      simp only [Fin.sum_univ_two, F] <;> simp_all [VecZ2.N, VecZ2.ring]
+  ev := fun _ => 1
+  coev := fun i => if i = 0 then 1 else -1
+  ev_ne_zero := fun _ => one_ne_zero
+  coev_ne_zero := by
+    intro i
+    fin_cases i <;> norm_num
+  snake_left := by
+    intro _ i
+    fin_cases i <;> norm_num [F, VecZ2.ring, VecZ2.N]
+  snake_right := by
+    intro _ i
+    fin_cases i <;> norm_num [F, VecZ2.ring, VecZ2.N]
+  J := fun _ _ _ => 1
+  J_ne_zero := fun _ _ _ _ => one_ne_zero
+  J_unit_left := fun _ _ => rfl
+  J_unit_right := fun _ _ => rfl
+  J_dual := fun _ _ => rfl
+  J_coherent := by
+    intro a b c d e f _ _ _ _
+    simp
+
+/-- The duality normalisation of this witness: `κ = 1` at the unit and `-1` at
+`g`.  In particular the dimension of `g` in the pivotal structure `p ≡ 1` is
+`-1`, not `FPdim g = 1`. -/
+theorem kappa_g : system.kappa 1 = -1 := by
+  simp [FusionSystem.kappa, system, F, VecZ2.ring]
+
+theorem kappa_unit : system.kappa 0 = 1 := by
+  simp [FusionSystem.kappa, system]
+
+end VecZ2Twisted
+
 end FusionCategory
