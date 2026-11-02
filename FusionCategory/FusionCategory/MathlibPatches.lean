@@ -1,5 +1,2 @@
-
-import FusionCategory.Basic
 import FusionCategory.MathlibPatches.PivotalCategory
 import FusionCategory.MathlibPatches.PerronFrobenius
-

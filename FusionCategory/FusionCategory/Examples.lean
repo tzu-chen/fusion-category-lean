@@ -1,2 +1,2 @@
-public import FusionCategory.Examples.Ising
-public import FusionCategory.Examples.Fibonacci
+import FusionCategory.Examples.Ising
+import FusionCategory.Examples.Fibonacci
