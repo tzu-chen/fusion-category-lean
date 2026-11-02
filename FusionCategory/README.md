@@ -1,11 +1,10 @@
-# FusionCategory (planned)
+# FusionCategory
 
-Goal: formalize general fusion-categorical lemmas used implicitly by the Haagerup–Izumi construction:
+Goal: ENO Proposition 8.23 — every pseudo-unitary fusion category admits a
+unique spherical structure with `dim = FPdim`.
 
-- `PivotalStructure` as monoidal iso `𝟙 ≅ **`
-- Pivotal cover $\tilde{\cal C}$ and splitting criterion $[g]=h^2\in{\rm Hom}(U_{\cal C},k^\times)$
-- Perron–Frobenius `FPdim` and ENO Prop.8.23 `pseudoUnitary → spherical`
+See [`PLAN.md`](PLAN.md) for the multi-step implementation plan.
+Builds on `RigidCategory` + Mathlib PRs `#42150` (PivotalCategory) and
+`#39914–#39922` (Perron–Frobenius) on `v4.33.1`.
 
-Will depend on Mathlib `RigidCategory` + open PRs `#42150`/`#39922` on branch `v4.33.1`.
-
-Currently empty - see root `README.md` for plan.
+Currently scaffolding — steps 1–7 in `PLAN.md`.
