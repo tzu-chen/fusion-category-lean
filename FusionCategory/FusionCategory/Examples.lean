@@ -1,2 +1,4 @@
 import FusionCategory.Examples.Ising
 import FusionCategory.Examples.Fibonacci
+import FusionCategory.Examples.Ostrik
+import FusionCategory.Step4Checks
