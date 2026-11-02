@@ -59,8 +59,10 @@ the ratio formula recorded under "The derived twist: result" below.  What is
 still true from that file: `J`'s coherence for `Vec_{Z/2}` is verified rather
 than chosen, and the twist is a genuine ratio of composites.
 
-Still owed: the `F`-twisted (non-strict) and non-self-dual cases of that
-derivation, where the composite carries explicit associator factors; the
+Still owed: an independent evaluation of the `J`-diagram (the non-self-dual
+`F`-twisted case is now *checked* on nine data sets and *derived* only as a
+reconstruction — see "The derived twist: result" below); a model with
+`(−)** ≠ id` on labels, which `FusionSystem` cannot represent as it stands; the
 multiplicity-free restriction (`N ≤ 1`) as a separate general-multiplicity
 development; and the analytic input for `ENO823`.
 
@@ -153,33 +155,69 @@ Both examples do satisfy the *conclusion*: a pivotal structure with
 
 ## The derived twist: result
 
-The second swarm (smvzsb2ql) closed the derivation for the self-dual case, which
-covers Fibonacci, Ising and every pointed category.  With `M_b(E,c') =
-F^{a*ab}_b(E,c')` the associator block at total `b` (a `1x1` block in the
-multiplicity-free case),
+`J` is the monoidal structure of `(−)** = (−)* ∘ (−)*`.  Since `(−)*` is
+monoidal contravariant, `J` is a **ratio** of two cuspidal comparisons: with
+`ψ_{a,b} : (a⊗b)* → b* ⊗ a*` the comparison between the two left duals
+`(a⊗b)*` and `b* ⊗ a*` of `a⊗b`,
 
-    psi_{a,b}|_c = ev_c/(ev_a * ev_b) * 1/Omega(a,b;c),
-    Omega(a,b;c)  = F^{b*a*c}_0(c*,b) * (M_b)^{-1}(0,c),
-    J a b c       = psi_{a,b}|_c / psi_{b*,a*}|_{c*}.
+    J a b c = ψ_{a,b}|_c / ψ_{b*,a*}|_{c*} .
 
-Consequences, in the order they were established:
+Evaluating `ψ` (two F-moves and one transported coevaluation) gives, in the
+normalisation `ev_{i*} = ev_i`,
 
-* the composite is a **ratio**, not a product: both `psi`s have source
-  `(b* x a*)*`, so no product of them is a morphism.  This was the single error
-  behind three incompatible formulas;
-* the gauge law carries the duals,
-  `J -> J * (lam a * lam b * lam c*)/(lam c * lam a* * lam b*)`, so on
-  self-dual data `J` is gauge **invariant**;
-* in any duality-compatible normalisation the self-dual examples have
-  `J = 1`, hence `p = 1` is pivotal with `dim = kappa`.  `ev a * ev b / ev c`
-  is the psi-scalar, not `J`;
-* checked against an independent model that composes morphisms on eleven data
-  sets, including Ising, where the block is `1x1` because `N^E_{bb} = 1`.
+    Ω(a,b;c) = F^{b* a* c}_0(c*,b) · (M_b)^{-1}(0,c),    M_b(E,c') = F^{a* a b}_b(E,c'),
+    J a b c  = Ω(b*,a*;c*) / Ω(a,b;c).
 
-Not derived, only checked: the block indices of `Omega`, and the general
-non-self-dual case.  Wiring this into `DoubleDual.lean` replaces the definition
-there by `psi` and the ratio, and the `1x1` case is enough for every category the
-package currently has.
+`M_b` is the block `F^{a* a b}_b` **restricted to its support** — rows `E`
+channels of `a*⊗a` with `b ∈ E⊗b`, columns `c'` channels of `a⊗b` with
+`b ∈ a*⊗c'`.  Unrestricted the matrix is rectangular (Ising at
+`(a,b) = (σ,ψ)`: `2 × 1`) and the formula returns `0/0`; restricted it is
+square and the formula is defined on every channel of every model tested.
+`(M_b)^{-1}` is a genuine matrix inverse — a diagonal in `coev_b` is spread
+over the whole channel space by the associator, so an entrywise reciprocal would
+silently assume `M_b` were diagonal.
+
+What is established, in order of strength:
+
+* the two snakes in the matrix-inverse form of the previous section, verified on
+  13–16 data sets, including non-self-dual objects and `2 × 2` blocks; the
+  `i i* i` analogue of the second snake is **false** (`Vec^ω_{Z/3}` refutes it);
+* the ratio structure of `J`, derived (m2, m7) and confirmed independently
+  (m1, m3, m5, m6);
+* `J ≡ 1` in the duality-compatible normalisation on all 16 data sets checked —
+  Fibonacci, Ising, `Vec^ω_{Z/n}` for `n = 2,3,4,5`, and the products
+  `Vec^ω_{Z/3} ⊠ Fib`, `Vec^ω_{Z/2} ⊠ Ising`, `Vec^ω_{Z/3} ⊠ Ising` — so
+  `p ≡ 1` is pivotal with `dim = κ`.  This is *checked*, not proved: nobody
+  produced an independent evaluation of the `J`-diagram from raw category data,
+  so the formula is a reconstruction whose consequences are verified, not a
+  derivation from first principles;
+* the gauge law `J ↦ J·(λ_a λ_b λ_{c*})/(λ_c λ_{a*} λ_{b*})`.  The invariant is
+  `ν_i = κ_{i*}/κ_i`, not `κ` itself: under the vertex gauge
+  `κ_i ↦ κ_i·v^{i i*}_0 v^{i* i}_0`, and `ν` is unchanged.  A channel gauge
+  exists that makes both `J ≡ 1` and `κ_{i*} = κ_i` on the pointed examples, so
+  `J ≡ 1` and sphericality are not in conflict — but they are different
+  conditions, and `J ≡ 1` alone does not give `κ_{i*} = κ_i`;
+* if `J ≡ 1` then `p ≡ 1` is pivotal and `κ` is a character of the fusion ring:
+  `κ_a κ_b = Σ_c N^c_{ab} κ_c`.  So `κ` *is* a dimension function; the two
+  examples have `κ = FPdim` (`φ`, `√2`), and `Vec^ω_{Z/2}` has the other
+  character, `κ g = −1`.
+
+**Correction to the coherence axiom.**  For a general `C` the `J`-pentagon
+carries the associator on both sides,
+
+    J a b e · J e c d · F^{abc}_d(e,f) = J b c f · J a f d · F^{a**b**c**}_{d**}(e**,f**),
+
+and the F-free form `J a b e · J e c d = J b c f · J a f d` — which is
+`FusionSystem.J_coherent` — is that equation only when `(−)**` is the identity
+on labels.  The rest of `FusionSystem` fixes exactly that case: `J` has type
+`Fin n → Fin n → Fin n → k` with no slot for a label transport, and `p_mon`
+reads `p c = J a b c · p a · p b` with `c` the channel of `a ⊗ b`.  Every model
+used has `a** = a`, so nothing is lost for the examples, but the general
+statement is the displayed one and a `FusionSystem` with `i** ≠ i` is not
+representable.
+
+**Not derived:** the independent diagram evaluation (above); the case
+`(−)** ≠ id` on labels; and the analytic input for `ENO823`.
 
 ## ENO 8.23: the sharp form
 
