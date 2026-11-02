@@ -95,6 +95,40 @@ to reuse; the categorical infrastructure is being landed in Mathlib right now,
 so the cheap long-term move is to keep our skeletal layer aligned with
 #42150/#42191 naming and stub out the bridge, as already planned.
 
+## Blocked: the Fibonacci and Ising instances need a second evaluation
+
+Attempting the instances exposed a defect in the signature that both earlier
+formulations of the Snake axioms got wrong, in opposite directions.
+
+For a **self-dual** simple `i` the two snakes read
+
+    snake_left  : kappa * F^{i i i}_i(1,1) = 1        (loop at i, associator)
+    snake_right : kappa / F^{i i i}_i(1,1) = 1        (loop at i*, inverse)
+
+and if `i* = i` the two `F` entries are literally the same number, so both hold
+only if `F^{i i i}_i(1,1)^2 = 1`.  Fibonacci has `F^{tau tau tau}_tau(1,1) =
++-1/phi`, and Ising's `sigma` is self-dual with the same problem, so neither
+instance can exist in the present signature.  Verified numerically:
+
+    F = 1/phi = 0.618;  snake_left wants kappa = 1/F = 1.618,
+                        snake_right wants kappa =   F = 0.618.
+
+The history of this axiom is worth recording because it shows the shape of the
+error.  As originally written, *both* snakes multiplied by `F`, which forced the
+two entries to be equal and so excluded `Vec^omega_{Z/3}` (where they genuinely
+differ); the correction to `kappa / F` fixed that and now excludes every
+self-dual category whose loop scalar is not `+-1`.  Neither is right: a single
+`ev : Fin n -> k` cannot represent the left and right evaluations of a self-dual
+simple, which differ by the Frobenius--Schur indicator.  The fix is to carry the
+mirror evaluation (equivalently `nu : Fin n -> k` with the mirror equal to
+`nu i * ev i`), and the relation between the two snakes becomes
+`F * F' = nu`, which for self-dual `i` reads `F^2 = nu` — satisfiable by
+Fibonacci with `nu` absorbing the `1/phi`.
+
+This is the same block bookkeeping the derived twist still lacks ("checked, not
+derived" in the section above), which is why it surfaced here: the two are one
+problem.
+
 ## The derived twist: result
 
 The second swarm (smvzsb2ql) closed the derivation for the self-dual case, which
