@@ -6,6 +6,7 @@ import FusionCategory.Examples.Fibonacci
 import FusionCategory.Examples.Ising
 import FusionCategory.Examples.Ostrik
 import FusionCategory.Examples.PseudoUnitaryInstances
+import FusionCategory.Examples.VecZ2Twisted
 
 /-!
 # Axiom audit — ENO 8.23
@@ -54,6 +55,12 @@ open FusionCategory.Examples
 #print axioms twist_eq_coboundary_of_pivotal
 #print axioms exists_spherical_of_coboundary
 #print axioms eno823_of_twist_coboundary
+
+-- The second witness: non-trivial associator, two pivotal structures
+#print axioms VecZ2Twisted.kappa_g
+#print axioms VecZ2Twisted.system
+#print axioms FusionCategory.Examples.VecZ2Tw.pSign_dim_one
+#print axioms FusionCategory.Examples.VecZ2Tw.pSign_spherical
 
 -- Positivity and cover doubling are axiom-free
 #print axioms globalDim_pos_of_fpdim

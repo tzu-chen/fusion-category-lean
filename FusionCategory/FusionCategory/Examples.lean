@@ -1,4 +1,5 @@
 import FusionCategory.Examples.Ising
 import FusionCategory.Examples.Fibonacci
 import FusionCategory.Examples.Ostrik
+import FusionCategory.Examples.VecZ2Twisted
 import FusionCategory.Step4Checks

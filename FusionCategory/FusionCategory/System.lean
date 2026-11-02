@@ -343,11 +343,13 @@ unit-leg blocks, i.e. the associator of `Vec^ω_{Z/2}` for the non-trivial
 3-cocycle `ω`.  It is also the first witness with `κ ≠ 1`: the snake equations
 force `κ g = -1`, so `dim g = -1` while `FPdim g = 1`.
 
-That last point is the reason to keep it: this `FusionSystem` is *not*
-pseudo-unitary, and ENO 8.23's conclusion (`dim = FPdim`, spherical) fails for
-it — `p ≡ 1` is pivotal, `J ≡ 1`, and `dim g = -1 ≠ 1 = FPdim g`.  So the
-hypothesis of ENO 8.23 is not vacuous, and the two witnesses differ in exactly
-the invariant the theorem is about. -/
+That last point is the reason to keep it: this `FusionSystem` carries *two*
+pivotal structures, `p ≡ 1` with `dim g = -1` and `p g = -1` with `dim g = 1`;
+the second is the one with positive dimensions, and it is spherical
+(`Examples/VecZ2Twisted.lean`).  So "the" dimension of a simple is not a
+property of the fusion ring and its associator alone, and the hypothesis of
+ENO 8.23 is what selects the positive one — which is exactly why the conclusion
+has content. -/
 
 namespace VecZ2Twisted
 
