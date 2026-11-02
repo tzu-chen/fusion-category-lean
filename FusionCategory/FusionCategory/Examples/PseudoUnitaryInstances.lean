@@ -120,28 +120,19 @@ theorem pfUnique_transport {n : ℕ} {R R' : FusionRing n} (hEq : R = R')
   rw [hfp_eq] at hv_eq
   exact hv_eq
 
-theorem fibonacci_pseudoUnitary_spherical
-    {k : Type} [Field k] [Algebra ℝ k]
-    (S : FusionSystem 2 k) (hRing : S.ring = FibonacciRing)
-    (d : CategoricalDimData S) (hPU : IsPseudoUnitary d (hRing.symm ▸ FibonacciFPData))
-    (hPos : ∀ i, d.dim i ≠ 0) :
-    ∃ (P : PivotalStructure S), IsSpherical P :=
-  unitary_is_spherical (hRing.symm ▸ FibonacciFPData) (pfUnique_transport hRing.symm fibonacci_pfUnique_instance) d hPU hPos (by omega)
+/-! ## Retired: the `pseudoUnitary_spherical` corollaries
 
-theorem ising_pseudoUnitary_spherical
-    {k : Type} [Field k] [Algebra ℝ k]
-    (S : FusionSystem 3 k) (hRing : S.ring = IsingRing)
-    (d : CategoricalDimData S) (hPU : IsPseudoUnitary d (hRing.symm ▸ IsingFPData))
-    (hPos : ∀ i, d.dim i ≠ 0) :
-    ∃ (P : PivotalStructure S), IsSpherical P :=
-  unitary_is_spherical (hRing.symm ▸ IsingFPData) (pfUnique_transport hRing.symm ising_pfUnique_instance) d hPU hPos (by omega)
+The three theorems that stood here — `fibonacci_pseudoUnitary_spherical`,
+`ising_pseudoUnitary_spherical`, `k2210_pseudoUnitary_spherical` — concluded
+`∃ P, IsSpherical P` from `unitary_is_spherical`.  That chain rested on the old
+`PivotalStructure`, whose `p_fusion` fixed the double-dual twist to `1`
+silently, and on a `FusionSystem` with no inhabitants.  Since `p ≡ 1` is
+pivotal for *every* fusion system, the three statements carried no information
+about Fibonacci, Ising or `K(2,2,1,0)`.
 
-theorem k2210_pseudoUnitary_spherical
-    {k : Type} [Field k] [Algebra ℝ k]
-    (S : FusionSystem 3 k) (hRing : S.ring = K2210Ring)
-    (d : CategoricalDimData S) (hPU : IsPseudoUnitary d (hRing.symm ▸ K2210FPData))
-    (hPos : ∀ i, d.dim i ≠ 0) :
-    ∃ (P : PivotalStructure S), IsSpherical P :=
-  unitary_is_spherical (hRing.symm ▸ K2210FPData) (pfUnique_transport hRing.symm k2210_pfUnique_instance) d hPU hPos (by omega)
+They are retired rather than restated.  With the twist carried as data the
+corresponding claim is `FusionCategory.ENO823`, an open target.  What survives
+in this file, and is still checked: the `PFUnique` instances for the three
+rings and their transport along a ring isomorphism. -/
 
 end FusionCategory.Examples

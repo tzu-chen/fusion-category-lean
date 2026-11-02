@@ -9,3 +9,6 @@ __pycache__/
 Thumbs.db
 # Zips kept in releases, not in working tree
 *.zip
+
+# Agent scratch
+.scratch/

@@ -12,9 +12,9 @@ This file checks that the core theorems use only the allowed axiom
 budget `[propext, Classical.choice, Quot.sound]`, matching
 `haagerup-odd/AxiomAudit.lean`.
 
-The three axioms in `Grading.lean` (torsor_p_dual, pivotal_iff_square,
-pivotal_of_no2Torsion) are intentionally pending Step 7 (categorical
-bridge) and are not used by the PFUnique / spherical corollaries.
+There are no `axiom` declarations left in the library: the three that stood in
+`Grading.lean` are now a theorem (`torsor_p_dual`'s content is `pVal_dual`) and
+two `def`s recording open targets.
 -/
 
 open FusionCategory
@@ -30,23 +30,17 @@ open FusionCategory.Examples
 #print axioms ising_pfUnique_instance
 #print axioms k2210_pfUnique_instance
 
--- Main theorem is axiom-free modulo PFUnique hypothesis
-#print axioms pseudoUnitary_spherical
-#print axioms unitary_is_spherical
-#print axioms pfUnique_transport
+-- The pivotal layer: `p_dual` is derived, sphericity is the kappa equation
+#print axioms PivotalStructure.pVal_dual
+#print axioms PivotalStructure.isSpherical_iff
+#print axioms squaredNorm_eq
 
--- Unconditional corollaries are axiom-free
-#print axioms fibonacci_pseudoUnitary_spherical
-#print axioms ising_pseudoUnitary_spherical
-#print axioms k2210_pseudoUnitary_spherical
+-- What the retired `pseudoUnitary_spherical` actually proved, and its cheap case
+#print axioms exists_pivotal_of_trivial_twist
+#print axioms exists_spherical_of_trivial_twist
+#print axioms pfUnique_transport
 
 -- Positivity and cover doubling are axiom-free
 #print axioms globalDim_pos_of_fpdim
 #print axioms coverGlobalDim_double
 #print axioms cover_preserves_squaredReal
-
--- Grading torsorAction is axiom-free (uses only Classical.choice)
--- Its three supporting axioms are pending Step 7:
--- axiom torsor_p_dual (Grading.lean:48)
--- axiom pivotal_iff_square (Grading.lean:79)
--- axiom pivotal_of_no2Torsion (Grading.lean:95)

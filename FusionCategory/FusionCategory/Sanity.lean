@@ -1,6 +1,7 @@
 import FusionCategory.Basic
 import FusionCategory.System
 import FusionCategory.Pivotal
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Sanity checks — that the formalization captures intended objects
@@ -45,7 +46,7 @@ noncomputable def fibFPdim : Fin 2 → ℝ
   | 1 => (1 + Real.sqrt 5) / 2
 
 theorem fibFPdim_pos (i : Fin 2) : 0 < fibFPdim i := by
-  fin_cases i <;> simp [fibFPdim, Real.sqrt_nonneg]
+  fin_cases i <;> simp [fibFPdim] <;> positivity
 
 -- The Fibonacci `N` matrices (to be supplied in `Examples.Fibonacci`):
 -- N₀ = I, N₁ = [[0,1],[1,1]].  We state the expected FPdim equation
@@ -70,44 +71,54 @@ noncomputable def isingFPdim : Fin 3 → ℝ
 theorem isingFPdim_pos (i : Fin 3) : 0 < isingFPdim i := by
   fin_cases i <;> simp [isingFPdim, Real.sqrt_nonneg]
 
-/-- `U_C = ℤ/2` grading check: `deg` respects fusion. -/
-def isingDeg : Fin 3 → Fin 2
+/-- `U_C = ℤ/2` grading check: `deg` is *additive* on fusion channels
+(`σ ⊗ σ = 1 ⊕ ψ` and both summands have degree `0`, with `1 + 1 = 0` in `ℤ/2`).
+
+The previous version of this check used multiplication on `Fin 2`, where
+`1 * 1 = 1 ≠ 0`, so it was simply false; it had never been built because this
+file was not imported by the umbrella. -/
+def isingDeg : Fin 3 → ZMod 2
   | 0 => 0
   | 1 => 0
   | 2 => 1
 
 example : isingDeg 0 = 0 := rfl
-example : isingDeg 2 * isingDeg 2 = 0 := by decide
+example : (isingDeg 2 : ZMod 2) + isingDeg 2 = 0 := by decide
+example : (isingDeg 2 : ZMod 2) + isingDeg 2 = isingDeg 1 := by decide
 
 /-! ### 4. Pivotal and spherical
 
-`IsSpherical` correctly captures `p_i = p_{i*} = p_i⁻¹`, i.e. `p²=1`.
-For Fibonacci `U_C=1` the unique pivotal `p≡1` is spherical.
-For Ising `U_C=ℤ/2` there are two pivotal structures `±1`.
+Sphericity is the equality of the two trace functionals, `dim (i*) = dim i`.
+Two checks that the definition behaves correctly — and that the formulation it
+replaced did not:
+
+* when `kappa` is invariant under `*` the new condition reduces to the old one,
+  `p i ^ 2 = 1`; that special case is *not* the general notion;
+* for a self-dual simple the equation is automatic, so a definition that forced
+  `p i ^ 2 = 1` for all `i` (as the retired one did) would get Ising wrong.
 -/
 
 example {n : ℕ} {k : Type} [Field k] {S : FusionSystem n k}
-    (P : PivotalStructure S) (h : IsSpherical P) (i : Fin n) :
-    (P.p i : k) * (P.p i : k) = 1 :=
-  IsSpherical.p_sq_one h i
+    (P : PivotalStructure S) (hn : 0 < n)
+    (hκ : ∀ i : Fin n, S.kappa (S.ring.dual i) = S.kappa i) :
+    P.IsSpherical ↔ ∀ i : Fin n, (P.pVal i) ^ 2 = 1 := by
+  rw [P.isSpherical_iff hn]
+  constructor
+  · intro h i
+    have h1 : P.pVal i ^ 2 * S.kappa i = 1 * S.kappa i := by
+      rw [← h i, hκ i, one_mul]
+    exact mul_right_cancel₀ (S.kappa_ne_zero i) h1
+  · intro h i
+    rw [hκ i, h i, one_mul]
 
 example {n : ℕ} {k : Type} [Field k] {S : FusionSystem n k}
-    (P : PivotalStructure S) : IsSpherical P ↔ ∀ i, (P.p i : kˣ) = (P.p i)⁻¹ :=
-  IsSpherical_iff_inv P
+    (P : PivotalStructure S) (h : ∀ i : Fin n, S.ring.dual i = i) :
+    P.IsSpherical :=
+  P.spherical_of_selfdual h
 
-/-! ### 5. System pentagon is not vacuous
-
-For the group ring `ℤ/n` with trivial `F≡1` on admissible triples,
-the pentagon holds.  We state the shape as a check that our
-`FusionSystem.pentagon` has the correct summation indices (Vercleyen §3).
-If `F` were defined with swapped `e/f` indices, the group case would fail.
--/
-
-example {n : ℕ} {k : Type} [Field k] (S : FusionSystem n k)
-    (a b c d e f g h : Fin n) :
-    (∑ i : Fin n, S.F a b c d e i * S.F a i d g h f * S.F b c g h i e) =
-    (∑ i : Fin n, S.F a b f g e i * S.F i c d g h f) :=
-  S.pentagon a b c d e f g h
+example {n : ℕ} {k : Type} [Field k] {S : FusionSystem n k}
+    (P : PivotalStructure S) (i : Fin n) : dim P i ≠ 0 :=
+  P.dim_ne_zero i
 
 /-! ### 6. Global dimension doubles (cover shadow)
 

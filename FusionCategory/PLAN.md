@@ -9,6 +9,43 @@ fusion categories requires weak Hopf `S⁴` and is not attempted.
 §2.2, §3, §8.4, Prop. 8.23–8.26. Secondary: EGNO *Tensor Categories* Thm 9.6.10–9.6.12,
 Bartlett 2009 PhD Prop 5.7 Lemma 6.2, Shimizu *Frobenius–Schur*.
 
+## Status after the Step-2 rewrite
+
+`System.lean` and `Pivotal.lean` were rewritten because the old signature could
+not be inhabited and its pivotal axiom was vacuous:
+
+* `FusionSystem`'s two unit axioms were mutually inconsistent for `n ≥ 2`
+  (at `(0,b,0,d,b,0)` they force `1` and `0`), so the structure had **no
+  inhabitants** and every theorem quantified over it vacuously.  `VecZ2.system`
+  in `System.lean` is now a proved inhabitant, and the pentagon is checked on
+  all 512 label tuples of `Vec_{Z/2}`.
+* the identity called `pentagon` was not the pentagon: it had eight free labels
+  where the F-matrix pentagon needs ten, and it fails on `Vec_{Z/2}^ω` for
+  *every* `ω`, the trivial cocycle included.
+* `PivotalStructure.p_fusion` assumed the double-dual twist `J ≡ 1`, where `J`
+  is the monoidal structure of `(−)**`.  `J` is now carried by `FusionSystem`
+  and read by `p_mon : p kk = J i j kk * p i * p j`.  `p_dual` is derived from
+  the `i ⊗ i* ∋ 1` channel, not assumed.
+* `IsSpherical` was `p i = p (i*)`, which never mentions `F` and is satisfied by
+  `p ≡ 1` for every fusion-rule table.  Sphericity is now `dim (i*) = dim i`,
+  with `dim i = p i * kappa i` and `kappa i = coev i * ev i`; equivalently
+  `kappa (i*) = p i² * kappa i`.
+* `pseudoUnitary_spherical` and the three corollaries in
+  `Examples/PseudoUnitaryInstances.lean` are **retired**.  They were proved by
+  exhibiting `p ≡ 1`, which satisfies the old axiom with no hypothesis at all.
+  The genuine statement is `ENO823` in `PseudoUnitary.lean`, recorded as an open
+  target.
+* the three `axiom`s in `Grading.lean` are gone: `torsor_p_dual` is now
+  `PivotalStructure.pVal_dual`, and `pivotal_iff_square` /
+  `pivotal_of_no2Torsion` are `def`s recording open targets.  `AxiomAudit.lean`
+  reports `[propext, Classical.choice, Quot.sound]` throughout, and the library
+  contains no `sorry` and no `axiom`.
+
+Still owed: the derivation of `J` from `ev`, `coev` and `F` (it is carried as
+coherent data, see the docstring in `System.lean`); the multiplicity-free
+restriction (`N ≤ 1`) as a separate general-multiplicity development; and the
+analytic input for `ENO823`.
+
 **Upstream dependencies (pinned):**
 
 * `leanprover/lean4:v4.33.1` with `mathlib` `0df444a3` — already pinned by `haagerup-odd/`

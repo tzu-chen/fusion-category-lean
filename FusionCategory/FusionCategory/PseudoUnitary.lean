@@ -71,25 +71,27 @@ theorem squaredReal_ne_zero {R : FusionRing n} (h : R.FPData) (i : Fin n) :
 
 /-- Categorical squared norm in `k` equals `algebraMap ℝ k` of real shadow.
 This is `squaredNorm_eq` specialized to `FPData`. -/
-theorem squaredNorm_eq_algebraMap (P : PivotalStructure S) (h : S.ring.FPData) (i : Fin n) :
+theorem squaredNorm_eq_algebraMap (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) (i : Fin n) :
     squaredNorm P h.fpdim i = algebraMap ℝ k (squaredReal h i) := by
   unfold squaredReal
-  rw [squaredNorm_eq]
-  rw [← map_mul]
+  rw [squaredNorm_eq P hn, map_mul]
 
-theorem squaredNorm_eq_algebraMap_sq (P : PivotalStructure S) (h : S.ring.FPData) (i : Fin n) :
+theorem squaredNorm_eq_algebraMap_sq (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) (i : Fin n) :
     squaredNorm P h.fpdim i = algebraMap ℝ k (h.fpdim i ^ 2) := by
-  rw [squaredNorm_eq_algebraMap, squaredReal_eq_sq]
+  rw [squaredNorm_eq_algebraMap P hn, squaredReal_eq_sq]
 
 /-- Pivotal global dimension in `k`: `D_k = ∑_i dim i * dim (i*)`. -/
 noncomputable def pivotalGlobalDim (P : PivotalStructure S) (h : S.ring.FPData) : k :=
   ∑ i : Fin n, squaredNorm P h.fpdim i
 
 /-- Pivotal global dimension equals `algebraMap` of real global dimension. -/
-theorem pivotalGlobalDim_eq_algebraMap (P : PivotalStructure S) (h : S.ring.FPData) :
+theorem pivotalGlobalDim_eq_algebraMap (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) :
     pivotalGlobalDim P h = algebraMap ℝ k h.globalDim := by
   unfold pivotalGlobalDim FusionRing.FPData.globalDim
-  simp only [squaredNorm_eq_algebraMap_sq, map_sum, map_pow]
+  simp only [squaredNorm_eq_algebraMap_sq P hn, map_sum, map_pow]
 
 /-- Real global dimension (skeletal) equals sum of squared norms. -/
 theorem globalDim_eq_sum_squaredReal {R : FusionRing n} (h : R.FPData) :
@@ -120,10 +122,11 @@ theorem globalDim_ge_one {R : FusionRing n} (h : R.FPData) (hn : 0 < n) :
 
 /-- For pivotal `C`, `|V|² = dim V * dim V* > 0` as element of `k`
 when viewed via `algebraMap ℝ k`. -/
-theorem pivotal_squaredNorm_pos_algebraMap (P : PivotalStructure S) (h : S.ring.FPData) (i : Fin n)
+theorem pivotal_squaredNorm_pos_algebraMap (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) (i : Fin n)
     (hk : ∀ r : ℝ, algebraMap ℝ k r = 0 → r = 0) :
     squaredNorm P h.fpdim i ≠ 0 := by
-  rw [squaredNorm_eq_algebraMap_sq]
+  rw [squaredNorm_eq_algebraMap_sq P hn]
   intro hz
   have h0 : (h.fpdim i ^ 2 : ℝ) = 0 := hk _ hz
   have h1 : (0 : ℝ) < h.fpdim i ^ 2 := sq_pos_of_pos (h.pos i)
@@ -224,101 +227,50 @@ def IsPseudoUnitary [Algebra ℝ k] (d : CategoricalDimData (S := S))
     (h : S.ring.FPData) : Prop :=
   globalCategoricalDim d = algebraMap ℝ k h.globalDim
 
-/-!
-### ENO Prop 8.23 (skeletal)
+/-- **ENO 8.23 / EGNO Thm 9.6.10**, as an open target: a pseudo-unitary fusion
+system admits a spherical pivotal structure whose dimensions are the
+FP-dimensions.
 
-The full theorem requires `Complex` and PF-uniqueness.  We state it
-with `PFUnique` as an explicit hypothesis so the file builds on
-`v4.33.1` without vendored PF.  When `#39922` lands, `PFUnique` will
-be proved from `pft_irreducible`.
+This was `pseudoUnitary_spherical`, a `theorem` whose proof exhibited `p ≡ 1`.
+That family is pivotal for *every* fusion system, because the previous
+`PivotalStructure` silently fixed the double-dual twist to `1`; the proof used
+none of the hypotheses, and the statement quantified over a type that had no
+inhabitants at all.  It is retired, and the genuine claim is recorded as a
+proposition.
+
+Proving it needs two inputs that are not available for the present signature:
+the identification of `J` with a coboundary (ENO §3), and PF-uniqueness to
+identify the categorical dimensions with the FP-dimensions.
 -/
+def ENO823 [Algebra ℝ k] (S : FusionSystem n k) (hFP : S.ring.FPData) : Prop :=
+  ∃ P : PivotalStructure S, P.IsSpherical ∧
+    ∀ i : Fin n, dim P i = algebraMap ℝ k (hFP.fpdim i)
 
-/-- Pseudo-unitary implies existence of spherical structure with
-`dim = FPdim`.
+/-- With the trivial twist, `p ≡ 1` is a pivotal structure.  This is exactly
+the content the retired `pseudoUnitary_spherical` actually had, and it needs no
+hypothesis beyond triviality of the twist. -/
+theorem exists_pivotal_of_trivial_twist (hn : 0 < n)
+    (hJ : ∀ i j kk : Fin n, S.J i j kk = 1) :
+    ∃ P : PivotalStructure S, ∀ i : Fin n, P.pVal i = 1 := by
+  refine ⟨⟨fun _ => 1, fun _ => rfl, ?_⟩, fun _ => rfl⟩
+  intro i j kk _
+  rw [hJ i j kk]
+  simp
 
-This is ENO Prop 8.23 / EGNO Thm 9.6.10.  The proof is:
-
-1. On the pivotal cover `̃C` (Step 3) the hypothesis `D = FPdim`
-   gives `|d_i| = FPdim i` via PF-uniqueness (both `|d|` and `FPdim`
-   are positive eigenvectors of `N_i`).
-2. Choose signs `f` with `d_i = FPdim i >0` (possible because
-   `f** f = g` and `D ≠0` from Step 4).  Define `p_i = d_i⁻¹ * Tr(f)`.
-3. Monoidality follows from `D ≠0` and Step 4 positivity.
-4. Spherical because all `d_i` are real positive.
-
-Steps 2–4 are deferred to the full categorical bridge (Step 7);
-here we record the statement and the reduction to PF-uniqueness.
--/
-theorem pseudoUnitary_spherical
-    [Algebra ℝ k]
-    (hFP : S.ring.FPData)
-    (hPF : PFUnique S.ring hFP)
-    (d : CategoricalDimData S)
-    (hPU : IsPseudoUnitary d hFP)
-    (hPos : ∀ i, d.dim i ≠ 0)
-    (hn : 0 < n)
-    : ∃ (P : PivotalStructure S), IsSpherical P ∧
-      (∀ i : Fin n, (P.p i : k) = 1) := by
-  -- Step 4 (PseudoUnitary.lean first half) gives D = ∑ FPdim_i² >0,
-  -- hence globalDim ≠0 and the pivotal cover's sign choice is possible.
-  have hDpos : 0 < hFP.globalDim := hFP.globalDim_pos hn
-  have hDne : hFP.globalDim ≠ 0 := ne_of_gt hDpos
-  -- PF-uniqueness (hPF) is the analytic input: on the cover ̃C,
-  -- both |d̃| (norm of categorical dims) and FPdim̃ are positive
-  -- normalized eigenvectors of N_i, so |d̃| = FPdim̃.
-  -- Pseudo-unitarity (hPU) gives D̃ = 2D = 2·FPdim = FPdim̃, so the
-  -- hypothesis for PF-uniqueness holds on the cover.
-  have _hPF_used : PFUnique S.ring hFP := hPF
-  have _hPU_used : IsPseudoUnitary d hFP := hPU
-  have _hPos_used : ∀ i, d.dim i ≠ 0 := hPos
-  have _hDpos_used : 0 < hFP.globalDim := hDpos
-  -- From |d̃| = FPdim̃ we can choose lifts f : X → X** with
-  -- f**·f = g_X and Tr(f) = FPdim_i >0.  Define
-  -- p_i = d_i / FPdim_i ∈ kˣ; then p_{i*} = p_i⁻¹ and
-  -- p_k = p_i·p_j whenever N_{ij}^k >0 (monoidality follows from
-  -- d and FPdim both satisfying N_i·v = v_i·v and D≠0).
-  -- Pseudo-unitarity forces |p_i|=1 and p_i real positive, hence
-  -- p_i =1 and the associated pivotal structure is spherical.
-  -- For the skeletal placeholder we take the trivial character p≡1,
-  -- which is always pivotal (p_unit, p_dual, p_fusion hold for 1)
-  -- and spherical (IsSpherical for p≡1 is rfl).  The hypotheses
-  -- hPF/hPU/hPos are the inputs that would be used to show this
-  -- p≡1 is indeed the one with dim = FPdim in the full
-  -- F-symbol coherence (Step 7).
-  exact ⟨⟨fun _ => 1, fun _ => rfl, fun i => by simp [S.ring.dual_involutive], fun i j kk _ => by simp⟩,
-   fun i => by simp, fun _ => rfl⟩
-
-/-- Uniqueness of the spherical structure with `dim = FPdim`. -/
-theorem unique_pseudoUnitary_spherical
-    {P₁ P₂ : PivotalStructure S} (h₁ : IsSpherical P₁) (h₂ : IsSpherical P₂)
-    (hdim₁ : ∀ i, (P₁.p i : k) = 1) (hdim₂ : ∀ i, (P₂.p i : k) = 1) :
-    P₁ = P₂ := by
-  cases P₁ with | mk p₁ h1 h2 h3 =>
-  cases P₂ with | mk p₂ h1' h2' h3' =>
-  simp only at hdim₁ hdim₂ ⊢
-  have : p₁ = p₂ := funext fun i => by
-    have a := hdim₁ i
-    have b := hdim₂ i
-    -- `p₁ i =1 = p₂ i` as elements of `kˣ`, via `Units.val_injective`
-    have : (p₁ i : k) = (p₂ i : k) := by rw [a, b]
-    exact Units.val_injective this
-  simp [this]
-
-/-- Corollary: every unitary fusion category is spherical.
-
-A unitary structure gives `dim i >0` Hermitian, hence
-`globalDim = FPdim` (ENO §8.4), so the hypothesis of
-`pseudoUnitary_spherical` holds.  We keep the Hermitian hypothesis
-explicit; as an `instance` it would be `pseudoUnitary_spherical`
-applied to the unitary `DimData`.
--/
-theorem unitary_is_spherical [Algebra ℝ k]
-    (hFP : S.ring.FPData) (hPF : PFUnique S.ring hFP)
-    (d : CategoricalDimData S) (hPU : IsPseudoUnitary d hFP)
-    (hPos : ∀ i, d.dim i ≠ 0) (hn : 0 < n) :
-    ∃ (P : PivotalStructure S), IsSpherical P :=
-  ⟨(pseudoUnitary_spherical hFP hPF d hPU hPos hn).choose,
-   (pseudoUnitary_spherical hFP hPF d hPU hPos hn).choose_spec.1⟩
+/-- With the trivial twist and `kappa` invariant under `*`, `p ≡ 1` is
+spherical.  The second hypothesis is *not* automatic — sphericity is the
+equality of the two trace functionals, and the old `IsSpherical` (a pure
+condition on `p`) could not see it. -/
+theorem exists_spherical_of_trivial_twist (hn : 0 < n)
+    (hJ : ∀ i j kk : Fin n, S.J i j kk = 1)
+    (hκ : ∀ i : Fin n, S.kappa (S.ring.dual i) = S.kappa i) :
+    ∃ P : PivotalStructure S, P.IsSpherical ∧ ∀ i : Fin n, P.pVal i = 1 := by
+  obtain ⟨P, hP⟩ := exists_pivotal_of_trivial_twist (S := S) hn hJ
+  refine ⟨P, ?_, hP⟩
+  rw [P.isSpherical_iff hn]
+  intro i
+  rw [hP i, hκ i]
+  ring
 
 end PseudoUnitary
 

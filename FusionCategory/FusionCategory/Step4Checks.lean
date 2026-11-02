@@ -38,16 +38,18 @@ example {n : ℕ} {R : FusionRing n} (h : R.FPData) (hn : 0 < n) :
 /-! ### 2. Squared norm independent of `p` -/
 
 example {n : ℕ} {k : Type} [Field k] [Algebra ℝ k]
-    {S : FusionSystem n k} (P : PivotalStructure S) (h : S.ring.FPData) (i : Fin n) :
+    {S : FusionSystem n k} (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) (i : Fin n) :
     squaredNorm P h.fpdim i = algebraMap ℝ k (h.fpdim i ^ 2) :=
-  squaredNorm_eq_algebraMap_sq P h i
+  squaredNorm_eq_algebraMap_sq P hn h i
 
 -- Wrong definition `pivotalDim P d i = p_i * d_{i*}` would give
 -- `p_i * p_{i*}` ≠ 1 in this equality.
 example {n : ℕ} {k : Type} [Field k] [Algebra ℝ k]
-    {S : FusionSystem n k} (P : PivotalStructure S) (h : S.ring.FPData) :
+    {S : FusionSystem n k} (P : PivotalStructure S) (hn : 0 < n)
+    (h : S.ring.FPData) :
     pivotalGlobalDim P h = algebraMap ℝ k h.globalDim :=
-  pivotalGlobalDim_eq_algebraMap P h
+  pivotalGlobalDim_eq_algebraMap P hn h
 
 /-! ### 3. Positivity is strict, not just non-negative -/
 

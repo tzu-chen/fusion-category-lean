@@ -94,12 +94,6 @@ then `P' = χ • P` with `(χ•P).p i = χ(deg i) * p_i` is again pivotal.
 Conversely any two pivotal structures differ by a unique such `χ`.
 This makes pivotal structures a torsor over `Hom(U_C, kˣ)`.
 -/
-axiom torsor_p_dual {n : ℕ} {S : FusionSystem n k}
-    (U : HasUniversalGrading n S.ring) (P : PivotalStructure S)
-    (χ : U.G →* kˣ) (i : Fin n) :
-    (χ (U.grading.deg (S.ring.dual i)) * P.p (S.ring.dual i) : kˣ) =
-    ((χ (U.grading.deg i) * P.p i)⁻¹ : kˣ)
-
 noncomputable def torsorAction {n : ℕ} {S : FusionSystem n k}
     (U : HasUniversalGrading n S.ring)
     (P : PivotalStructure S) (χ : U.G →* kˣ) : PivotalStructure S where
@@ -109,15 +103,15 @@ noncomputable def torsorAction {n : ℕ} {S : FusionSystem n k}
     show χ (U.grading.deg ⟨0, hn⟩) * P.p ⟨0, hn⟩ = 1
     rw [U.grading.deg_unit hn, P.p_unit hn]
     simp
-  p_dual := torsor_p_dual U P χ
-  p_fusion := by
+  p_mon := by
     intro i j kk hN
     have hdeg : U.grading.deg kk = U.grading.deg i * U.grading.deg j :=
       U.grading.deg_mul i j kk hN
     have hχ : (χ (U.grading.deg kk) : kˣ) = χ (U.grading.deg i) * χ (U.grading.deg j) := by
       rw [hdeg, map_mul]
-    have hp : (P.p kk : k) = (P.p i : k) * (P.p j : k) := P.p_fusion i j kk hN
-    show (↑(χ (U.grading.deg kk) * P.p kk) : k) = (↑(χ (U.grading.deg i) * P.p i) : k) * ↑(χ (U.grading.deg j) * P.p j)
+    have hp : (P.p kk : k) = S.J i j kk * (P.p i : k) * (P.p j : k) := P.p_mon i j kk hN
+    show (↑(χ (U.grading.deg kk) * P.p kk) : k)
+      = S.J i j kk * (↑(χ (U.grading.deg i) * P.p i) : k) * (↑(χ (U.grading.deg j) * P.p j) : k)
     simp only [hχ, hp, Units.val_mul]
     ring
 
@@ -128,14 +122,15 @@ the Radford `S⁴` is a square: `∃ h, h^2 = [g]`.  This is ENO Rem 3.1 /
 Bartlett Lemma 6.2.  The forward direction chooses `p` with
 `p^2 = g` via `p_i² = g_i`; the converse builds `g` from a given `p`.
 
-We state it as an axiom for Step 3, to be proved in Step 5 after the
-cover machinery is in place.  The hypothesis `U` is the universal
-grading; `g : U.G → kˣ` is the character of `S⁴`.
+This was an `axiom` in the previous version of this file and is now a
+`def`: with the twist carried by `FusionSystem`, the criterion is a
+statement about the *class* of `J`, and it cannot be assumed.  It is
+recorded as an open target, not as a fact.
 -/
-axiom pivotal_iff_square {n : ℕ} {S : FusionSystem n k}
+def pivotal_iff_square {n : ℕ} {S : FusionSystem n k}
     (U : HasUniversalGrading n S.ring)
-    (g : U.G →* kˣ) :
-    Nonempty (PivotalStructure S) ↔ ∃ h : U.G →* kˣ, ∀ x, h x * h x = g x
+    (g : U.G →* kˣ) : Prop :=
+  Nonempty (PivotalStructure S) ↔ ∃ h : U.G →* kˣ, ∀ x, h x * h x = g x
 
 /-- If `U_C` has no 2-torsion, every fusion category is pivotal.
 
@@ -143,12 +138,15 @@ Indeed, if `U_C` is 2-torsion-free then the squaring map
 `Hom(U_C, kˣ) → Hom(U_C, kˣ)`, `h ↦ h^2` is surjective (as `kˣ` is
 divisible for `k = ℂ`), so `[g]` is always a square.  This is the
 criterion used for Haagerup–Izumi with `U_C = ℤ/(2n+1)` etc.
+
+Recorded as a `def` (an open target) rather than an `axiom`: it is not
+true of the present signature, where `J` is data.
 -/
-axiom pivotal_of_no2Torsion {n : ℕ} {S : FusionSystem n k}
+def pivotal_of_no2Torsion {n : ℕ} {S : FusionSystem n k}
     (U : HasUniversalGrading n S.ring)
     (hU : ∀ x : U.G, x * x = 1 → x = 1)
-    (g : U.G →* kˣ) :
-    Nonempty (PivotalStructure S)
+    (g : U.G →* kˣ) : Prop :=
+  Nonempty (PivotalStructure S)
 
 end Grading
 
