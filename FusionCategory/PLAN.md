@@ -62,6 +62,69 @@ derivation, where the composite carries explicit associator factors; the
 multiplicity-free restriction (`N ≤ 1`) as a separate general-multiplicity
 development; and the analytic input for `ENO823`.
 
+## Prior art, checked
+
+Searched before continuing; three bodies of work are adjacent and none is a
+drop-in:
+
+* **Mathlib** has `RigidCategory` (`CategoryTheory.Monoidal.Rigid.Basic`) but
+  no pivotal or spherical categories. They are in flight: PR #42150
+  (*pivotal categories*, blocked-by-other-PR), and PRs #42191 (*spherical
+  categories*) and #42192 (*symmetric rigid categories are spherical*) build on
+  it. This is exactly the layer vendored as `MathlibPatches/PivotalCategory.lean`
+  (still a stub), and it is why the plan says to keep the patch
+  byte-compatible: when #42150 lands, the bridge becomes an import. Nothing to
+  reinvent here, only to track.
+* **Alphabeta Math** (alphabetamath.cc) has a generated library page *Unitary
+  Fusion Spaces, F/R Symbols, and Anyon Models* with multiplicity-aware fusion
+  trees, the F-symbol as a recoupling matrix, the pentagon in fusion-tree
+  coordinates, gauge covariance, and explicit Fibonacci and Ising carriers. It
+  is pipeline-generated with provenance labels, and the page reports two
+  results verified on it. Its target is unitary/braided anyon data, not
+  pivotality, so it overlaps `System.lean` and the `DoubleDual` computation but
+  not the question this project asks.
+* **TNLean** (sirui-lu.com/TNLean) is a blueprint project on tensor networks
+  whose anyon chapter treats quantum-double models. Different object (microscopic
+  models rather than abstract fusion data).
+* Data, not code: **AnyonWiki** supplies F/R/pivotal tables in a fixed gauge for
+  the multiplicity-free categories up to rank 7; our Fibonacci and Ising
+  conventions should follow it rather than be derived afresh.
+
+Conclusion: no finished Lean formalization of pivotal fusion categories exists
+to reuse; the categorical infrastructure is being landed in Mathlib right now,
+so the cheap long-term move is to keep our skeletal layer aligned with
+#42150/#42191 naming and stub out the bridge, as already planned.
+
+## The derived twist: result
+
+The second swarm (smvzsb2ql) closed the derivation for the self-dual case, which
+covers Fibonacci, Ising and every pointed category.  With `M_b(E,c') =
+F^{a*ab}_b(E,c')` the associator block at total `b` (a `1x1` block in the
+multiplicity-free case),
+
+    psi_{a,b}|_c = ev_c/(ev_a * ev_b) * 1/Omega(a,b;c),
+    Omega(a,b;c)  = F^{b*a*c}_0(c*,b) * (M_b)^{-1}(0,c),
+    J a b c       = psi_{a,b}|_c / psi_{b*,a*}|_{c*}.
+
+Consequences, in the order they were established:
+
+* the composite is a **ratio**, not a product: both `psi`s have source
+  `(b* x a*)*`, so no product of them is a morphism.  This was the single error
+  behind three incompatible formulas;
+* the gauge law carries the duals,
+  `J -> J * (lam a * lam b * lam c*)/(lam c * lam a* * lam b*)`, so on
+  self-dual data `J` is gauge **invariant**;
+* in any duality-compatible normalisation the self-dual examples have
+  `J = 1`, hence `p = 1` is pivotal with `dim = kappa`.  `ev a * ev b / ev c`
+  is the psi-scalar, not `J`;
+* checked against an independent model that composes morphisms on eleven data
+  sets, including Ising, where the block is `1x1` because `N^E_{bb} = 1`.
+
+Not derived, only checked: the block indices of `Omega`, and the general
+non-self-dual case.  Wiring this into `DoubleDual.lean` replaces the definition
+there by `psi` and the ratio, and the `1x1` case is enough for every category the
+package currently has.
+
 ## ENO 8.23: the sharp form
 
 `Coboundary.lean` reduces the target to an equation.  With
