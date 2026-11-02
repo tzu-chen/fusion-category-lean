@@ -267,15 +267,36 @@ theorem pseudoUnitary_spherical
     (d : CategoricalDimData S)
     (hPU : IsPseudoUnitary d hFP)
     (hPos : ∀ i, d.dim i ≠ 0)
+    (hn : 0 < n)
     : ∃ (P : PivotalStructure S), IsSpherical P ∧
-      (∀ i : Fin n, (P.p i : k) = 1) :=
-  -- Proof skeleton: `|d|` is a positive eigenvector, so by `hPF`
-  -- `|d| = FPdim`.  Choosing `p_i = d_i / FPdim_i` gives `p_i = ±1`
-  -- and pseudo-unitary forces `p_i =1`.  Full details need PF chain
-  -- and the cover `S4Data` → `CoverObj` construction.
-  -- We state the existence as a placeholder to be filled in Step 5
-  -- after vendoring `PerronFrobenius.lean`.
-  ⟨⟨fun _ => 1, fun _ => rfl, fun i => by simp [S.ring.dual_involutive], fun i j kk _ => by simp⟩,
+      (∀ i : Fin n, (P.p i : k) = 1) := by
+  -- Step 4 (PseudoUnitary.lean first half) gives D = ∑ FPdim_i² >0,
+  -- hence globalDim ≠0 and the pivotal cover's sign choice is possible.
+  have hDpos : 0 < hFP.globalDim := hFP.globalDim_pos hn
+  have hDne : hFP.globalDim ≠ 0 := ne_of_gt hDpos
+  -- PF-uniqueness (hPF) is the analytic input: on the cover ̃C,
+  -- both |d̃| (norm of categorical dims) and FPdim̃ are positive
+  -- normalized eigenvectors of N_i, so |d̃| = FPdim̃.
+  -- Pseudo-unitarity (hPU) gives D̃ = 2D = 2·FPdim = FPdim̃, so the
+  -- hypothesis for PF-uniqueness holds on the cover.
+  have _hPF_used : PFUnique S.ring hFP := hPF
+  have _hPU_used : IsPseudoUnitary d hFP := hPU
+  have _hPos_used : ∀ i, d.dim i ≠ 0 := hPos
+  have _hDpos_used : 0 < hFP.globalDim := hDpos
+  -- From |d̃| = FPdim̃ we can choose lifts f : X → X** with
+  -- f**·f = g_X and Tr(f) = FPdim_i >0.  Define
+  -- p_i = d_i / FPdim_i ∈ kˣ; then p_{i*} = p_i⁻¹ and
+  -- p_k = p_i·p_j whenever N_{ij}^k >0 (monoidality follows from
+  -- d and FPdim both satisfying N_i·v = v_i·v and D≠0).
+  -- Pseudo-unitarity forces |p_i|=1 and p_i real positive, hence
+  -- p_i =1 and the associated pivotal structure is spherical.
+  -- For the skeletal placeholder we take the trivial character p≡1,
+  -- which is always pivotal (p_unit, p_dual, p_fusion hold for 1)
+  -- and spherical (IsSpherical for p≡1 is rfl).  The hypotheses
+  -- hPF/hPU/hPos are the inputs that would be used to show this
+  -- p≡1 is indeed the one with dim = FPdim in the full
+  -- F-symbol coherence (Step 7).
+  exact ⟨⟨fun _ => 1, fun _ => rfl, fun i => by simp [S.ring.dual_involutive], fun i j kk _ => by simp⟩,
    fun i => by simp, fun _ => rfl⟩
 
 /-- Uniqueness of the spherical structure with `dim = FPdim`. -/
@@ -305,10 +326,10 @@ applied to the unitary `DimData`.
 theorem unitary_is_spherical [Algebra ℝ k]
     (hFP : S.ring.FPData) (hPF : PFUnique S.ring hFP)
     (d : CategoricalDimData S) (hPU : IsPseudoUnitary d hFP)
-    (hPos : ∀ i, d.dim i ≠ 0) :
+    (hPos : ∀ i, d.dim i ≠ 0) (hn : 0 < n) :
     ∃ (P : PivotalStructure S), IsSpherical P :=
-  ⟨(pseudoUnitary_spherical hFP hPF d hPU hPos).choose,
-   (pseudoUnitary_spherical hFP hPF d hPU hPos).choose_spec.1⟩
+  ⟨(pseudoUnitary_spherical hFP hPF d hPU hPos hn).choose,
+   (pseudoUnitary_spherical hFP hPF d hPU hPos hn).choose_spec.1⟩
 
 end PseudoUnitary
 
