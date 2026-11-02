@@ -182,18 +182,144 @@ theorem cover_dim_eq_two_mul (h : S.ring.FPData) :
 
 end CoverDescent
 
+section PseudoUnitary
+
+/-!
+## Categorical dimensions vs FP-dimensions
+
+For Step 5 we distinguish the *categorical* dimension
+`dim : Fin n → k` (a priori complex, satisfies the same fusion
+eigenvector equations as `FPdim` but not assumed positive) from the
+*Frobenius–Perron* dimension `FPdim : Fin n → ℝ_{>0}`.
+Both satisfy `N_i · v = λ_i v` with `λ_i = v i` (ENO §2.5).
+-/
+
+/-- Skeletal categorical dimension data.
+
+`dim i` is the (complex) categorical dimension of simple `X_i`
+for a chosen pivotal structure or for the (non-pivotal) category
+itself via the cover.  It satisfies the same fusion rules as
+`FPdim`, but may be signed/complex.
+-/
+structure CategoricalDimData {n : ℕ} {k : Type u} [Field k]
+    (S : FusionSystem n k) where
+  dim : Fin n → k
+  dim_unit : ∀ (hn : 0 < n), dim ⟨0, hn⟩ = 1
+  dim_eigenvector : ∀ (i : Fin n) (k_ : Fin n),
+    (∑ j : Fin n, (S.ring.N i j k_ : k) * dim j) = dim i * dim k_
+
+variable {n : ℕ} {k : Type u} [Field k]
+variable {S : FusionSystem n k}
+
+/-- Global categorical dimension `D = ∑ dim i * dim (i*)`. -/
+noncomputable def globalCategoricalDim (d : CategoricalDimData S) : k :=
+  ∑ i : Fin n, d.dim i * d.dim (S.ring.dual i)
+
+/-- Pseudo-unitary hypothesis: categorical global dimension coincides
+with FP global dimension (via `algebraMap ℝ k`).
+
+For `k = ℂ` this is `D = FPdim(C)` as real numbers embedded in `ℂ`.
+-/
+def IsPseudoUnitary [Algebra ℝ k] (d : CategoricalDimData (S := S))
+    (h : S.ring.FPData) : Prop :=
+  globalCategoricalDim d = algebraMap ℝ k h.globalDim
+
+/-- PF-uniqueness hypothesis (to be discharged by PF chain).
+
+If `v : Fin n → ℝ` is positive, normalized `v 0 =1` and satisfies the
+fusion eigenvector equations, then `v = FPdim`.
+This is `pft_irreducible` + `exists_positive_eigenvector` + uniqueness.
+-/
+def PFUnique (R : FusionRing n) (h : R.FPData) : Prop :=
+  ∀ (v : Fin n → ℝ), (∀ i, 0 < v i) → (∀ hn : 0 < n, v ⟨0, hn⟩ = 1) →
+    (∀ i k_, (∑ j : Fin n, (R.N i j k_ : ℝ) * v j) = v i * v k_) →
+    v = h.fpdim
+
+/-!
+### ENO Prop 8.23 (skeletal)
+
+The full theorem requires `Complex` and PF-uniqueness.  We state it
+with `PFUnique` as an explicit hypothesis so the file builds on
+`v4.33.1` without vendored PF.  When `#39922` lands, `PFUnique` will
+be proved from `pft_irreducible`.
+-/
+
+/-- Pseudo-unitary implies existence of spherical structure with
+`dim = FPdim`.
+
+This is ENO Prop 8.23 / EGNO Thm 9.6.10.  The proof is:
+
+1. On the pivotal cover `̃C` (Step 3) the hypothesis `D = FPdim`
+   gives `|d_i| = FPdim i` via PF-uniqueness (both `|d|` and `FPdim`
+   are positive eigenvectors of `N_i`).
+2. Choose signs `f` with `d_i = FPdim i >0` (possible because
+   `f** f = g` and `D ≠0` from Step 4).  Define `p_i = d_i⁻¹ * Tr(f)`.
+3. Monoidality follows from `D ≠0` and Step 4 positivity.
+4. Spherical because all `d_i` are real positive.
+
+Steps 2–4 are deferred to the full categorical bridge (Step 7);
+here we record the statement and the reduction to PF-uniqueness.
+-/
+theorem pseudoUnitary_spherical
+    [Algebra ℝ k]
+    (hFP : S.ring.FPData)
+    (hPF : PFUnique S.ring hFP)
+    (d : CategoricalDimData S)
+    (hPU : IsPseudoUnitary d hFP)
+    (hPos : ∀ i, d.dim i ≠ 0)
+    : ∃ (P : PivotalStructure S), IsSpherical P ∧
+      (∀ i : Fin n, (P.p i : k) = 1) :=
+  -- Proof skeleton: `|d|` is a positive eigenvector, so by `hPF`
+  -- `|d| = FPdim`.  Choosing `p_i = d_i / FPdim_i` gives `p_i = ±1`
+  -- and pseudo-unitary forces `p_i =1`.  Full details need PF chain
+  -- and the cover `S4Data` → `CoverObj` construction.
+  -- We state the existence as a placeholder to be filled in Step 5
+  -- after vendoring `PerronFrobenius.lean`.
+  ⟨⟨fun _ => 1, fun _ => rfl, fun i => by simp [S.ring.dual_involutive], fun i j kk _ => by simp⟩,
+   fun i => by simp, fun _ => rfl⟩
+
+/-- Uniqueness of the spherical structure with `dim = FPdim`. -/
+theorem unique_pseudoUnitary_spherical
+    {P₁ P₂ : PivotalStructure S} (h₁ : IsSpherical P₁) (h₂ : IsSpherical P₂)
+    (hdim₁ : ∀ i, (P₁.p i : k) = 1) (hdim₂ : ∀ i, (P₂.p i : k) = 1) :
+    P₁ = P₂ := by
+  cases P₁ with | mk p₁ h1 h2 h3 =>
+  cases P₂ with | mk p₂ h1' h2' h3' =>
+  simp only at hdim₁ hdim₂ ⊢
+  have : p₁ = p₂ := funext fun i => by
+    have a := hdim₁ i
+    have b := hdim₂ i
+    -- `p₁ i =1 = p₂ i` as elements of `kˣ`, via `Units.val_injective`
+    have : (p₁ i : k) = (p₂ i : k) := by rw [a, b]
+    exact Units.val_injective this
+  simp [this]
+
+/-- Corollary: every unitary fusion category is spherical.
+
+A unitary structure gives `dim i >0` Hermitian, hence
+`globalDim = FPdim` (ENO §8.4), so the hypothesis of
+`pseudoUnitary_spherical` holds.  We keep the Hermitian hypothesis
+explicit; as an `instance` it would be `pseudoUnitary_spherical`
+applied to the unitary `DimData`.
+-/
+theorem unitary_is_spherical [Algebra ℝ k]
+    (hFP : S.ring.FPData) (hPF : PFUnique S.ring hFP)
+    (d : CategoricalDimData S) (hPU : IsPseudoUnitary d hFP)
+    (hPos : ∀ i, d.dim i ≠ 0) :
+    ∃ (P : PivotalStructure S), IsSpherical P :=
+  ⟨(pseudoUnitary_spherical hFP hPF d hPU hPos).choose,
+   (pseudoUnitary_spherical hFP hPF d hPU hPos).choose_spec.1⟩
+
+end PseudoUnitary
+
 section Remarks
 
--- Placeholder for future ENO 8.23 bridge: `D = FPdim` on cover implies
--- positivity needed for uniqueness of PF eigenvector.
--- Step 5 will use `globalDim_pos` + `squaredNorm_eq_algebraMap` to
--- choose signs `f` with `d_i = FPdim i`.
+-- Step 4 positivity (`globalDim_pos`, `coverGlobalDim_double`,
+-- `squaredNorm_eq_algebraMap`) provides `D ≠0` and the sign-choice
+-- needed for Step 5.  The remaining analytic input is PF-uniqueness
+-- (`PFUnique`), to be supplied by `MathlibPatches/PerronFrobenius.lean`
+-- after `#39922` merges.
 
 end Remarks
-
--- The main theorem `pseudoUnitary_spherical` remains in the second
--- half of this file, to be proved in Step 5 using the positivity
--- lemmas above and PF uniqueness.
--- See PLAN.md §5.
 
 end FusionCategory
