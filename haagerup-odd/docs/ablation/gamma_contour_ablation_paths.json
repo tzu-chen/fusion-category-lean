@@ -1,0 +1,38 @@
+{
+  "source_hashes_match": true,
+  "scope": "Existing proof dependency paths; not a list of false conclusions.",
+  "paths": [
+    [
+      "HaagerupIzumi.GammaK4Contour.sum_crossedBetween",
+      "HaagerupIzumi.GammaK4Contour.corrected_value_eq_of_lt"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.corrected_value_eq_of_lt",
+      "HaagerupIzumi.GammaK4Contour.corrected_value_independent"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.corrected_value_independent",
+      "HaagerupIzumi.GammaK4Contour.K4_line"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.K4_line",
+      "HaagerupIzumi.GammaK4Contour.exists_local_scaledK4_representation"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.exists_local_scaledK4_representation",
+      "HaagerupIzumi.GammaK4Contour.differentiableAt_K4_scaled"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.differentiableAt_K4_scaled",
+      "HaagerupIzumi.GammaK4Contour.K4_euler"
+    ],
+    [
+      "HaagerupIzumi.GammaK4Contour.K4_euler",
+      "HaagerupIzumi.GammaContinuation.hypGamma._proof_1",
+      "HaagerupIzumi.GammaContinuation.hypGamma",
+      "HaagerupIzumi.ruijsenaarsHypGamma",
+      "HaagerupIzumi.EGEquations_ruijsenaars",
+      "HaagerupIzumi.exists_EGEquations_odd"
+    ]
+  ]
+}

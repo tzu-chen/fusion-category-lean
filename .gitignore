@@ -1,0 +1,11 @@
+# Lean
+.lake/
+build/
+# Python
+__pycache__/
+*.pyc
+# OS
+.DS_Store
+Thumbs.db
+# Zips kept in releases, not in working tree
+*.zip

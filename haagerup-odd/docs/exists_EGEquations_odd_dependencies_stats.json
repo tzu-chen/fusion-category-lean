@@ -1,0 +1,27 @@
+{
+  "nodes": 1981,
+  "edges": 8700,
+  "modules": 113,
+  "roots": 633,
+  "named_declarations": 1320,
+  "kinds": {
+    "ctor": 6,
+    "def": 244,
+    "inductive": 6,
+    "thm": 1725
+  },
+  "statement_edges": 3542,
+  "proof_edges": 5158,
+  "external_references": 176336,
+  "external_declarations": 2802,
+  "external_module_roots": [
+    "Batteries",
+    "Init",
+    "Mathlib"
+  ],
+  "layers": 48,
+  "mutually_recursive_components": 0,
+  "self_edges": 0,
+  "svg_width": 12820,
+  "svg_height": 20086
+}

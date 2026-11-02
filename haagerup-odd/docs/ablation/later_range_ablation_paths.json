@@ -1,0 +1,34 @@
+{
+  "source_hashes_match": true,
+  "scope": "Existing proof dependencies; only statements separately refuted are labeled false.",
+  "paths": {
+    "left_residue_sum": [
+      "HaagerupIzumi.Concrete.left_residue_sum",
+      "HaagerupIzumi.Concrete.left_product",
+      "HaagerupIzumi.Concrete.bracket_zero",
+      "HaagerupIzumi.Concrete.restricted_fourier",
+      "HaagerupIzumi.Concrete.EGEquations_concrete",
+      "HaagerupIzumi.EGEquations_ruijsenaars",
+      "HaagerupIzumi.exists_EGEquations_odd"
+    ],
+    "right_residue_sum": [
+      "HaagerupIzumi.Concrete.right_residue_sum",
+      "HaagerupIzumi.Concrete.right_product",
+      "HaagerupIzumi.Concrete.bracket_zero",
+      "HaagerupIzumi.Concrete.restricted_fourier",
+      "HaagerupIzumi.Concrete.EGEquations_concrete",
+      "HaagerupIzumi.EGEquations_ruijsenaars",
+      "HaagerupIzumi.exists_EGEquations_odd"
+    ],
+    "tz_neg_window": [
+      "HaagerupIzumi.Concrete.tz_neg_window",
+      "HaagerupIzumi.Concrete.right_residue_sum",
+      "HaagerupIzumi.Concrete.right_product",
+      "HaagerupIzumi.Concrete.bracket_zero",
+      "HaagerupIzumi.Concrete.restricted_fourier",
+      "HaagerupIzumi.Concrete.EGEquations_concrete",
+      "HaagerupIzumi.EGEquations_ruijsenaars",
+      "HaagerupIzumi.exists_EGEquations_odd"
+    ]
+  }
+}
