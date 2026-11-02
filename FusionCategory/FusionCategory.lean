@@ -5,3 +5,4 @@ import FusionCategory.Cover
 import FusionCategory.Grading
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
+import FusionCategory.Step4Checks

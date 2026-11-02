@@ -1,4 +1,9 @@
 import FusionCategory.Pivotal
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Pivotal cover — Step 3
@@ -87,13 +92,37 @@ given by `̃d(i,ε) = d(i)` satisfies `∑_{̃i} ̃d(̃i)² = 2 * ∑_i d(i)²`.
 This is the skeletal shadow of ENO Rem 3.1's `dim ̃C = 2 dim C` and
 `FPdim ̃C = 2 FPdim C`.
 
-Stated as an axiom to be discharged in Step 4 when the full
-`coverFusionRing` with `ñ = 2n` is constructed; the proof is a
-straightforward splitting of `Fin (2n)` into evens/odds.
+Proved in Step 4 via `finProdFinEquiv : Fin n × Fin 2 ≃ Fin (n*2)`.
 -/
-axiom coverGlobalDim_double {n : ℕ} {k : Type} [Field k]
+theorem coverGlobalDim_double {n : ℕ} {k : Type u} [Field k]
     {S : FusionSystem n k} (h : S.ring.FPData) :
     (∑ i : Fin (n * 2), (h.fpdim (⟨i.val / 2, by omega⟩ : Fin n) ^ 2 : ℝ)) =
-    2 * h.globalDim
+    2 * h.globalDim := by
+  unfold FusionRing.FPData.globalDim
+  let e : Fin n × Fin 2 ≃ Fin (n * 2) := finProdFinEquiv (m := n) (n := 2)
+  have hval : ∀ p : Fin n × Fin 2, (e p).val = p.2.val + 2 * p.1.val := by
+    intro p; simp [e, finProdFinEquiv]
+  have hdiv : ∀ p : Fin n × Fin 2, (e p).val / 2 = p.1.val := by
+    intro p
+    rw [hval p]
+    have hb : p.2.val < 2 := p.2.isLt
+    omega
+  calc (∑ i : Fin (n * 2), (h.fpdim (⟨i.val / 2, by omega⟩ : Fin n) ^ 2 : ℝ))
+      = ∑ p : Fin n × Fin 2, (h.fpdim (⟨(e p).val / 2, by omega⟩ : Fin n) ^ 2 : ℝ) := by
+        rw [← Equiv.sum_comp e (fun i => (h.fpdim (⟨i.val / 2, by omega⟩ : Fin n) ^ 2 : ℝ))]
+    _ = ∑ p : Fin n × Fin 2, (h.fpdim p.1 ^ 2 : ℝ) := by
+        apply Fintype.sum_congr
+        intro p
+        have h1 : (⟨(e p).val / 2, by omega⟩ : Fin n) = p.1 := by
+          apply Fin.ext
+          simp [hdiv p]
+        rw [h1]
+    _ = ∑ a : Fin n, ∑ _b : Fin 2, (h.fpdim a ^ 2 : ℝ) := by
+        rw [Fintype.sum_prod_type]
+    _ = ∑ a : Fin n, (2 * (h.fpdim a ^ 2 : ℝ)) := by
+        apply Finset.sum_congr rfl
+        intro a _; simp
+    _ = 2 * ∑ a : Fin n, (h.fpdim a ^ 2 : ℝ) := by
+        rw [Finset.mul_sum]
 
 end FusionCategory
