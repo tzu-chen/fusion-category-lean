@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import FusionCategory.Basic
 
 /-!
@@ -96,9 +97,18 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
   /-- Left snake: the loop at `X_i`, `(ev ⊗ id) ∘ α ∘ (id ⊗ coev) = id`. -/
   snake_left : ∀ (hn : 0 < n) (i : Fin n),
     coev i * ev i * F i (ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ = 1
-  /-- Right snake: the same loop at `X_{i*}`. -/
+  /-- Right snake: `(ev ⊗ id) ∘ α⁻¹ ∘ (id ⊗ coev) = id` on `X_{i*}`.
+
+  The inverse associator contributes the *reciprocal* of the `F` entry, so this
+  reads `coev i * ev i / F^{i* i i*}_{i*}(1,1) = 1`.  Together with
+  `snake_left` it forces `F^{i i* i}_i(1,1) * F^{i* i i*}_{i*}(1,1) = 1`
+  (`snake_consistency` below).  Writing both snakes with a factor of `F`
+  instead would force the two entries to be equal, which is false for
+  `Vec^ω_{Z/3}` and for every pointed category whose cocycle is non-trivial in
+  this normalisation — and `Vec_{Z/2}` cannot detect it, because there
+  `i* = i` and the two entries coincide. -/
   snake_right : ∀ (hn : 0 < n) (i : Fin n),
-    coev i * ev i * F (ring.dual i) i (ring.dual i) (ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ = 1
+    coev i * ev i / F (ring.dual i) i (ring.dual i) (ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ = 1
   /-- The double-dual twist: the scalar of `X_a** ⊗ X_b** → (X_a ⊗ X_b)**`
   on the channel `c`. -/
   J : Fin n → Fin n → Fin n → k
@@ -140,6 +150,27 @@ theorem kappa_ne_zero (i : Fin n) : S.kappa i ≠ 0 :=
 theorem kappa_loop (hn : 0 < n) (i : Fin n) :
     S.kappa i * S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ = 1 :=
   S.snake_left hn i
+
+/-- The two snake equations together force the two loop scalars to be mutually
+inverse: `F^{i i* i}_i(1,1) * F^{i* i i*}_{i*}(1,1) = 1`.
+
+This is the relation that a `Vec_{Z/2}` witness cannot test (`i* = i` there) and
+that the previous formulation of the axioms got wrong. -/
+theorem snake_consistency (hn : 0 < n) (i : Fin n) :
+    S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ *
+      S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ = 1 := by
+  have h1 := S.snake_left hn i
+  have h2 := S.snake_right hn i
+  have hF0 : S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ ≠ 0 := by
+    intro h0
+    rw [h0, div_zero] at h2
+    exact one_ne_zero h2.symm
+  have hF : S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩
+      = S.kappa i := by
+    rw [div_eq_one_iff_eq hF0] at h2
+    exact h2.symm
+  rw [hF]
+  simpa [FusionSystem.kappa, mul_comm, mul_left_comm, mul_assoc] using h1
 
 end FusionSystem
 

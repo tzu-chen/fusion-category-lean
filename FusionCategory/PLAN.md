@@ -41,6 +41,15 @@ not be inhabited and its pivotal axiom was vacuous:
   reports `[propext, Classical.choice, Quot.sound]` throughout, and the library
   contains no `sorry` and no `axiom`.
 
+A second defect in the same sign was caught by the derivation swarm: the
+`snake_right` axiom wrote the second snake with a factor of `F` instead of its
+reciprocal, which forced `F^{i i* i}_i(1,1) = F^{i* i i*}_{i*}(1,1)` and so
+excluded every pointed category whose cocycle is non-trivial in this
+normalisation (`Vec^ω_{Z/3}`).  It is corrected, and `snake_consistency` now
+records the relation the two snakes force, `F^{i i* i}_i · F^{i* i i*}_{i*} = 1`.
+`Vec_{Z/2}` could not detect this, because there `i* = i` and the two entries
+coincide — a witness with `i* ≠ i` is owed.
+
 `J` is now **derived** from the duality data in the strict self-dual
 normalisation (`DoubleDual.lean`): the chainmail composite `μ = ψ_{b*,a*} ∘ ψ*`
 collapses to `J a b c = ev a * ev b / ev c`, its coherence holds identically,

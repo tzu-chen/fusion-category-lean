@@ -47,6 +47,9 @@ open FusionCategory.Examples
 #print axioms DoubleDual.derivedTwist_dual
 #print axioms DoubleDual.vecZ2_twist_derived
 
+-- The two snakes force the two loop scalars to be mutually inverse
+#print axioms FusionSystem.snake_consistency
+
 -- ENO 8.23 reduced to a coboundary condition on the twist
 #print axioms twist_eq_coboundary_of_pivotal
 #print axioms exists_spherical_of_coboundary
