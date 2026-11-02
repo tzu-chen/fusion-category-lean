@@ -53,6 +53,29 @@ derivation, where the composite carries explicit associator factors; the
 multiplicity-free restriction (`N ≤ 1`) as a separate general-multiplicity
 development; and the analytic input for `ENO823`.
 
+## ENO 8.23: the sharp form
+
+`Coboundary.lean` reduces the target to an equation.  With
+`kappa i = coev i * ev i` the duality normalisation (which is *gauge
+invariant*: `coev i ↦ lam i * coev i`, `ev i ↦ ev i / lam i` leaves it fixed and
+preserves the snakes), and `kappa` multiplicative on fusion channels:
+
+* a pivotal structure forces `J a b c = dim c / (dim a * dim b)` on every
+  channel (`twist_eq_coboundary_of_pivotal`) — the twist of a pivotal structure
+  is the coboundary of its dimension;
+* conversely a character `d` of the fusion rules with `d c = J a b c * d a * d b`
+  *is* a pivotal structure with `dim = d` (`exists_pivotal_of_coboundary`), and
+  it is spherical when `d` is invariant under `*`
+  (`exists_spherical_of_coboundary`);
+* hence `ENO823` holds as soon as the twist is the coboundary of the
+  FP-dimension (`eno823_of_twist_coboundary`).
+
+So the open content of ENO Prop 8.23 is exactly the hypothesis of that last
+theorem: pseudo-unitarity must produce `J a b c = FPdim c / (FPdim a * FPdim b)`.
+That can only be proved once `J` is derived from `ev`, `coev` and `F` in
+general, which is why the `F`-twisted case of `DoubleDual.lean` is the next
+piece.  The `F`-twisted census for Fibonacci and Ising is the concrete test.
+
 **Upstream dependencies (pinned):**
 
 * `leanprover/lean4:v4.33.1` with `mathlib` `0df444a3` — already pinned by `haagerup-odd/`

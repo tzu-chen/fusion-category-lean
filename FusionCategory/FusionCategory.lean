@@ -10,3 +10,4 @@ import FusionCategory.Examples.PseudoUnitaryInstances
 import FusionCategory.Step4Checks
 import FusionCategory.Sanity
 import FusionCategory.DoubleDual
+import FusionCategory.Coboundary

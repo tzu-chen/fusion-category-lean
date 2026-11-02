@@ -1,4 +1,5 @@
 import FusionCategory.DoubleDual
+import FusionCategory.Coboundary
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples.Fibonacci
@@ -45,6 +46,11 @@ open FusionCategory.Examples
 #print axioms DoubleDual.derivedTwist_coherent
 #print axioms DoubleDual.derivedTwist_dual
 #print axioms DoubleDual.vecZ2_twist_derived
+
+-- ENO 8.23 reduced to a coboundary condition on the twist
+#print axioms twist_eq_coboundary_of_pivotal
+#print axioms exists_spherical_of_coboundary
+#print axioms eno823_of_twist_coboundary
 
 -- Positivity and cover doubling are axiom-free
 #print axioms globalDim_pos_of_fpdim
