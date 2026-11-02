@@ -41,10 +41,17 @@ not be inhabited and its pivotal axiom was vacuous:
   reports `[propext, Classical.choice, Quot.sound]` throughout, and the library
   contains no `sorry` and no `axiom`.
 
-Still owed: the derivation of `J` from `ev`, `coev` and `F` (it is carried as
-coherent data, see the docstring in `System.lean`); the multiplicity-free
-restriction (`N ≤ 1`) as a separate general-multiplicity development; and the
-analytic input for `ENO823`.
+`J` is now **derived** from the duality data in the strict self-dual
+normalisation (`DoubleDual.lean`): the chainmail composite `μ = ψ_{b*,a*} ∘ ψ*`
+collapses to `J a b c = ev a * ev b / ev c`, its coherence holds identically,
+its gauge law is the coboundary `J ↦ J · lam c / (lam a * lam b)`, and
+`vecZ2_twist_derived` identifies it with the twist `VecZ2.system` carries.  So
+for `Vec_{Z/2}` the carried `J` is verified rather than chosen.
+
+Still owed: the `F`-twisted (non-strict) and non-self-dual cases of that
+derivation, where the composite carries explicit associator factors; the
+multiplicity-free restriction (`N ≤ 1`) as a separate general-multiplicity
+development; and the analytic input for `ENO823`.
 
 **Upstream dependencies (pinned):**
 

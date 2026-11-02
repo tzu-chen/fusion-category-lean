@@ -1,3 +1,4 @@
+import FusionCategory.DoubleDual
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples.Fibonacci
@@ -39,6 +40,11 @@ open FusionCategory.Examples
 #print axioms exists_pivotal_of_trivial_twist
 #print axioms exists_spherical_of_trivial_twist
 #print axioms pfUnique_transport
+
+-- The twist derived from the duality data (strict self-dual normalisation)
+#print axioms DoubleDual.derivedTwist_coherent
+#print axioms DoubleDual.derivedTwist_dual
+#print axioms DoubleDual.vecZ2_twist_derived
 
 -- Positivity and cover doubling are axiom-free
 #print axioms globalDim_pos_of_fpdim

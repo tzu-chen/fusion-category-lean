@@ -9,3 +9,4 @@ import FusionCategory.Examples
 import FusionCategory.Examples.PseudoUnitaryInstances
 import FusionCategory.Step4Checks
 import FusionCategory.Sanity
+import FusionCategory.DoubleDual
