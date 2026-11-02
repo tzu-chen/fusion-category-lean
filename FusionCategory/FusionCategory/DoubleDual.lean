@@ -27,6 +27,14 @@ composite collapses, on the channel `c` of `a ⊗ b`, to the scalar
 the evaluation `ev c` of the product being `ev a * ev b` transported through
 the comparison.
 
+**Caveat, added after the derivation swarm.**  The collapse to that scalar is
+only valid in the normalisation `ev ≡ 1`.  With `ev 1 = 2`, `coev 1 = 1/2` in a
+strict self-dual datum the snakes still hold, the chainmail gives `1`, and
+`ev a * ev b / ev c` gives `4`; the two differ by the coboundary
+`ev a * ev b / ev c`, so the *class* of the twist — and every pivotality
+verdict — is unaffected, but the formula is a representative, not the value.
+That is consistent with `vecZ2_twist_derived` below, where `ev ≡ 1`.
+
 ## What this establishes
 
 * `derivedTwist_coherent` — the derived twist satisfies the pentagon
@@ -99,10 +107,17 @@ theorem derivedTwist_dual (S : FusionSystem n k) (hn : 0 < n) (i : Fin n)
   rw [hev, mul_comm, hinv]
   norm_num
 
-/-- **Gauge covariance.**  Rescaling the duality data — `coev i ↦ lam i * coev i`
-and `ev i ↦ ev i / lam i`, which preserves the snake equations — multiplies the
-derived twist by the coboundary `lam c / (lam a * lam b)`.  This is the law under
-which the twist's *class*, and hence pivotality, is invariant. -/
+/-- A scalar identity: the bookkeeping factor `ev a * ev b / ev c` transforms by
+`lam c / (lam a * lam b)` when `ev i` is rescaled to `ev i / lam i`.
+
+**This is not the gauge covariance of the twist.**  The actual transformation of
+the double-dual twist under `coev i ↦ lam i * coev i`, `ev i ↦ ev i / lam i`
+involves the duals, `lam a * lam b * lam (c*) / (lam c * lam (a*) * lam (b*))`,
+so for self-dual data the twist is gauge *invariant* (m1 of the derivation
+swarm, checked against an exact matrix model).  The identity below is only the
+arithmetic of the `ev`-bookkeeping; it was previously mislabelled as the gauge
+law, and the difference is why three independent derivations could disagree on
+the representative while agreeing on the class. -/
 theorem derivedTwist_gauge {ev lam : Fin n → k} (h : ∀ i, lam i ≠ 0)
     (a b c : Fin n) :
     (ev a / lam a) * (ev b / lam b) / (ev c / lam c)
