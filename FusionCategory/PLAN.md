@@ -45,17 +45,19 @@ A second defect in the same sign was caught by the derivation swarm: the
 `snake_right` axiom wrote the second snake with a factor of `F` instead of its
 reciprocal, which forced `F^{i i* i}_i(1,1) = F^{i* i i*}_{i*}(1,1)` and so
 excluded every pointed category whose cocycle is non-trivial in this
-normalisation (`Vec^ω_{Z/3}`).  It is corrected, and `snake_consistency` now
-records the relation the two snakes force, `F^{i i* i}_i · F^{i* i i*}_{i*} = 1`.
-`Vec_{Z/2}` could not detect this, because there `i* = i` and the two entries
-coincide — a witness with `i* ≠ i` is owed.
+normalisation (`Vec^ω_{Z/3}`).  It was corrected to a reciprocal.  That
+correction was *also* wrong, in the opposite direction, and it is corrected
+again here; see the next section.  `snake_consistency` now records what the two
+snakes actually force: the `(0,0)` entry of `F^{i i* i}_i` equals the `(0,0)`
+entry of the inverse block `(F^{i* i i*}_{i*})⁻¹`.
 
-`J` is now **derived** from the duality data in the strict self-dual
-normalisation (`DoubleDual.lean`): the chainmail composite `μ = ψ_{b*,a*} ∘ ψ*`
-collapses to `J a b c = ev a * ev b / ev c`, its coherence holds identically,
-its gauge law is the coboundary `J ↦ J · lam c / (lam a * lam b)`, and
-`vecZ2_twist_derived` identifies it with the twist `VecZ2.system` carries.  So
-for `Vec_{Z/2}` the carried `J` is verified rather than chosen.
+`J` is **derived** from the duality data in the strict self-dual normalisation
+(`DoubleDual.lean`).  The definition that file originally carried,
+`J a b c = ev a * ev b / ev c`, is the ψ-scalar and *not* `J`; that was retracted
+in `a168b32`, together with the coboundary gauge law.  The correct statement is
+the ratio formula recorded under "The derived twist: result" below.  What is
+still true from that file: `J`'s coherence for `Vec_{Z/2}` is verified rather
+than chosen, and the twist is a genuine ratio of composites.
 
 Still owed: the `F`-twisted (non-strict) and non-self-dual cases of that
 derivation, where the composite carries explicit associator factors; the
@@ -95,39 +97,59 @@ to reuse; the categorical infrastructure is being landed in Mathlib right now,
 so the cheap long-term move is to keep our skeletal layer aligned with
 #42150/#42191 naming and stub out the bridge, as already planned.
 
-## Blocked: the Fibonacci and Ising instances need a second evaluation
+## The duality normalisation: the right snake needs the inverse block
 
-Attempting the instances exposed a defect in the signature that both earlier
-formulations of the Snake axioms got wrong, in opposite directions.
+The Fibonacci and Ising instances were blocked by a third defect in the same
+axiom, and the diagnosis recorded here previously (a missing mirror evaluation,
+"`F² = ν`") was **wrong**.  What the two snake equations of a rigid skeletal
+category actually say, with `κ i = coev i * ev i`, is
 
-For a **self-dual** simple `i` the two snakes read
+    snake_left  : κ i · F^{i i* i}_i(0,0) = 1,
+    snake_right : κ i · (F^{i* i i*}_{i*})⁻¹(0,0) = 1,
 
-    snake_left  : kappa * F^{i i i}_i(1,1) = 1        (loop at i, associator)
-    snake_right : kappa / F^{i i i}_i(1,1) = 1        (loop at i*, inverse)
+where the second entry is the `(0,0)` entry of the **matrix inverse** of the
+associator block at `(a,b,c,d) = (i*, i, i*, i*)` — not the reciprocal of the
+single entry `F^{i* i i*}_{i*}(0,0)`.  The two agree exactly when that block is
+`1 × 1`, which is the case for every pointed category (that is why the
+`kappa / F` correction fixed `Vec^ω_{Z/3}`), and they differ as soon as the
+block is bigger, which is exactly the self-dual case `i* = i` with
+`N i i 0 = N i i i = 1`.
 
-and if `i* = i` the two `F` entries are literally the same number, so both hold
-only if `F^{i i i}_i(1,1)^2 = 1`.  Fibonacci has `F^{tau tau tau}_tau(1,1) =
-+-1/phi`, and Ising's `sigma` is self-dual with the same problem, so neither
-instance can exist in the present signature.  Verified numerically:
+Checked numerically on honest linear models of the two examples (associator
+blocks composed as matrices, `α⁻¹` inverted numerically, not by taking
+reciprocals):
 
-    F = 1/phi = 0.618;  snake_left wants kappa = 1/F = 1.618,
-                        snake_right wants kappa =   F = 0.618.
+    Fibonacci, φ = (1+√5)/2, gauge F^{τττ}_τ = [[1/φ, 1], [1/φ, -1/φ]]:
+        κ_τ = φ;  κ_τ · F(0,0) = 1  and  κ_τ · (F⁻¹)(0,0) = 1   (F is an involution)
+        the reciprocal reading demands κ_τ = 1/φ instead, i.e. φ² = 1.
+    Ising, F^{σσσ}_σ = (1/√2)[[1,1],[1,-1]]:
+        κ_σ = √2; same phenomenon, κ_σ / F(0,0) = 2 ≠ 1.
 
-The history of this axiom is worth recording because it shows the shape of the
-error.  As originally written, *both* snakes multiplied by `F`, which forced the
-two entries to be equal and so excluded `Vec^omega_{Z/3}` (where they genuinely
-differ); the correction to `kappa / F` fixed that and now excludes every
-self-dual category whose loop scalar is not `+-1`.  Neither is right: a single
-`ev : Fin n -> k` cannot represent the left and right evaluations of a self-dual
-simple, which differ by the Frobenius--Schur indicator.  The fix is to carry the
-mirror evaluation (equivalently `nu : Fin n -> k` with the mirror equal to
-`nu i * ev i`), and the relation between the two snakes becomes
-`F * F' = nu`, which for self-dual `i` reads `F^2 = nu` — satisfiable by
-Fibonacci with `nu` absorbing the `1/phi`.
+So the fix is to carry the inverse associator `Finv` with its two inverse laws
+(`α ∘ α⁻¹ = id`, `α⁻¹ ∘ α = id`, on the channel sets) and to state
+`snake_right` with `Finv`.  `System.lean` does that; `Finv` is data because the
+two channel index sets of a block are different subsets of `Fin n`, so there is
+no canonical way to present the inverse block as a matrix indexed by `Fin n`.
+`Vec_{Z/2}` still inhabits the structure (with `Finv a b c d f e = F a b c d e f`).
 
-This is the same block bookkeeping the derived twist still lacks ("checked, not
-derived" in the section above), which is why it surfaced here: the two are one
-problem.
+## The coboundary reduction is a pointed-category statement
+
+`Coboundary.lean`'s `KappaMultiplicative` — `κ c = κ a * κ b` on every fusion
+channel — is *not* a theorem for a general fusion category, and it fails for
+both new examples: Ising has `κ_1 = 1` but `κ_σ² = 2` on `σ ⊗ σ ∋ 1`, Fibonacci
+the same with `φ²`.  It holds for pointed categories, where the dimension is a
+character of the fusion ring.
+
+Consequently `twist_eq_coboundary_of_pivotal` and `eno823_of_twist_coboundary`
+are theorems about that situation only: a pivotal structure in general has
+`J a b c = (dim c / (dim a * dim b)) · (κ a κ b / κ c)`, so `J` is the coboundary
+of `dim` iff `κ` is multiplicative.  The claim in an earlier version of this
+plan — that the open content of ENO 8.23 *is* that coboundary hypothesis — is
+therefore too strong.  For non-pointed `C` the content is rather the sphericity
+equation itself, `κ (i*) = (p i)² κ i` (`PivotalStructure.isSpherical_iff`), and
+the examples realise it with `p ≡ 1` because they are self-dual, `κ (i*) = κ i`.
+Both examples do satisfy the *conclusion*: a pivotal structure with
+`dim = FPdim` that is spherical.
 
 ## The derived twist: result
 

@@ -24,9 +24,18 @@ the twist is a pivotal structure, normalised by `kappa`
 under `*` (`exists_spherical_of_coboundary`).
 
 `eno823_of_twist_coboundary` is then the payoff: ENO 8.23 holds as soon as the
-twist is the coboundary of the FP-dimension in the `kappa`-normalisation.  That
-is the equation the theorem is *about*; what remains open is producing it from
-pseudo-unitarity.
+twist is the coboundary of the FP-dimension in the `kappa`-normalisation.
+
+**Scope, which is narrower than it looks.**  `KappaMultiplicative` is not a
+theorem for a general fusion category.  In any pivotal structure
+`J a b c = (dim c / (dim a * dim b)) · (kappa a * kappa b / kappa c)`, so `J` is
+the coboundary of the dimension exactly when `kappa` is multiplicative — which
+fails whenever a simple has dimension `≠ 1`: Ising has `kappa_1 = 1` but
+`kappa_sigma^2 = 2` on `sigma ⊗ sigma ∋ 1`, Fibonacci the same with `phi^2`.
+It holds for pointed categories, where the dimension is a character of the
+fusion ring.  For non-pointed `C` the content of ENO 8.23 is the sphericity
+equation itself, `kappa (i*) = (p i)^2 * kappa i`
+(`PivotalStructure.isSpherical_iff`), not a coboundary condition.
 
 `kappa_gauge_invariant` records why the hypothesis on `kappa` is legitimate: it
 is unchanged by `coev i ↦ lam i * coev i`, `ev i ↦ ev i / lam i`, the
@@ -119,9 +128,10 @@ is the coboundary of the FP-dimension, in the normalisation where `kappa` is
 multiplicative and normalised at the unit, then a spherical pivotal structure
 with `dim = FPdim` exists.
 
-The remaining open content of ENO Prop 8.23 is exactly the hypothesis `hJ`:
-pseudo-unitarity has to produce that equation, which it can only do once the
-twist is *derived* from `ev`, `coev` and `F` rather than carried. -/
+Under the hypothesis `hκ` this is the whole theorem; note that `hκ` restricts
+to the pointed-type situation (see the file header).  What pseudo-unitarity must
+produce in general is the sphericity equation of `PivotalStructure.isSpherical_iff`,
+which reduces to `hJ` only when `kappa` is multiplicative. -/
 theorem eno823_of_twist_coboundary (S : FusionSystem n k) (hFP : S.ring.FPData)
     (hκ : KappaMultiplicative S) (hn : 0 < n) (hκ0 : S.kappa ⟨0, hn⟩ = 1)
     (hmap : ∀ r : ℝ, algebraMap ℝ k r = 0 → r = 0)

@@ -27,6 +27,15 @@ by inspection:
   included.  The identity below has been checked exhaustively against the
   standard `Vec_{Z/2}^ω` associator for both `ω = ±1`.
 
+A third defect, found when trying to build the Fibonacci instance, was in the
+duality normalisation: the right snake was written with the *reciprocal* of a
+single `F` entry, where the associator enters through its inverse and the
+correct scalar is the `(0,0)` entry of the *matrix inverse* of the block
+`F^{i* i i*}_{i*}`.  The two agree for `1 × 1` blocks (every pointed category)
+and differ for self-dual simples with a `2 × 2` block, which excludes Fibonacci
+and Ising.  `Finv` below carries the inverse associator with its two inverse
+laws, and `snake_right` reads `Finv ... 0 0`.
+
 ## The six-index convention
 
 `F a b c d e f` is `F^{abc}_d(e,f)`: `a`, `b`, `c` are the three factors,
@@ -88,6 +97,31 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
   and then `d = e`. -/
   F_unit_right : ∀ (hn : 0 < n) (a b d e : Fin n), 0 < ring.N a b e →
     F a b ⟨0, hn⟩ d e b = if d = e then 1 else 0
+  /-- The inverse associator, `Finv a b c d f e`: the entry of `α⁻¹` from the
+  channel `f` of `b ⊗ c` to the channel `e` of `a ⊗ b`.
+
+  It is carried as data because the block of `F` at fixed `(a,b,c,d)` is a
+  square matrix indexed by those two channel sets, and the two channel sets are
+  *different* subsets of `Fin n` in general: there is no canonical way to call
+  the inverse "a matrix indexed by `Fin n`", and restricting to subtypes gives
+  two index types that are not syntactically equal.  Carrying `α⁻¹` with its
+  two inverse laws is the honest formulation (an associator *is* an
+  isomorphism), and it is exactly what the right snake equation needs. -/
+  Finv : Fin n → Fin n → Fin n → Fin n → Fin n → Fin n → k
+  /-- `Finv` vanishes off the channels: a non-zero entry requires `f` to be a
+  channel of `b ⊗ c` with `d` in `a ⊗ f`, and `e` a channel of `a ⊗ b` with
+  `d` in `e ⊗ c`. -/
+  Finv_support : ∀ a b c d f e : Fin n,
+    ¬ (0 < ring.N b c f ∧ 0 < ring.N a f d ∧ 0 < ring.N a b e ∧ 0 < ring.N e c d) →
+    Finv a b c d f e = 0
+  /-- `α ∘ α⁻¹ = id` on the channels of `b ⊗ c`. -/
+  Finv_comp : ∀ a b c d f' f : Fin n,
+    0 < ring.N b c f' → 0 < ring.N a f' d → 0 < ring.N b c f → 0 < ring.N a f d →
+    (∑ e : Fin n, Finv a b c d f' e * F a b c d e f) = if f' = f then 1 else 0
+  /-- `α⁻¹ ∘ α = id` on the channels of `a ⊗ b`. -/
+  F_comp_inv : ∀ a b c d e' e : Fin n,
+    0 < ring.N a b e' → 0 < ring.N e' c d → 0 < ring.N a b e → 0 < ring.N e c d →
+    (∑ f : Fin n, Finv a b c d f e' * F a b c d e f) = if e' = e then 1 else 0
   /-- Evaluation `X_{i*} ⊗ X_i → 1`, as a scalar. -/
   ev : Fin n → k
   /-- Coevaluation `1 → X_i ⊗ X_{i*}`, as a scalar. -/
@@ -99,16 +133,27 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
     coev i * ev i * F i (ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ = 1
   /-- Right snake: `(ev ⊗ id) ∘ α⁻¹ ∘ (id ⊗ coev) = id` on `X_{i*}`.
 
-  The inverse associator contributes the *reciprocal* of the `F` entry, so this
-  reads `coev i * ev i / F^{i* i i*}_{i*}(1,1) = 1`.  Together with
-  `snake_left` it forces `F^{i i* i}_i(1,1) * F^{i* i i*}_{i*}(1,1) = 1`
-  (`snake_consistency` below).  Writing both snakes with a factor of `F`
-  instead would force the two entries to be equal, which is false for
-  `Vec^ω_{Z/3}` and for every pointed category whose cocycle is non-trivial in
-  this normalisation — and `Vec_{Z/2}` cannot detect it, because there
-  `i* = i` and the two entries coincide. -/
+  The inverse associator contributes the entry `Finv i* i i* i* 0 0`, i.e. the
+  `(0,0)` entry of the *matrix inverse* of the block `F^{i* i i*}_{i*}`, and
+  **not** the reciprocal of the single entry `F^{i* i i*}_{i*}(0,0)`.  The two
+  agree exactly when that block is `1 × 1` — in particular for every pointed
+  category — and differ as soon as the block is bigger, which is the case for
+  every self-dual simple `i` with `N i i 0 = N i i i = 1`.
+
+  This is the second correction to this axiom, and the two earlier versions
+  were wrong in opposite directions.  The original wrote both snakes with a
+  factor of `F`, which forces `F^{i i* i}_i(0,0) = F^{i* i i*}_{i*}(0,0)` and
+  excludes `Vec^ω_{Z/3}` for non-trivial `ω` (corrected in `a8d6178`).  The
+  reciprocal version then excludes every self-dual simple whose block is not
+  `1 × 1`: Fibonacci has `F^{τττ}_τ = [[1/φ, 1], [1/φ, -1/φ]]` (gauge with the
+  golden ratio `φ`), whence `κ_τ = φ` from the left snake, while the reciprocal
+  reading demands `κ_τ = 1/φ` from the right snake.  The matrix-inverse entry
+  is `1/φ` as well, because that block is an involution, so the corrected
+  equation reads `φ · 1/φ = 1`.  `Examples/Fibonacci.lean` and
+  `Examples/Ising.lean` are the regression tests. -/
   snake_right : ∀ (hn : 0 < n) (i : Fin n),
-    coev i * ev i / F (ring.dual i) i (ring.dual i) (ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ = 1
+    coev i * ev i * Finv (ring.dual i) i (ring.dual i) (ring.dual i)
+      ⟨0, hn⟩ ⟨0, hn⟩ = 1
   /-- The double-dual twist: the scalar of `X_a** ⊗ X_b** → (X_a ⊗ X_b)**`
   on the channel `c`. -/
   J : Fin n → Fin n → Fin n → k
@@ -141,7 +186,8 @@ theorem pentagon_eq (a b c d e i j r x : Fin n) :
   S.pentagon a b c d e i j r x
 
 /-- The duality normalisation `κ i = coev i * ev i`.  By the snake equations
-this is the inverse of the loop scalar `F^{i i* i}_i(1,1)`. -/
+this is the inverse of the loop scalar `F^{i i* i}_i(1,1)`, and equals the
+`(0,0)` entry of the inverse block `(F^{i* i i*}_{i*})⁻¹`. -/
 def kappa (i : Fin n) : k := S.coev i * S.ev i
 
 theorem kappa_ne_zero (i : Fin n) : S.kappa i ≠ 0 :=
@@ -151,26 +197,26 @@ theorem kappa_loop (hn : 0 < n) (i : Fin n) :
     S.kappa i * S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ = 1 :=
   S.snake_left hn i
 
-/-- The two snake equations together force the two loop scalars to be mutually
-inverse: `F^{i i* i}_i(1,1) * F^{i* i i*}_{i*}(1,1) = 1`.
+/-- The two snake equations together say that the two loop scalars of `i` — the
+`(0,0)` entry of `F^{i i* i}_i` and the `(0,0)` entry of the *inverse* block
+`(F^{i* i i*}_{i*})⁻¹` — are equal, both being `1 / κ i`.
 
-This is the relation that a `Vec_{Z/2}` witness cannot test (`i* = i` there) and
-that the previous formulation of the axioms got wrong. -/
+For a `1 × 1` block, i.e. for every pointed category and for `Vec_{Z/2}`, this
+is the statement `F · F' = 1` that the previous formulation recorded; for a
+self-dual simple with a `2 × 2` block it is a genuinely different equation
+(Fibonacci: `1/φ = 1/φ`, the transferred entry of an involution). -/
 theorem snake_consistency (hn : 0 < n) (i : Fin n) :
-    S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ *
-      S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ = 1 := by
+    S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ =
+      S.Finv (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i)
+        ⟨0, hn⟩ ⟨0, hn⟩ := by
   have h1 := S.snake_left hn i
   have h2 := S.snake_right hn i
-  have hF0 : S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩ ≠ 0 := by
-    intro h0
-    rw [h0, div_zero] at h2
-    exact one_ne_zero h2.symm
-  have hF : S.F (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i) ⟨0, hn⟩ ⟨0, hn⟩
-      = S.kappa i := by
-    rw [div_eq_one_iff_eq hF0] at h2
-    exact h2.symm
-  rw [hF]
-  simpa [FusionSystem.kappa, mul_comm, mul_left_comm, mul_assoc] using h1
+  have e1 : S.F i (S.ring.dual i) i i ⟨0, hn⟩ ⟨0, hn⟩ = (S.kappa i)⁻¹ :=
+    eq_inv_of_mul_eq_one_right h1
+  have e2 : S.Finv (S.ring.dual i) i (S.ring.dual i) (S.ring.dual i)
+      ⟨0, hn⟩ ⟨0, hn⟩ = (S.kappa i)⁻¹ :=
+    eq_inv_of_mul_eq_one_right h2
+  rw [e1, e2]
 
 end FusionSystem
 
@@ -253,6 +299,21 @@ def system : FusionSystem 2 ℚ where
     intro _ a b d e _
     fin_cases a <;> fin_cases b <;> fin_cases d <;> fin_cases e <;>
       simp_all [F, ring, N]
+  Finv := fun a b c d f e => F a b c d e f
+  Finv_support := by
+    intro a b c d f e h
+    simp only [F]
+    exact if_neg (fun hc => h ⟨hc.2.2.1, hc.2.2.2, hc.1, hc.2.1⟩)
+  Finv_comp := by
+    intro a b c d f' f _ _ _ _
+    fin_cases a <;> fin_cases b <;> fin_cases c <;> fin_cases d <;>
+      fin_cases f' <;> fin_cases f <;>
+      simp only [Fin.sum_univ_two, F] <;> simp_all [N, ring]
+  F_comp_inv := by
+    intro a b c d e' e _ _ _ _
+    fin_cases a <;> fin_cases b <;> fin_cases c <;> fin_cases d <;>
+      fin_cases e' <;> fin_cases e <;>
+      simp only [Fin.sum_univ_two, F] <;> simp_all [N, ring]
   ev := fun _ => 1
   coev := fun _ => 1
   ev_ne_zero := fun _ => one_ne_zero
