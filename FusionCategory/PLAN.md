@@ -365,6 +365,46 @@ forms, invisible to a multiplicity-free skeleton where every Hom space is
 one-dimensional — is what has to supply it.  `ENO823` still carries no
 hypothesis expressing that, which is the substantive gap, not the algebra above.
 
+**The identity is `J`-free on the coevaluation channel.**  On the channel
+`(i, i*; 1)` the axiom `J^{1}_{i i*} = 1` is used, so (K) there reads
+
+    (C)   κ_i κ_{i*} = FPdim_i²     for every i,
+
+with no `J` in it.  So (K) ⟹ (C) is a two-line theorem, and (C) is exactly the
+statement that `p = FPdim/κ` is *spherical* (`isSpherical_iff`).  The converse,
+(C) ⟹ (K), is ENO 8.23.  In other words, in this formalism
+
+    (K) ⟺ ENO 8.23 ⟺ pseudo-unitarity of the datum,
+
+and the residual mathematical content is `pseudo-unitarity ⟹ (C)` — a statement
+about `κ` and `FPdim` only, *not* about `J`.  This retires the "derive the
+`J`-diagram" programme as the route to ENO 8.23 (it stays necessary to make the
+signature honest, since `p_mon` mentions `J`).
+
+**The witness that (C) is not automatic is Yang-Lee.**  Rank 2 with
+`τ ⊗ τ = 1 ⊕ τ`, `F^{τττ}_τ = [[-φ, 1], [-φ, φ]]`, `FPdim_τ = φ`; both snakes
+give `κ_τ = -1/φ` from both branches (the pentagon holds on all `2^9` tuples),
+and `κ_τ κ_{τ*} = 1/φ² ≠ φ² = FPdim_τ²`.  So (K) fails on Yang-Lee for *every*
+`J`, every other axiom of `FusionSystem` holds, and Yang-Lee is not
+pseudo-unitary.  Fibonacci is the control: same check, `κ_τ = φ`, (C) holds.
+`docs/yang_lee_check.py` recomputes both.  Since Yang-Lee is a two-label model,
+`¬ ENO823` for it is cheap to kernel-check — that is the next formal brick, and
+it refutes the target as stated in the smallest available case.
+
+Two further results from the same swarm, both about constructions rather than
+the identity:
+
+* the defect `Δ^c_ab = J κ_c FPdim_a FPdim_b /(FPdim_c κ_a κ_b)` (so (K) ⟺ Δ = 1)
+  is multiplicative: `Δ(C ⊠ D) = Δ_C Δ_D`, so no Deligne product cures a
+  failure; `Δ(C̄) = conj Δ`; and on `C^op`,
+  `Δ(a,b;c) = Δ(a,b;c)·(J(b,a;c)/J(a,b;c))·ν_aν_b/ν_c`;
+* the vertex gauge `coev ↦ λ coev`, `ev ↦ ev/λ` fixes `κ` and multiplies `Δ` by
+  `t_a t_b/t_c` with `t_i = λ_i/λ_{i*}`.  So (K), and hence `ENO823`, is *not*
+  invariant under that gauge: it survives exactly the duality normalisation
+  `λ_{i*} = λ_i`.  That is a defect of the signature, not of the mathematics —
+  the fix is to add `ev (dual i) = ev i` as an axiom or to define
+  `dim P i = p_i * coev_i * ev (dual i)` rather than `p_i * κ_i`.
+
 **Upstream dependencies (pinned):**
 
 * `leanprover/lean4:v4.33.1` with `mathlib` `0df444a3` — already pinned by `haagerup-odd/`
