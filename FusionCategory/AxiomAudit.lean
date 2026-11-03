@@ -79,9 +79,14 @@ open FusionCategory.Examples
 
 -- ENO Proposition 8.21: the spectral bound |d_i| <= FPdim_i
 #print axioms fpdim_char
+#print axioms fpdim_char_mid
 #print axioms abs_le_fpdim_of_eigenvector
 #print axioms abs_le_fpdim_of_char
+#print axioms abs_le_fpdim_of_mult
 #print axioms abs_dim_le_fpdim
+#print axioms tMatrix_mulVec
+#print axioms abs_dim_le_fpdim_of_pseudoUnitary
+#print axioms eq_abs_of_pseudoUnitary
 #print axioms eq_abs_of_sum_sq
 
 -- ENO 8.23 with its source statement: pseudo-unitary means dim C = FPdim C,

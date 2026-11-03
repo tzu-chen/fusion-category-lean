@@ -428,13 +428,41 @@ the analytic heart and the next target.
 * `eq_abs_of_sum_sq` — the equality case: `Σ_i |d_i|² = Σ_i f_i²` plus
   termwise `|d_i| ≤ f_i` forces `|d_i| = f_i`.
 
-What Proposition 8.21 still needs in this signature is the *hypothesis*
-`DimEigen`: ENO obtain `T_i d = d_i d` for a `T`-matrix whose entries are
-FS-indicator twists of the fusion coefficients, and that construction uses the
-duality data, not multiplicativity of `dim`.  Deriving `DimEigen` for `dim P`
-here is the remaining half of step 1 — and it is *not* the same as assuming
-(M), which is why it is worth doing: the `T`-matrix route does not presuppose
-that `dim` is multiplicative or spherical.
+**What Proposition 8.21's hypothesis is, checked against the source.**  ENO
+§3.1 construct `T_i` from the `b`-symbols: with `a_V : V → V**` chosen so that
+`a_V² = g_V`, one has `a_V ⊗ a_W = ⊕_U b^{VW}_U ⊗ a_U` with `(b^{VW}_U)² = 1`, so
+`T^{ik}_j := tr(b^{ik}_j) ∈ {0, ±1}`, `d_i d_k = Σ_j T^{ik}_j d_j`, and
+`(T_i)_{kj} = T^{ik}_j`.  Remark 3.1 then says:
+
+> in the pivotal case `ε_i` and `b^{ik}_j` **are 1**, so `T^{ik}_j` are equal to
+> `N^{ik}_j`, the multiplicity of `X_j` in `X_i ⊗ X_k`.
+
+So in a pivotal fusion system — which is exactly `FusionSystem` plus
+`PivotalStructure` — ENO's `T`-matrix **is the fusion matrix**
+(`tMatrix S i : fun k j => N i k j`), its domination
+`|(T_i)_{kj}| ≤ N^{ik}_j` is an equality (`abs_tMatrix`), and the eigenvector
+equation `T_i d = d_i · d` (`tMatrix_mulVec`) **is multiplicativity of the
+dimension**, `d_a d_b = Σ_c N a b c d_c`.  The non-trivial `b`-symbols exist only
+when no pivotal structure is fixed, and their role is to prove `dim(C) ≠ 0`
+without one; they do not help with 8.23, where a pivotal structure is what we
+must produce.
+
+Consequently:
+
+* `abs_le_fpdim_of_mult` — the bound for a multiplicative dimension
+  (`DimEigen`, ENO's form), and `abs_dim_le_fpdim` for `dim P`;
+* `abs_dim_le_fpdim_of_pseudoUnitary` — the bound for any `P` with
+  `IsPseudoUnitaryPivotal P`, i.e. `DimEigen` discharged from `mult`, with no
+  further input;
+* `eq_abs_of_pseudoUnitary` — ENO's `|V|² = FPdim(V)²` from the total equality.
+
+So step 1 is closed *modulo multiplicativity of the dimension*, which is the
+`mult` field of `IsPseudoUnitaryPivotal` — the same input 8.23 needs anyway.  In
+this signature `mult` is not free (it is (M), and `Vec^ω_{(Z/2)²}` with `J ≡ 1`
+fails it), so the honest statement of what remains for step 1 is: derive
+multiplicativity of `dim P` from the pivotal data, i.e. settle `J`.  That is the
+precise sense in which step 1 and the `J`-problem are the same problem, and the
+reason the earlier hope that the `T`-matrix would bypass it is wrong.
 
 **The hypothesis, restored, and the theorem that follows from it.**  Since
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:

@@ -1,5 +1,6 @@
 import FusionCategory.PFDim
 import FusionCategory.Pivotal
+import FusionCategory.PseudoUnitary
 
 /-!
 # ENO Proposition 8.21: `|V|² ≤ FPdim(V)²`
@@ -219,19 +220,161 @@ theorem eq_abs_of_sum_sq {d f : Fin n → ℝ} (hf : ∀ i, 0 ≤ f i)
   have h4 : |d i| ^ 2 = (f i) ^ 2 := by rw [sq_abs]; exact hsq
   nlinarith [h4, h1, h2, h3, sq_nonneg (|d i| - f i)]
 
+/-- The FP-dimension is a character in the *third* slot as well,
+`Σ_k N i k j · f_k = f_i f_j` — the form in which ENO's `T`-matrix uses it. -/
+theorem fpdim_char_mid {R : FusionRing n} (h : R.FPData) (hn : 0 < n) (i j : Fin n) :
+    (∑ k : Fin n, h.fpdim k * (R.N i k j : ℝ)) = h.fpdim i * h.fpdim j := by
+  calc (∑ k : Fin n, h.fpdim k * (R.N i k j : ℝ))
+      = ∑ k : Fin n, h.fpdim k * (R.N (R.dual j) i (R.dual k) : ℝ) := by
+        apply Finset.sum_congr rfl
+        intro k _
+        rw [cyclic2 hn i k j]
+    _ = ∑ k : Fin n, h.fpdim (R.dual k) * (R.N (R.dual j) i (R.dual k) : ℝ) := by
+        apply Finset.sum_congr rfl
+        intro k _
+        rw [h.dual_eq k, mul_comm]
+    _ = ∑ m : Fin n, h.fpdim m * (R.N (R.dual j) i m : ℝ) :=
+        sum_dual_reindex (fun m => h.fpdim m * (R.N (R.dual j) i m : ℝ))
+    _ = h.fpdim (R.dual j) * h.fpdim i := by
+        rw [← fpdim_char h hn (R.dual j) i]
+        apply Finset.sum_congr rfl
+        intro m _
+        ring
+    _ = h.fpdim i * h.fpdim j := by rw [h.dual_eq j, mul_comm]
+
+/-- **ENO Proposition 8.21**, in the form ENO's `T`-matrix delivers: a dimension
+function that is multiplicative on the fusion ring — `Σ_c N a b c d_c = d_a d_b`,
+the character form — is bounded by the FP-dimensions. -/
+theorem abs_le_fpdim_of_mult {R : FusionRing n} (h : R.FPData) (hn : 0 < n)
+    (d : Fin n → ℝ)
+    (hm : ∀ a b : Fin n, (∑ c : Fin n, (R.N a b c : ℝ) * d c) = d a * d b) :
+    ∀ i, |d i| ≤ h.fpdim i := by
+  intro i
+  set S : ℝ := ∑ k : Fin n, h.fpdim k * |d k| with hSdef
+  have hSnn : 0 ≤ S :=
+    Finset.sum_nonneg (fun k _ => mul_nonneg (le_of_lt (h.pos k)) (abs_nonneg _))
+  have hbound : |d i| * S ≤ h.fpdim i * S := by
+    calc |d i| * S
+        = ∑ k : Fin n, h.fpdim k * |d i * d k| := by
+          rw [hSdef, Finset.mul_sum]
+          apply Finset.sum_congr rfl
+          intro k _
+          rw [abs_mul]
+          ring
+      _ = ∑ k : Fin n, h.fpdim k * |∑ j : Fin n, (R.N i k j : ℝ) * d j| := by
+          apply Finset.sum_congr rfl
+          intro k _
+          rw [hm i k]
+      _ ≤ ∑ k : Fin n, h.fpdim k * (∑ j : Fin n, (R.N i k j : ℝ) * |d j|) := by
+          apply Finset.sum_le_sum
+          intro k _
+          apply mul_le_mul_of_nonneg_left _ (le_of_lt (h.pos k))
+          calc |∑ j : Fin n, (R.N i k j : ℝ) * d j|
+              ≤ ∑ j : Fin n, |(R.N i k j : ℝ) * d j| := Finset.abs_sum_le_sum_abs _ _
+            _ = ∑ j : Fin n, (R.N i k j : ℝ) * |d j| := by
+                apply Finset.sum_congr rfl
+                intro j _
+                rw [abs_mul, abs_of_nonneg (Nat.cast_nonneg _)]
+      _ = ∑ k : Fin n, ∑ j : Fin n, h.fpdim k * ((R.N i k j : ℝ) * |d j|) := by
+          apply Finset.sum_congr rfl
+          intro k _
+          rw [Finset.mul_sum]
+      _ = ∑ j : Fin n, ∑ k : Fin n, h.fpdim k * ((R.N i k j : ℝ) * |d j|) :=
+          Finset.sum_comm
+      _ = ∑ j : Fin n, (∑ k : Fin n, h.fpdim k * (R.N i k j : ℝ)) * |d j| := by
+          apply Finset.sum_congr rfl
+          intro j _
+          rw [Finset.sum_mul]
+          apply Finset.sum_congr rfl
+          intro k _
+          ring
+      _ = ∑ j : Fin n, (h.fpdim i * h.fpdim j) * |d j| := by
+          apply Finset.sum_congr rfl
+          intro j _
+          have hc : (∑ k : Fin n, h.fpdim k * (R.N i k j : ℝ)) = h.fpdim i * h.fpdim j :=
+            fpdim_char_mid h hn i j
+          rw [hc]
+      _ = h.fpdim i * S := by
+          rw [hSdef, Finset.mul_sum]
+          apply Finset.sum_congr rfl
+          intro j _
+          ring
+  rcases lt_or_eq_of_le hSnn with hpos | hzero
+  · exact le_of_mul_le_mul_right hbound hpos
+  · have hS0 : (∑ k : Fin n, h.fpdim k * |d k|) = 0 := by rw [← hSdef]; exact hzero.symm
+    have hterm : h.fpdim i * |d i| = 0 :=
+      (Finset.sum_eq_zero_iff_of_nonneg
+        (f := fun k => h.fpdim k * |d k|)
+        (fun k _ => mul_nonneg (le_of_lt (h.pos k)) (abs_nonneg _))).mp hS0 i (Finset.mem_univ i)
+    have hdi : |d i| = 0 := by
+      rcases mul_eq_zero.mp hterm with h' | h'
+      · exact absurd h' (ne_of_gt (h.pos i))
+      · exact h'
+    rw [hdi]
+    exact le_of_lt (h.pos i)
+
+/-! ## The `T`-matrix itself (ENO §3.1, pivotal case)
+
+ENO's `T`-matrix is `(T_i)_{kj} = T^{ik}_j = tr(b^{ik}_j)` with `(b^{ik}_j)² = 1`,
+and Remark 3.1 records that **in the pivotal case `b^{ik}_j = 1`**, so `T_i` is
+the fusion matrix.  Its entries are therefore integers with
+`|(T_i)_{kj}| ≤ N^{ik}_j` an equality, and `T_i d = d_i · d` is exactly
+multiplicativity of the dimension. -/
+
+/-- ENO's `T`-matrix for a pivotal fusion system: `(T_i)_{kj} = N^{ik}_j`. -/
+noncomputable def tMatrix (S : FusionSystem n ℝ) (i : Fin n) : Matrix (Fin n) (Fin n) ℝ :=
+  fun k j => (S.ring.N i k j : ℝ)
+
+/-- ENO's domination `|(T_i)_{kj}| ≤ N^{ik}_j` is an equality in the pivotal case,
+because the entries *are* the fusion coefficients. -/
+theorem abs_tMatrix (S : FusionSystem n ℝ) (i k j : Fin n) :
+    |tMatrix S i k j| = (S.ring.N i k j : ℝ) := by
+  rw [tMatrix, abs_of_nonneg (Nat.cast_nonneg _)]
+
+/-- `T_i d = d_i · d` for ENO's `T`-matrix is multiplicativity of the dimension,
+`d_a d_b = Σ_c N a b c d_c` — the `mult` field of `IsPseudoUnitaryPivotal`. -/
+theorem tMatrix_mulVec (S : FusionSystem n ℝ) (d : Fin n → ℝ) (i : Fin n) :
+    (tMatrix S i).mulVec d = (d i) • d ↔
+      ∀ k : Fin n, (∑ m : Fin n, (S.ring.N i k m : ℝ) * d m) = d i * d k := by
+  constructor
+  · intro h k
+    have := congrFun h k
+    simpa [tMatrix, Matrix.mulVec, dotProduct, smul_eq_mul] using this
+  · intro h
+    funext k
+    simpa [tMatrix, Matrix.mulVec, dotProduct, smul_eq_mul] using h k
+
 /-- The input ENO get from the `T`-matrix, stated for a skeletal dimension
-function: the dimension of a simple is an eigenvector of the fusion matrices.
-This is *not* automatic in the skeletal signature — see PLAN.md — so it is
-carried as a hypothesis here. -/
+function: multiplicative on the fusion ring.  `tMatrix_mulVec` identifies it with
+`T_i d = d_i · d`. -/
 def DimEigen {n : ℕ} [Field k] (S : FusionSystem n k) (d : Fin n → k) : Prop :=
-  ∀ i kk : Fin n, (∑ j : Fin n, (S.ring.N i j kk : k) * d j) = d i * d kk
+  ∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : k) * d c) = d a * d b
 
 /-- **ENO Proposition 8.21** for a skeletal fusion system: a dimension function
-satisfying the `T`-matrix eigenvector equation is bounded by the FP-dimensions,
-`|d_i| ≤ FPdim_i`. -/
+satisfying ENO's `T`-matrix eigenvector equation is bounded by the
+FP-dimensions, `|d_i| ≤ FPdim_i`. -/
 theorem abs_dim_le_fpdim {n : ℕ} {S : FusionSystem n ℝ} (hFP : S.ring.FPData)
     (hn : 0 < n) (P : PivotalStructure S) (heig : DimEigen S (dim P)) :
     ∀ i, |dim P i| ≤ hFP.fpdim i :=
-  abs_le_fpdim_of_eigenvector hFP hn (dim P) heig
+  abs_le_fpdim_of_mult hFP hn (dim P) heig
+
+/-- **ENO Proposition 8.21 for pseudo-unitary data**: for a pivotal structure
+whose dimension function is positive and multiplicative —
+`IsPseudoUnitaryPivotal`, the hypothesis of `eno823_of_pseudoUnitary` — the bound
+holds with no further input.  This discharges `DimEigen` from `mult`. -/
+theorem abs_dim_le_fpdim_of_pseudoUnitary {n : ℕ} {S : FusionSystem n ℝ}
+    (hFP : S.ring.FPData) (hn : 0 < n) (P : PivotalStructure S)
+    (hU : IsPseudoUnitaryPivotal P) : ∀ i, |dim P i| ≤ hFP.fpdim i :=
+  abs_le_fpdim_of_eigenvector hFP hn (dim P) hU.mult
+
+/-- ENO's consequence: if in addition the squared norms agree in total, they agree
+termwise — `|V|² = FPdim(V)²` for every simple. -/
+theorem eq_abs_of_pseudoUnitary {n : ℕ} {S : FusionSystem n ℝ}
+    (hFP : S.ring.FPData) (hn : 0 < n) (P : PivotalStructure S)
+    (hU : IsPseudoUnitaryPivotal P)
+    (hsum : (∑ i : Fin n, (dim P i) ^ 2) = ∑ i : Fin n, (hFP.fpdim i) ^ 2) :
+    ∀ i, |dim P i| = hFP.fpdim i :=
+  eq_abs_of_sum_sq (fun i => le_of_lt (hFP.pos i))
+    (abs_dim_le_fpdim_of_pseudoUnitary hFP hn P hU) hsum
 
 end FusionCategory
