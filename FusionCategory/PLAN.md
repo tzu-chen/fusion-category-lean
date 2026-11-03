@@ -382,6 +382,25 @@ about `κ` and `FPdim` only, *not* about `J`.  This retires the "derive the
 `J`-diagram" programme as the route to ENO 8.23 (it stays necessary to make the
 signature honest, since `p_mon` mentions `J`).
 
+**The hypothesis, restored, and the theorem that follows from it.**  Since
+`ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:
+
+    structure IsPseudoUnitaryPivotal (P : PivotalStructure S) : Prop where
+      pos  : ∀ i, 0 < dim P i                              -- what a Hermitian structure gives
+      mult : ∀ i kk, ∑ j, N i j kk * dim P j = dim P i * dim P kk   -- dim is a ring character
+
+    theorem eno823_of_pseudoUnitary (hn) (hFP) (huniq : PFUnique S.ring hFP)
+        (P) (hU : IsPseudoUnitaryPivotal P) : ENO823 S hFP
+
+Both fields are needed and neither is automatic: **positivity** is what Yang-Lee
+fails (`YangLee.not_eno823`), and **multiplicativity** is what
+`Vec^ω_{(Z/2)²}` with `J ≡ 1` fails — in this signature multiplicativity of
+`dim = p·κ` is equivalent to the sum identity (M) `Σ_c N^c_ab J^c_ab κ_c = κ_aκ_b`
+on the twist, which a non-canonical `J` violates.  With both, `PFUnique` forces
+`dim P = FPdim`, and sphericity then follows from `p_{i*} = p_i⁻¹` rather than
+being assumed.  So what remains open is exactly the passage from a Hermitian
+structure to those two conditions — ENO 8.23's own argument — not the algebra.
+
 **The witness that (C) is not automatic is Yang-Lee, and it is kernel-checked.**
 Rank 2 with `τ ⊗ τ = 1 ⊕ τ`, `F^{τττ}_τ = [[-φ, 1], [-φ, φ]]`, `FPdim_τ = φ`;
 both snakes give `κ_τ = -1/φ` from both branches (the pentagon holds on all `2^9`

@@ -284,4 +284,85 @@ section Remarks
 
 end Remarks
 
+section PseudoUnitaryTarget
+
+/-!
+## Pseudo-unitarity as a hypothesis, and `ENO823` from it
+
+`ENO823` is false as stated: `Examples/YangLee.lean` carries a complete rigid
+datum with no pivotal structure of dimension `FPdim`, because its categorical
+dimension `κ = (1, -1/φ)` is negative (`YangLee.not_eno823`).  What is missing is
+the hypothesis of ENO 8.23 itself.  Here it is, in the form the skeletal axioms
+can see:
+
+* positivity of the dimension function of a pivotal structure — this is what a
+  Hermitian structure supplies, and Yang-Lee fails it;
+* multiplicativity of that dimension (`dim(X⊗Y) = dim X · dim Y`, in eigenvector
+  form) — a theorem of pivotal categories, which in this signature is equivalent
+  to the sum identity `Σ_c N^c_ab J^c_ab κ_c = κ_a κ_b` on the twist, and hence
+  fails for data whose `J` is not the canonical one (`Vec^ω_{(Z/2)²}` with
+  `J ≡ 1`).
+
+With both, Perron–Frobenius uniqueness (`PFUnique`) identifies `dim P` with
+`FPdim`, and sphericity is then automatic — so `ENO823` holds.  What remains
+open is exactly the passage from a Hermitian structure to these two conditions,
+i.e. ENO 8.23 itself.
+-/
+
+variable {n : ℕ} {S : FusionSystem n ℝ}
+
+/-- `κ` at the unit is `1`: the left snake at `i = 1` with the unit law of `F`. -/
+theorem kappa_unit (hn : 0 < n) : S.kappa ⟨0, hn⟩ = 1 := by
+  have hd : S.ring.dual ⟨0, hn⟩ = ⟨0, hn⟩ := S.ring.dual_zero hn
+  have hN : 0 < S.ring.N ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩ := by
+    rw [S.ring.left_unit hn ⟨0, hn⟩ ⟨0, hn⟩]
+    simp
+  have hunit := S.F_unit_left hn ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩ ⟨0, hn⟩ hN
+  simp only [if_true] at hunit
+  have hsnake := S.snake_left hn ⟨0, hn⟩
+  rw [hd, hunit, mul_one] at hsnake
+  exact hsnake
+
+/-- **Pseudo-unitarity of a pivotal structure**, in the skeletal form: its
+dimension function is positive and multiplicative.
+
+This is the real hypothesis of ENO 8.23, and it supersedes the `IsPseudoUnitary`
+above, which is a `Prop` about a `CategoricalDimData` detached from `S`: the
+point of pseudo-unitarity is not an equation between global dimensions but the
+positivity of a *dimension function*, and that is what a pivotal structure
+carries. -/
+structure IsPseudoUnitaryPivotal (P : PivotalStructure S) : Prop where
+  /-- Positivity — what a Hermitian structure gives. -/
+  pos : ∀ i : Fin n, 0 < dim P i
+  /-- Multiplicativity of the dimension on the fusion ring. -/
+  mult : ∀ i kk : Fin n,
+    (∑ j : Fin n, (S.ring.N i j kk : ℝ) * dim P j) = dim P i * dim P kk
+
+/-- **ENO 8.23 with its hypothesis restored.**  A pseudo-unitary pivotal
+structure is spherical and has the FP-dimensions, provided positive normalised
+characters of the fusion ring are unique (`PFUnique`, the Perron–Frobenius
+input).  Compare `YangLee.not_eno823`: without the hypothesis the conclusion
+fails. -/
+theorem eno823_of_pseudoUnitary (hn : 0 < n) (hFP : S.ring.FPData)
+    (huniq : PFUnique S.ring hFP) (P : PivotalStructure S)
+    (hU : IsPseudoUnitaryPivotal P) : ENO823 S hFP := by
+  have hdim0 : ∀ (hn' : 0 < n), dim P ⟨0, hn'⟩ = 1 := by
+    intro hn'
+    have h0 : (⟨0, hn'⟩ : Fin n) = ⟨0, hn⟩ := by simp
+    rw [PivotalStructure.dim_eq, h0, P.pVal_unit hn, kappa_unit (S := S) hn, mul_one]
+  have hd : dim P = hFP.fpdim :=
+    huniq (fun i => dim P i) hU.pos hdim0 hU.mult
+  refine ⟨P, ?_, ?_⟩
+  · rw [P.isSpherical_iff hn]
+    intro i
+    have h1 : dim P (S.ring.dual i) = dim P i := by rw [hd, hFP.dual_eq i]
+    rw [PivotalStructure.dim_eq, PivotalStructure.dim_eq, P.pVal_dual hn i] at h1
+    field_simp at h1
+    rw [← h1]
+  · intro i
+    have h := congrFun hd i
+    simpa using h
+
+end PseudoUnitaryTarget
+
 end FusionCategory

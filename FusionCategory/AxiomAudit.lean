@@ -76,6 +76,11 @@ open FusionCategory.Examples
 #print axioms YangLee.twisted_norm_one_one_zero
 #print axioms YangLee.not_eno823
 
+-- ENO 8.23 with its hypothesis restored: pseudo-unitarity (positivity plus
+-- multiplicativity of a pivotal dimension) and PF uniqueness give the conclusion
+#print axioms kappa_unit
+#print axioms eno823_of_pseudoUnitary
+
 -- The second witness: non-trivial associator, two pivotal structures
 #print axioms VecZ2Twisted.kappa_g
 #print axioms VecZ2Twisted.system
