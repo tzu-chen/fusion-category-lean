@@ -18,6 +18,13 @@ import FusionCategory.Statements
 import FusionCategory.Examples.Z2SqHonest
 import FusionCategory.Triangle
 import FusionCategory.Coherence
+import FusionCategory.PFUniqueAll
+import FusionCategory.Duality
+import FusionCategory.Gauge
+import FusionCategory.Coverage
+import FusionCategory.Prop821CNorm
+import FusionCategory.Prop821CEq
+import FusionCategory.Transport
 import FusionCategory.Examples.Z2SqFalseJ
 import FusionCategory.Witnesses.Z3sqTwist
 import FusionCategory.Witnesses.Z3sqTwisted

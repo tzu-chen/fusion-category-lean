@@ -24,6 +24,71 @@ revision (see the paragraph after "Still owed" below for the withdrawn
 label-permutation request); the original step list (§0–7 below) is retained
 under a superseded banner that enumerates its retired instructions.
 
+## WP1 proofs landed (the D3/M2 round, swarm `smw0zjsah`)
+
+The first delegation batch passed review, so the holding rule on WP1's proofs
+lifted.  A seven-solution delegation round landed the remaining WP1 proofs; every
+artefact was re-elaborated by the coordinator before acceptance, and the chain is
+green end to end (build 8743 jobs, audit 1216 declarations, Gate 4 and the
+self-test green).  New modules, all with axiom budget
+`[propext, Classical.choice, Quot.sound]`:
+
+* **`PFUniqueAll.lean`** — **`PFUnique` is a theorem**: `pfUnique_unconditional`
+  proves Perron–Frobenius uniqueness for *every* fusion ring with `FPData`, by an
+  elementary Collatz–Wielandt argument (the row-sum matrix `M i j = Σ_k N i j k`
+  is strictly positive by associativity at `(i,j,j*,i)`; two positive eigenvectors
+  of a strictly positive matrix are proportional — no irreducibility, no spectral
+  theory, no vendored PF chain).  Corollaries: `fpdim_unique` (`FPData` is a
+  property of the ring, not data), `pfUnique_system` (discharges the hypothesis at
+  any scalar field), `eno823_of_pseudoUnitary_noPF`.  The vendoring motivation of
+  WP0 Task 0.1 shrinks to the `FPData` *existence* half; its uniqueness half is
+  closed here.  The three hand-written instance proofs in
+  `Examples/PseudoUnitaryInstances.lean` are now instances of the general theorem
+  (consistency-checked in the swarm, not yet deleted from the tree).
+* **`Coverage.lean`** — every provable frozen `Prop` of `Statements.lean`
+  discharged in one file, conclusions being the frozen defs applied, pinned by
+  `rfl` shape guards: `EvDual`, `dimENO_eq_dim`, `dimENO_eq_dim_of_selfdual`,
+  `J_coherent_forms_agree`, `TriangleLaw` (Task 1.2's frozen form, previously
+  proved only in the raw), and the four `Cx` statements — `Cx.pivotal_ext`,
+  `Cx.eno823_of_exact`, `Cx.eno823_of_bare`, `Cx.eno823_of_pseudoUnitary`
+  (the PFUnique route).  `exact_iff_bare` records Task 1.5(a) as an equivalence:
+  at `ℂ` the exact form adds no content to the bare form gated on its antecedent.
+* **`Prop821CNorm.lean`** — the ℂ analytic chain (Task 1.1's explicit port item):
+  `norm_le_fpdim_of_eigenvector` lifts ENO 8.21 to any `NormedRing` (the ℝ
+  original is the `K = ℝ` instance), `eq_abs_of_sum_sq_c`, the character form, the
+  ℂ twist algebra (`mult_iff_twist_c`: multiplicativity ⟺ (M), per-channel (K) ⇒
+  (M)), the **settled twist** `settledJ = f_c κ_a κ_b / (κ_c f_a f_b)` whose
+  `J_match` is literally the per-channel law, and `κ = FPdim` / `dim = FPdim`
+  from pseudo-unitarity with the honest extra hypotheses.
+* **`Prop821CEq.lean`** — the ℓ²-equality chain: `eq_of_sum_mul` (the product
+  form), `eq_norm_of_pseudoUnitary_c`, and — the highlight —
+  `eno823_c_of_pseudoUnitaryPivotal`: **bare `ENO823` at `ℂ` from
+  `IsPseudoUnitaryC` + `Pos` + multiplicativity via 8.21's bound and the ℓ²
+  equality case, with no `PFUnique`** — ENO's own §8.4 route, the M5 skeleton
+  pulled forward.  Two independent routes to the conditional theorem now exist.
+* **`Duality.lean`** — the `dimENO` layer: the two normalisations agree, and
+  `IsPseudoUnitaryC` ⟺ ENO's `Σ d_i d_{i*} = FPdim(C)` in ENO's own dimensions
+  (the `dimENO`-level ℓ² bridge).
+* **`Gauge.lean`** — Task 1.4's prose claim kernel-checked: the vertex gauge
+  (`coev ↦ λ·coev`, `ev ↦ ev/λ`) is a `FusionSystem` endomorphism fixing `κ`;
+  the `EvDual` stabiliser is exactly the dual-invariant subgroup, so `ev_dual` is
+  a gauge slice, not a restriction; `dim`, sphericity, `IsPseudoUnitaryC`,
+  `Cx.IsPseudoUnitaryPivotal` and `ENO823` are gauge-invariant.
+* **`Transport.lean`** — Task 1.1's transport: `mapSystem f S` (scalar extension
+  along any ring hom between fields, all 24 fields), `mapPivotal` (pivotal
+  structures and `dim`/sphericity/`ENO823` transport), the ℂ copies
+  `FibonacciC`/`IsingC`/`YangLeeC` and `VecZ2R`, and the battery:
+  `IsPseudoUnitaryC` proved for Fibonacci and Ising at `ℂ`, **refuted** for
+  Yang–Lee at `ℂ`, `ENO823` at both positive copies.  (Environment fact,
+  kernel-checked by three members independently: `Complex.abs` does not exist in
+  the pinned Mathlib — the modulus is the norm `‖·‖`; the ℂ files all use it.)
+
+Still owed from WP1 (nothing new): the `ENO823ExactC` family is not a proof
+target at WP1 (its `derivedJ` is WP2 Task 2.3's held definition; the collapse
+guards in `Statements.lean` record why).  WP2 (reconstruction, `derivedJ`,
+`J_match` discharge) is the next package; the `settledJ`/`J_match` interface in
+`Prop821CNorm.lean` is its entry point.
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

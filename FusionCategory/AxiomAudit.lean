@@ -160,6 +160,20 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.forgetCover
 #print axioms finProdFinEquiv.eq_1
 
+-- FusionCategory.Coverage (11 declarations)
+
+#print axioms Coverage.J_coherent_forms_agree
+#print axioms Coverage.cx_eno823_of_bare
+#print axioms Coverage.cx_eno823_of_exact
+#print axioms Coverage.cx_eno823_of_pseudoUnitary
+#print axioms Coverage.cx_pivotal_ext
+#print axioms Coverage.dimENO_eq_dim
+#print axioms Coverage.dimENO_eq_dim_of_selfdual
+#print axioms Coverage.evDual
+#print axioms Coverage.exact_iff_bare
+#print axioms Coverage.kappa_unit_c
+#print axioms Coverage.triangleLaw
+
 -- FusionCategory.DoubleDual (10 declarations)
 
 #print axioms FusionCategory.DoubleDual.derivedTwist
@@ -172,6 +186,25 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.DoubleDual.vecZ2_twist_derived
 #print axioms FusionCategory.DoubleDual.vecZ2_twist_eq_one
 #print axioms FusionCategory.VecZ2.system.eq_1
+
+-- FusionCategory.Duality (16 declarations)
+
+#print axioms FusionCategory.IsPseudoUnitaryC.eq_1
+#print axioms FusionCategory.J_coherent_forms_agree_iff
+#print axioms FusionCategory.dim.eq_1
+#print axioms FusionCategory.dimENO.eq_1
+#print axioms FusionCategory.dimENO_eq_lib_dim
+#print axioms FusionCategory.dimENO_eq_lib_dim_apply
+#print axioms FusionCategory.dimENO_eq_lib_dim_selfdual
+#print axioms FusionCategory.dimENO_mul_dimENO_dual
+#print axioms FusionCategory.eno823_iff_dimENO
+#print axioms FusionCategory.evDual
+#print axioms FusionCategory.isPseudoUnitaryC_iff_dimENO
+#print axioms FusionCategory.isSpherical_iff_dimENO
+#print axioms FusionCategory.pos_dimENO_iff
+#print axioms FusionCategory.pos_ofReal
+#print axioms FusionCategory.pos_ofReal_iff
+#print axioms FusionCategory.sum_dimENO_eq_sum_kappa
 
 -- FusionCategory.ENOSqrt (31 declarations)
 
@@ -761,6 +794,29 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.w_unit_left
 #print axioms FusionCategory.Z2SqH.w_unit_right
 
+-- FusionCategory.Gauge (20 declarations)
+
+#print axioms FusionCategory.gauge
+#print axioms FusionCategory.gauge.congr_simp
+#print axioms FusionCategory.gauge.eq_1
+#print axioms FusionCategory.gaugePivotal
+#print axioms FusionCategory.gauge_coev_comp
+#print axioms FusionCategory.gauge_coev_mul_ev
+#print axioms FusionCategory.gauge_dim
+#print axioms FusionCategory.gauge_eno823_iff
+#print axioms FusionCategory.gauge_ev_comp
+#print axioms FusionCategory.gauge_ev_dual_iff
+#print axioms FusionCategory.gauge_exists_pivotal_iff
+#print axioms FusionCategory.gauge_isPseudoUnitaryC_iff
+#print axioms FusionCategory.gauge_isPseudoUnitaryPivotal_iff
+#print axioms FusionCategory.gauge_isSpherical_iff
+#print axioms FusionCategory.gauge_kappa
+#print axioms FusionCategory.gauge_ring
+#print axioms FusionCategory.gauge_sum_kappa
+#print axioms FusionCategory.ungaugePivotal
+#print axioms FusionCategory.ungauge_dim
+#print axioms FusionCategory.ungauge_isSpherical_iff
+
 -- FusionCategory.Grading (56 declarations)
 
 #print axioms FusionCategory.GradingData
@@ -828,6 +884,21 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.phi_sq
 #print axioms FusionCategory.phi_unique
 
+-- FusionCategory.PFUniqueAll (12 declarations)
+
+#print axioms FusionCategory.eigen_le_of_pos_eigenvector
+#print axioms FusionCategory.eno823_of_pseudoUnitary_noPF
+#print axioms FusionCategory.eq_smul_of_pos_eigenvector
+#print axioms FusionCategory.fpdim_unique
+#print axioms FusionCategory.fusionRowSum
+#print axioms FusionCategory.fusionRowSum_apply
+#print axioms FusionCategory.fusionRowSum_pos
+#print axioms FusionCategory.fusionRowSum_pos'
+#print axioms FusionCategory.pfUnique_system
+#print axioms FusionCategory.pfUnique_unconditional
+#print axioms FusionCategory.pos_eigenvector_eq_smul_fpdim
+#print axioms FusionCategory.sum_eigenrelation
+
 -- FusionCategory.Pivotal (34 declarations)
 
 #print axioms FusionCategory.PivotalStructure
@@ -889,6 +960,70 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.tMatrix.eq_1
 #print axioms FusionCategory.tMatrix_mulVec
 #print axioms FusionCategory.twist_sum_of_perChannel
+
+-- FusionCategory.Prop821CEq (23 declarations)
+
+#print axioms FusionCategory.Pos.eq_1
+#print axioms FusionCategory.Pos.ne_zero
+#print axioms FusionCategory.abs_le_fpdim_of_char_c_ofReal
+#print axioms FusionCategory.abs_le_fpdim_of_multiplicative_c
+#print axioms FusionCategory.dim_eq_algebraMap_of_norm_eq
+#print axioms FusionCategory.dim_eq_algebraMap_of_pseudoUnitaryC
+#print axioms FusionCategory.dim_mul_dim_dual_c
+#print axioms FusionCategory.eigenvector_of_char_c
+#print axioms FusionCategory.eigenvector_of_eigenvector_c
+#print axioms FusionCategory.eno823_c_of_pseudoUnitaryPivotal
+#print axioms FusionCategory.eq_algebraMap_of_pos_of_norm
+#print axioms FusionCategory.eq_norm_dim_of_pseudoUnitaryC
+#print axioms FusionCategory.eq_norm_of_pseudoUnitary_c
+#print axioms FusionCategory.eq_norm_of_sq_sum_c
+#print axioms FusionCategory.eq_of_sum_mul
+#print axioms FusionCategory.fpdim_char_c
+#print axioms FusionCategory.isSpherical_of_pseudoUnitaryC
+#print axioms FusionCategory.norm_ofReal_of_pos
+#print axioms FusionCategory.pos_algebraMap
+#print axioms FusionCategory.pos_witness
+#print axioms FusionCategory.pos_witness_le_fpdim
+#print axioms FusionCategory.sum_dim_mul_dim_dual_c
+#print axioms FusionRing.FPData.globalDim.eq_1
+
+-- FusionCategory.Prop821CNorm (35 declarations)
+
+#print axioms FusionCategory.abs_dim_le_fpdim_of_pseudoUnitaryC
+#print axioms FusionCategory.abs_le_fpdim_of_char_c
+#print axioms FusionCategory.abs_le_fpdim_of_eigenvector_c
+#print axioms FusionCategory.abs_le_fpdim_of_eigenvector_real_norm
+#print axioms FusionCategory.algebraMap_ne_zero_of_ne_zero
+#print axioms FusionCategory.dim_dual_general
+#print axioms FusionCategory.dim_eq_fpdim_of_pseudoUnitaryC
+#print axioms FusionCategory.dim_mul_dim_c
+#print axioms FusionCategory.dim_mul_dim_dual_general
+#print axioms FusionCategory.dim_mul_dim_general
+#print axioms FusionCategory.dim_unit_c
+#print axioms FusionCategory.dim_unit_general
+#print axioms FusionCategory.eq_abs_of_pseudoUnitaryC
+#print axioms FusionCategory.eq_abs_of_sum_sq_c
+#print axioms FusionCategory.fpdim_char_algebraMap
+#print axioms FusionCategory.j_match_settledJ_iff
+#print axioms FusionCategory.kappa_eq_fpdim_of_pseudoUnitaryC
+#print axioms FusionCategory.kappa_unit_c
+#print axioms FusionCategory.kappa_unit_general
+#print axioms FusionCategory.mult_iff_mult_c
+#print axioms FusionCategory.mult_iff_mult_general
+#print axioms FusionCategory.mult_iff_twist_c
+#print axioms FusionCategory.mult_iff_twist_general
+#print axioms FusionCategory.mult_of_J_match_settledJ
+#print axioms FusionCategory.mult_of_J_match_settledJ_c
+#print axioms FusionCategory.mult_of_perChannel_c
+#print axioms FusionCategory.mult_of_perChannel_general
+#print axioms FusionCategory.norm_le_fpdim_of_eigenvector
+#print axioms FusionCategory.settledJ
+#print axioms FusionCategory.sum_dim_eq_c
+#print axioms FusionCategory.sum_dim_eq_general
+#print axioms FusionCategory.sum_kappa_sq_eq_of_pseudoUnitaryC
+#print axioms FusionCategory.twist_sum_of_perChannel_c
+#print axioms FusionCategory.twist_sum_of_perChannel_general
+#print axioms FusionRing.FPData.globalDim.eq_def
 
 -- FusionCategory.PseudoUnitary (54 declarations)
 
@@ -1061,6 +1196,50 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.VecZ2Twisted.system
 #print axioms FusionCategory.VecZ2Twisted.system.eq_1
 #print axioms FusionRing.mk.congr_simp
+
+-- FusionCategory.Transport (41 declarations)
+
+#print axioms FusionCategory.Transport.eno823_of_algebraMap
+#print axioms FusionCategory.Transport.isPseudoUnitaryC_of_algebraMap
+#print axioms FusionCategory.Transport.isPseudoUnitary_of_kappa_eq_fpdim
+#print axioms FusionCategory.Transport.mapPivotal
+#print axioms FusionCategory.Transport.mapPivotal_dim
+#print axioms FusionCategory.Transport.mapPivotal_isSpherical
+#print axioms FusionCategory.Transport.mapSystem
+#print axioms FusionCategory.Transport.mapSystem_EvDual
+#print axioms FusionCategory.Transport.mapSystem_F
+#print axioms FusionCategory.Transport.mapSystem_J
+#print axioms FusionCategory.Transport.mapSystem_TriangleLaw
+#print axioms FusionCategory.Transport.mapSystem_coev
+#print axioms FusionCategory.Transport.mapSystem_ev
+#print axioms FusionCategory.Transport.mapSystem_kappa
+#print axioms FusionCategory.Transport.mapSystem_qualified
+#print axioms FusionCategory.Transport.mapSystem_retained
+#print axioms FusionCategory.Transport.mapSystem_ring
+#print axioms FusionCategory.Transport.sum_kappa_map
+#print axioms FusionCategory.Transported.FibonacciC
+#print axioms FusionCategory.Transported.IsingC
+#print axioms FusionCategory.Transported.VecZ2R
+#print axioms FusionCategory.Transported.YangLeeC
+#print axioms FusionCategory.Transported.eno823_fibonacci
+#print axioms FusionCategory.Transported.eno823_fibonacciC
+#print axioms FusionCategory.Transported.eno823_ising
+#print axioms FusionCategory.Transported.eno823_isingC
+#print axioms FusionCategory.Transported.fibonacciFPData
+#print axioms FusionCategory.Transported.fibonacciFPData_dual
+#print axioms FusionCategory.Transported.fibonacciSystem_ring
+#print axioms FusionCategory.Transported.fibonacci_ring_N
+#print axioms FusionCategory.Transported.isPseudoUnitaryC_fibonacci
+#print axioms FusionCategory.Transported.isPseudoUnitaryC_ising
+#print axioms FusionCategory.Transported.isPseudoUnitary_fibonacci
+#print axioms FusionCategory.Transported.isPseudoUnitary_ising
+#print axioms FusionCategory.Transported.isingFPData
+#print axioms FusionCategory.Transported.isingFPData_dual
+#print axioms FusionCategory.Transported.isingSystem_ring
+#print axioms FusionCategory.Transported.ising_ring_N
+#print axioms FusionCategory.Transported.kappa_VecZ2R
+#print axioms FusionCategory.Transported.kappa_fibonacciC
+#print axioms FusionCategory.Transported.not_isPseudoUnitaryC_yangLee
 
 -- FusionCategory.Triangle (3 declarations)
 
