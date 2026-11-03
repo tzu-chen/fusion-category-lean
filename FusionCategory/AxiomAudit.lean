@@ -174,6 +174,68 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms Coverage.kappa_unit_c
 #print axioms Coverage.triangleLaw
 
+-- FusionCategory.DerivedJLaws (18 declarations)
+
+#print axioms FusionCategory.WP2_DerivedJ_gauge_invariant
+#print axioms FusionCategory.derivedJGen_dual
+#print axioms FusionCategory.derivedJGen_unit_left
+#print axioms FusionCategory.derivedJGen_unit_right
+#print axioms FusionCategory.derivedJGen_withJ
+#print axioms FusionCategory.derivedJ_dual
+#print axioms FusionCategory.derivedJ_unit_left
+#print axioms FusionCategory.derivedJ_unit_right
+#print axioms FusionCategory.derivedJ_withJ
+#print axioms FusionCategory.finv_mul_F_of_unique
+#print axioms FusionCategory.finv_mul_F_of_unique'
+#print axioms FusionCategory.pos_dual_coeff
+#print axioms FusionCategory.pos_dual_coeff'
+#print axioms FusionCategory.pos_left_unit
+#print axioms FusionCategory.pos_right_unit
+#print axioms FusionCategory.unique_left_unit
+#print axioms FusionCategory.unique_right_unit
+#print axioms FusionCategory.withJ
+
+-- FusionCategory.DerivedJPointed (17 declarations)
+
+#print axioms FusionCategory.F_ne_zero_of_pointed
+#print axioms FusionCategory.Finv_eq_inv_of_pointed
+#print axioms FusionCategory.N_dual_shift
+#print axioms FusionCategory.N_dual_shift'
+#print axioms FusionCategory.N_dual_symm
+#print axioms FusionCategory.N_shift
+#print axioms FusionCategory.WP2_DerivedJ_pointed_eq_delta_kappa
+#print axioms FusionCategory.comparisonScalar_ne_zero_of_pointed
+#print axioms FusionCategory.derivedJGen_eq_delta_kappa_of_pointed
+#print axioms FusionCategory.derivedJGen_ne_zero_of_pointed
+#print axioms FusionCategory.div_div_key
+#print axioms FusionCategory.key_bracket
+#print axioms FusionCategory.key_identity
+#print axioms FusionCategory.pentagon_P1
+#print axioms FusionCategory.pentagon_P2
+#print axioms FusionCategory.pentagon_P3
+#print axioms FusionCategory.pointed_unique
+
+-- FusionCategory.DerivedJScalar (18 declarations)
+
+#print axioms FusionCategory.DerivedJ_eq_settledJ
+#print axioms FusionCategory.DerivedJ_gauge_covariant
+#print axioms FusionCategory.DerivedJ_gauge_covariant_holds
+#print axioms FusionCategory.DerivedJ_pointed
+#print axioms FusionCategory.comparisonScalar
+#print axioms FusionCategory.comparisonScalar_def
+#print axioms FusionCategory.comparisonScalar_gauge
+#print axioms FusionCategory.comparisonScalar_ne_zero
+#print axioms FusionCategory.comparisonScalar_spec
+#print axioms FusionCategory.derivedJ
+#print axioms FusionCategory.derivedJFrozen
+#print axioms FusionCategory.derivedJGen
+#print axioms FusionCategory.derivedJGen_def
+#print axioms FusionCategory.derivedJGen_gauge
+#print axioms FusionCategory.derivedJGen_ne_zero
+#print axioms FusionCategory.derivedJGen_rescale
+#print axioms FusionCategory.derivedJ_apply
+#print axioms FusionCategory.j_match_settledJ_of_bridge
+
 -- FusionCategory.DoubleDual (10 declarations)
 
 #print axioms FusionCategory.DoubleDual.derivedTwist
@@ -1134,12 +1196,88 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.mul_blockDiag_apply
 #print axioms FusionCategory.sigma_mk_eq_iff
 
+-- FusionCategory.ReconAssembly (7 declarations)
+
+#print axioms FusionCategory.PentagonShape
+#print axioms FusionCategory.PentagonShapeHom
+#print axioms FusionCategory.monoidalCategoryOfAssoc
+#print axioms FusionCategory.monoidalDataOfAssoc
+#print axioms FusionCategory.monoidalDataOfAssoc_associator_hom
+#print axioms FusionCategory.monoidalPreadditiveOfAssoc
+#print axioms FusionCategory.pentagonShape_iff
+
 -- FusionCategory.ReconAssoc (4 declarations)
 
 #print axioms FusionCategory.assocEntry
 #print axioms FusionCategory.assocInvEntry
 #print axioms FusionCategory.associatorHom
 #print axioms FusionCategory.associatorInv
+
+-- FusionCategory.ReconAssocIso (55 declarations)
+
+#print axioms FusionCategory.assocEntry_apply_matched
+#print axioms FusionCategory.assocEntry_exact
+#print axioms FusionCategory.assocEntry_ne_zero_heq_x
+#print axioms FusionCategory.assocEntry_ne_zero_heq_y
+#print axioms FusionCategory.assocEntry_ne_zero_heq_z
+#print axioms FusionCategory.assocEntry_zero_a
+#print axioms FusionCategory.assocEntry_zero_b
+#print axioms FusionCategory.assocEntry_zero_c
+#print axioms FusionCategory.assocEntry_zero_c'
+#print axioms FusionCategory.assocEntry_zero_heq_x
+#print axioms FusionCategory.assocEntry_zero_heq_y
+#print axioms FusionCategory.assocEntry_zero_heq_z
+#print axioms FusionCategory.assocEntry_zero_x
+#print axioms FusionCategory.assocEntry_zero_x_gen
+#print axioms FusionCategory.assocEntry_zero_y
+#print axioms FusionCategory.assocEntry_zero_z
+#print axioms FusionCategory.assocInvEntry_apply_matched
+#print axioms FusionCategory.assocInvEntry_exact
+#print axioms FusionCategory.assocInvEntry_ne_zero_heq_x
+#print axioms FusionCategory.assocInvEntry_ne_zero_heq_y
+#print axioms FusionCategory.assocInvEntry_ne_zero_heq_z
+#print axioms FusionCategory.assocInvEntry_zero_a
+#print axioms FusionCategory.assocInvEntry_zero_b
+#print axioms FusionCategory.assocInvEntry_zero_c
+#print axioms FusionCategory.assocInvEntry_zero_c'
+#print axioms FusionCategory.assocInvEntry_zero_heq_x
+#print axioms FusionCategory.assocInvEntry_zero_heq_y
+#print axioms FusionCategory.assocInvEntry_zero_heq_z
+#print axioms FusionCategory.assocInvEntry_zero_x
+#print axioms FusionCategory.assocInvEntry_zero_y
+#print axioms FusionCategory.assocInvEntry_zero_z
+#print axioms FusionCategory.assoc_inv_mul
+#print axioms FusionCategory.assoc_inv_mul_apply
+#print axioms FusionCategory.assoc_mul
+#print axioms FusionCategory.assoc_mul_apply
+#print axioms FusionCategory.associatorHom_comp_associatorInv
+#print axioms FusionCategory.associatorInv_comp_associatorHom
+#print axioms FusionCategory.associatorIso
+#print axioms FusionCategory.associatorIsoIso
+#print axioms FusionCategory.associatorIsoIso_hom
+#print axioms FusionCategory.associatorIsoIso_inv
+#print axioms FusionCategory.blkL
+#print axioms FusionCategory.blkR
+#print axioms FusionCategory.channel_pos
+#print axioms FusionCategory.collapse_matched
+#print axioms FusionCategory.collapse_matched_inv
+#print axioms FusionCategory.heqProjRX
+#print axioms FusionCategory.heqProjRY
+#print axioms FusionCategory.heqProjRZ
+#print axioms FusionCategory.heqProjX
+#print axioms FusionCategory.heqProjY
+#print axioms FusionCategory.heqProjZ
+#print axioms FusionCategory.nsmul_entry
+#print axioms FusionCategory.nsmul_entry_inv
+#print axioms FusionCategory.sum_fin_const_eq
+
+-- FusionCategory.ReconAssocObj (5 declarations)
+
+#print axioms FusionCategory.objectAssociativity
+#print axioms FusionCategory.swap_outer
+#print axioms FusionCategory.tensorMul3_left
+#print axioms FusionCategory.tensorMul3_right
+#print axioms FusionCategory.tensorMul_eq
 
 -- FusionCategory.ReconAssocStatements (5 declarations)
 
@@ -1148,6 +1286,172 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.ObjectAssociativity
 #print axioms FusionCategory.assocIso_label_left
 #print axioms FusionCategory.assocIso_label_right
+
+-- FusionCategory.ReconFusionProps (17 declarations)
+
+#print axioms FusionCategory.MonoidalData.toStruct_tensorObj
+#print axioms FusionCategory.MonoidalData.toStruct_tensorUnit
+#print axioms FusionCategory.card_unitObj_blk
+#print axioms FusionCategory.card_unitObj_blk_ne
+#print axioms FusionCategory.endUnitEquiv
+#print axioms FusionCategory.endUnitEquivOfData
+#print axioms FusionCategory.endUnitEquiv_apply
+#print axioms FusionCategory.homFiniteDimensional
+#print axioms FusionCategory.instHomFiniteDimensional
+#print axioms FusionCategory.isFusionCategoryOf
+#print axioms FusionCategory.isFusionCategoryOfUnit
+#print axioms FusionCategory.ofM_hom_eq
+#print axioms FusionCategory.subsingleton_matrix_unitObj_blk_ne
+#print axioms FusionCategory.subsingleton_unitObj_blk
+#print axioms FusionCategory.tensorObj_ofM_blk
+#print axioms FusionCategory.tensorObj_ofM_card
+#print axioms FusionCategory.unitObjPt
+
+-- FusionCategory.ReconMonoidal (32 declarations)
+
+#print axioms FusionCategory.MonoidalData
+#print axioms FusionCategory.MonoidalData.associator
+#print axioms FusionCategory.MonoidalData.associator_naturality
+#print axioms FusionCategory.MonoidalData.casesOn
+#print axioms FusionCategory.MonoidalData.ctorIdx
+#print axioms FusionCategory.MonoidalData.leftUnitor
+#print axioms FusionCategory.MonoidalData.leftUnitor_naturality
+#print axioms FusionCategory.MonoidalData.mk
+#print axioms FusionCategory.MonoidalData.mk.inj
+#print axioms FusionCategory.MonoidalData.mk.injEq
+#print axioms FusionCategory.MonoidalData.mk.noConfusion
+#print axioms FusionCategory.MonoidalData.mk.sizeOf_spec
+#print axioms FusionCategory.MonoidalData.noConfusion
+#print axioms FusionCategory.MonoidalData.noConfusionType
+#print axioms FusionCategory.MonoidalData.pentagon
+#print axioms FusionCategory.MonoidalData.rec
+#print axioms FusionCategory.MonoidalData.recOn
+#print axioms FusionCategory.MonoidalData.rightUnitor
+#print axioms FusionCategory.MonoidalData.rightUnitor_naturality
+#print axioms FusionCategory.MonoidalData.toMonoidalCategory
+#print axioms FusionCategory.MonoidalData.toMonoidalPreadditive
+#print axioms FusionCategory.MonoidalData.toStruct
+#print axioms FusionCategory.MonoidalData.triangle
+#print axioms FusionCategory.associatorIsoOf
+#print axioms FusionCategory.associatorIsoOf.congr_simp
+#print axioms FusionCategory.associatorIsoOf_hom
+#print axioms FusionCategory.associatorIsoOf_inv
+#print axioms FusionCategory.isoOfHomInv
+#print axioms FusionCategory.isoOfHomInv_hom
+#print axioms FusionCategory.monoidalCategoryOfFrozen
+#print axioms FusionCategory.monoidalDataOfFrozen
+#print axioms FusionCategory.monoidalPreadditiveOfFrozen
+
+-- FusionCategory.ReconMonoidalBilin (30 declarations)
+
+#print axioms FusionCategory.blockDiag_add
+#print axioms FusionCategory.blockDiag_smul
+#print axioms FusionCategory.blockDiag_zero
+#print axioms FusionCategory.kroneckerMap_add_left
+#print axioms FusionCategory.kroneckerMap_add_right
+#print axioms FusionCategory.kroneckerMap_smul_left
+#print axioms FusionCategory.kroneckerMap_smul_right
+#print axioms FusionCategory.kroneckerMap_zero_left
+#print axioms FusionCategory.kroneckerMap_zero_right
+#print axioms FusionCategory.tensorHomBlock_add_left
+#print axioms FusionCategory.tensorHomBlock_add_right
+#print axioms FusionCategory.tensorHomBlock_smul_left
+#print axioms FusionCategory.tensorHomBlock_smul_right
+#print axioms FusionCategory.tensorHomBlock_zero_left
+#print axioms FusionCategory.tensorHomBlock_zero_right
+#print axioms FusionCategory.tensorHom_add_left
+#print axioms FusionCategory.tensorHom_add_right
+#print axioms FusionCategory.tensorHom_smul_left
+#print axioms FusionCategory.tensorHom_smul_right
+#print axioms FusionCategory.tensorHom_zero_left
+#print axioms FusionCategory.tensorHom_zero_right
+#print axioms FusionCategory.wl
+#print axioms FusionCategory.wl_add
+#print axioms FusionCategory.wl_smul
+#print axioms FusionCategory.wl_wr_exchange
+#print axioms FusionCategory.wl_zero
+#print axioms FusionCategory.wr
+#print axioms FusionCategory.wr_add
+#print axioms FusionCategory.wr_smul
+#print axioms FusionCategory.wr_zero
+
+-- FusionCategory.ReconRigid (33 declarations)
+
+#print axioms FusionCategory.FusionMat.SnakeLeft
+#print axioms FusionCategory.FusionMat.SnakeRight
+#print axioms FusionCategory.FusionMat.coev
+#print axioms FusionCategory.FusionMat.coev_apply
+#print axioms FusionCategory.FusionMat.coev_apply_of_eq
+#print axioms FusionCategory.FusionMat.coev_apply_of_ne
+#print axioms FusionCategory.FusionMat.dual
+#print axioms FusionCategory.FusionMat.dual_blk
+#print axioms FusionCategory.FusionMat.dual_dual
+#print axioms FusionCategory.FusionMat.dual_dual_blk
+#print axioms FusionCategory.FusionMat.dual_dual_m
+#print axioms FusionCategory.FusionMat.dual_fintype_blk
+#print axioms FusionCategory.FusionMat.dual_label_of_unit
+#print axioms FusionCategory.FusionMat.dual_m
+#print axioms FusionCategory.FusionMat.ev
+#print axioms FusionCategory.FusionMat.ev_apply
+#print axioms FusionCategory.FusionMat.ev_apply_of_eq
+#print axioms FusionCategory.FusionMat.ev_apply_of_ne
+#print axioms FusionCategory.FusionMat.ext_m_blk
+#print axioms FusionCategory.FusionMat.leftUnitor
+#print axioms FusionCategory.FusionMat.leftUnitor_eq
+#print axioms FusionCategory.FusionMat.mul_leftUnitor
+#print axioms FusionCategory.FusionMat.mul_rightUnitor
+#print axioms FusionCategory.FusionMat.rightUnitor
+#print axioms FusionCategory.FusionMat.rightUnitor_eq
+#print axioms FusionCategory.FusionMat.unitIdxL
+#print axioms FusionCategory.FusionMat.unitIdxR
+#print axioms FusionCategory.FusionMat.unitObj_blk_zero
+#print axioms FusionCategory.FusionMat.unit_channel_dual
+#print axioms FusionCategory.FusionMat.unit_channel_left
+#print axioms FusionCategory.FusionMat.unit_channel_right
+#print axioms FusionCategory.FusionMat.unit_label_of_left
+#print axioms FusionCategory.FusionMat.unit_label_of_right
+
+-- FusionCategory.ReconSnake (39 declarations)
+
+#print axioms FusionCategory.FusionMat.SnakeLeftIso
+#print axioms FusionCategory.FusionMat.absorbedEv
+#print axioms FusionCategory.FusionMat.absorbedEv.congr_simp
+#print axioms FusionCategory.FusionMat.absorbedEv.eq_1
+#print axioms FusionCategory.FusionMat.absorbedEv_apply_canon
+#print axioms FusionCategory.FusionMat.absorbedEv_apply_ne
+#print axioms FusionCategory.FusionMat.absorbedEv_apply_of
+#print axioms FusionCategory.FusionMat.assoc_mul_absorbedEv
+#print axioms FusionCategory.FusionMat.coevTensor_assoc_absorbedEv
+#print axioms FusionCategory.FusionMat.coev_tensor_apply_canon
+#print axioms FusionCategory.FusionMat.coev_tensor_apply_ne
+#print axioms FusionCategory.FusionMat.eq_unitIdxL_of
+#print axioms FusionCategory.FusionMat.eq_unitIdxR_of
+#print axioms FusionCategory.FusionMat.leftUnitorInv
+#print axioms FusionCategory.FusionMat.leftUnitorInv.eq_1
+#print axioms FusionCategory.FusionMat.leftUnitorIso
+#print axioms FusionCategory.FusionMat.leftUnitorIso.eq_1
+#print axioms FusionCategory.FusionMat.leftUnitor_comp_inv
+#print axioms FusionCategory.FusionMat.leftUnitor_inv_comp
+#print axioms FusionCategory.FusionMat.rightUnitorInv
+#print axioms FusionCategory.FusionMat.rightUnitorInv.eq_1
+#print axioms FusionCategory.FusionMat.rightUnitorIso
+#print axioms FusionCategory.FusionMat.rightUnitorIso.eq_1
+#print axioms FusionCategory.FusionMat.rightUnitor_comp_inv
+#print axioms FusionCategory.FusionMat.rightUnitor_inv_comp
+#print axioms FusionCategory.FusionMat.snakeLeft_iff_iso
+#print axioms FusionCategory.FusionMat.sum_tensorBlk
+#print axioms FusionCategory.FusionMat.tensorHomBlock_apply
+#print axioms FusionCategory.FusionMat.unitBlk
+#print axioms FusionCategory.FusionMat.unitBlk.eq_1
+#print axioms FusionCategory.FusionMat.unitBlk_unique
+#print axioms FusionCategory.FusionMat.unitChL
+#print axioms FusionCategory.FusionMat.unitChL.eq_1
+#print axioms FusionCategory.FusionMat.unitChR
+#print axioms FusionCategory.FusionMat.unitChR.eq_1
+#print axioms FusionCategory.FusionMat.unitIdxL.eq_1
+#print axioms FusionCategory.FusionMat.unitIdxL_injective
+#print axioms FusionCategory.FusionMat.unitIdxR.eq_1
+#print axioms FusionCategory.FusionMat.unitObj_blk_eq
 
 -- FusionCategory.ReconTensor (30 declarations)
 
@@ -1188,6 +1492,53 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.tensorHom_apply
 #print axioms FusionCategory.tensorHom_apply_ne
 
+-- FusionCategory.ReconTraceCorrespondence (44 declarations)
+
+#print axioms FusionCategory.WP2.trDual.eq_1
+#print axioms FusionCategory.WP2.trDual_add
+#print axioms FusionCategory.WP2.trDual_smul
+#print axioms FusionCategory.WP2.trDual_zero
+#print axioms FusionCategory.blk_sim_eq
+#print axioms FusionCategory.blk_unit_eq
+#print axioms FusionCategory.blk_unit_subsingleton
+#print axioms FusionCategory.coevSim
+#print axioms FusionCategory.coevSim.eq_1
+#print axioms FusionCategory.coevSim_block
+#print axioms FusionCategory.endSimEquiv
+#print axioms FusionCategory.end_unit_witness
+#print axioms FusionCategory.endo_sim_eq_smul
+#print axioms FusionCategory.evSim
+#print axioms FusionCategory.evSim.eq_1
+#print axioms FusionCategory.evSim_block
+#print axioms FusionCategory.pairUnitBlock_card
+#print axioms FusionCategory.scalarEndo
+#print axioms FusionCategory.scalarEndo_apply
+#print axioms FusionCategory.simPt
+#print axioms FusionCategory.smul_one_apply
+#print axioms FusionCategory.tensorHom_smul_left_apply
+#print axioms FusionCategory.trSimple
+#print axioms FusionCategory.trSimple.eq_1
+#print axioms FusionCategory.trSimple_eq
+#print axioms FusionCategory.trSimple_eq_zero_iff
+#print axioms FusionCategory.trSimple_gauge
+#print axioms FusionCategory.trSimple_one_eq_kappa
+#print axioms FusionCategory.trSimple_one_ne_zero
+#print axioms FusionCategory.trSimple_pVal_eq_dim
+#print axioms FusionCategory.trSimple_pVal_eq_dimENO
+#print axioms FusionCategory.traceGlobalDim_eq_pseudoUnitary_trSimple
+#print axioms FusionCategory.traceMor
+#print axioms FusionCategory.traceMorBlock_apply
+#print axioms FusionCategory.traceMor_congr
+#print axioms FusionCategory.traceOfPivotalComponent_trSimple
+#print axioms FusionCategory.traceOfScalar_trSimple
+#print axioms FusionCategory.traceProduct_eq_kappa_trSimple
+#print axioms FusionCategory.traceScalar
+#print axioms FusionCategory.traceScalarG_eq
+#print axioms FusionCategory.traceScalar_eq
+#print axioms FusionCategory.traceScalar_eq_endSimEquiv
+#print axioms FusionCategory.traceScalar_eq_smul_one
+#print axioms FusionCategory.unitPt
+
 -- FusionCategory.ReconUnit (7 declarations)
 
 #print axioms FusionCategory.tensor_unitObj_m
@@ -1197,6 +1548,61 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.unitObj_m_ne
 #print axioms FusionCategory.unitObj_m_zero
 #print axioms FusionCategory.unitObj_tensor_m
+
+-- FusionCategory.ReconUnitors (52 declarations)
+
+#print axioms FusionCategory.Units.N_self_unit_pos
+#print axioms FusionCategory.Units.N_unit_self_pos
+#print axioms FusionCategory.Units.assocEntry_mid_canon
+#print axioms FusionCategory.Units.assocEntry_mid_ne_fst
+#print axioms FusionCategory.Units.assocEntry_mid_ne_snd
+#print axioms FusionCategory.Units.assoc_eq_tensorHom_unit_mid
+#print axioms FusionCategory.Units.chanPt
+#print axioms FusionCategory.Units.chanPtRight
+#print axioms FusionCategory.Units.fst_eq_of_mem_unit_right
+#print axioms FusionCategory.Units.fst_eq_unit_of_mem
+#print axioms FusionCategory.Units.graphMat
+#print axioms FusionCategory.Units.graphMat.congr_simp
+#print axioms FusionCategory.Units.graphMat.eq_1
+#print axioms FusionCategory.Units.graphMatInv
+#print axioms FusionCategory.Units.graphMatInv.congr_simp
+#print axioms FusionCategory.Units.graphMatInv.eq_1
+#print axioms FusionCategory.Units.graphMatInv_mul_graphMat
+#print axioms FusionCategory.Units.graphMat_mul_graphMatInv
+#print axioms FusionCategory.Units.leftIdxEquiv
+#print axioms FusionCategory.Units.leftIdxEquiv_apply
+#print axioms FusionCategory.Units.leftIdxEquiv_symm_apply
+#print axioms FusionCategory.Units.leftUnitor
+#print axioms FusionCategory.Units.leftUnitorInv
+#print axioms FusionCategory.Units.leftUnitorInv_canon
+#print axioms FusionCategory.Units.leftUnitorInv_comp
+#print axioms FusionCategory.Units.leftUnitorIso
+#print axioms FusionCategory.Units.leftUnitor_comp_inv
+#print axioms FusionCategory.Units.nonempty_fin_N_unit_self
+#print axioms FusionCategory.Units.nonempty_unitObj_blk_self
+#print axioms FusionCategory.Units.rightIdxEquiv
+#print axioms FusionCategory.Units.rightIdxEquiv_apply
+#print axioms FusionCategory.Units.rightIdxEquiv_symm_apply
+#print axioms FusionCategory.Units.rightUnitor
+#print axioms FusionCategory.Units.rightUnitorInv
+#print axioms FusionCategory.Units.rightUnitorInv_comp
+#print axioms FusionCategory.Units.rightUnitorIso
+#print axioms FusionCategory.Units.rightUnitor_canon
+#print axioms FusionCategory.Units.rightUnitor_comp_inv
+#print axioms FusionCategory.Units.snd_eq_of_mem
+#print axioms FusionCategory.Units.snd_eq_unit_of_mem
+#print axioms FusionCategory.Units.subsingleton_fin_N_self_unit
+#print axioms FusionCategory.Units.subsingleton_fin_N_unit_self
+#print axioms FusionCategory.Units.subsingleton_fin_of_le_one
+#print axioms FusionCategory.Units.subsingleton_unitObj_blk_self
+#print axioms FusionCategory.Units.tensorHom_unit_left_apply
+#print axioms FusionCategory.Units.tensorHom_unit_right_apply
+#print axioms FusionCategory.Units.triangle
+#print axioms FusionCategory.Units.unitPt
+#print axioms FusionCategory.Units.whiskerLeft_leftUnitor
+#print axioms FusionCategory.Units.whiskerRight_rightUnitor
+#print axioms FusionCategory.prodSubsingletonEquiv
+#print axioms FusionCategory.sigmaUniqueEquiv
 
 -- FusionCategory.Sanity (13 declarations)
 

@@ -157,6 +157,93 @@ blocker), the unitors and triangle, the two snakes (the surviving scalar is
 exactly `S.snake_left` / `S.snake_right`), the trace correspondence, and
 `derivedJ` itself (m8's partial files included).
 
+## WP2 Round 2 landed (the reconstruction two proofs from monoidal, swarm `smw1222bv`)
+
+Six accepted solutions, every artefact re-elaborated by the coordinator before
+acceptance.  Chain state after landing: build 8764 jobs, audit 1666
+declarations (1228 theorem-kind), Gate 4 and the self-test green.
+
+**Landed modules** (all on the canonical scaffold, all axiom-clean):
+
+* `ReconAssocObj.lean` + `ReconAssocIso.lean` (m2) — **two of the three frozen
+  associator Props proved**: `ObjectAssociativity` and `AssociatorIso` (both
+  conjuncts, the frozen def applied), plus the associator as a
+  `CategoryTheory.Iso` ready for `MonoidalCategoryStruct`.  The **nested-Σ
+  blocker is cracked** — the method (flatten with `Fintype.sum_sigma` /
+`sum_prod_type` after `Matrix.mul_apply`, no `reindex`, no `Equiv`; never
+  unfold a `dif`-ladder inside a sum; kill binders one at a time with
+  `Finset.sum_eq_single` plus per-condition zero lemmas) is documented in
+  `docs/wp2-composite-engine.md` and is the required reading for every
+  remaining collapse.  Residual: `AssociatorNatural` (the two sides sum over
+  different index types; the plan — a general `HEq` entry formula for
+  `tensorHom (tensorHom f g) h` — is recorded in the member's RESULTS.md).
+* `ReconUnitors.lean` (m5) — **D4 complete**: the unitors as `Iso`s with round
+  trips, both naturality equations verbatim (Mathlib's field shapes), and the
+  **triangle**, proved by the sum-free route (`assoc_eq_tensorHom_unit_mid`:
+  the associator at the unit position is pointwise the tensor of the two
+  unitors, since `X ◁ λ_Y` is invertible; the only nonzero value is
+  `F e 0 c d e c = 1` by `TriangleCheck.triangle` — the WP1 Task 1.2 theorem
+  consumed exactly as the design note predicted).  Non-vacuity at `VecZ2` and
+  `VecZ2Twisted` over ℚ.
+* `ReconMonoidalBilin.lean` + `ReconMonoidal.lean` + `ReconAssembly.lean` +
+  `ReconFusionProps.lean` (m4) — **the monoidal assembly**: `MonoidalData`
+  (3 Iso families + 5 coherence equations) with `toStruct` **unconditional**
+  (tensor, whiskerings, unitors) and `toMonoidalCategory` via Mathlib's
+  `MonoidalCategory.ofTensorHom`, the associator consuming m2's
+  `AssociatorIso`, the triangle from m5's unitors, `MonoidalPreadditive`
+  (tensor bilinearity), `hom_finite`, `End(𝟙) ≃+* k`, and the
+  `IsFusionCategory` property pieces.  **The `MonoidalCategory` instance now
+  depends on exactly two open items** (`AssociatorNatural`, `PentagonShape` —
+  with `pentagonShape_iff` proving the two pentagon shapes agree).  Finding,
+  kernel-checked: the frozen `WP2.ReconFusion` names the *literal* model and
+  `tensorObj` provably leaves `ofM`'s image, so the freeze's reconstruction
+  theorem must be restated on the canonical scaffold or connected by an
+  explicit equivalence — a finding-driven statement revision for Round 3.
+* `ReconRigid.lean` + `ReconSnake.lean` (m6) — the dual (`dual_dual : X** = X`
+  on objects), `ev`/`coev` as unit-channel deltas with entry formulas, the
+  unitors as `Iso`s (an independent copy in namespace `FusionMat` — a
+  Round-3 dedupe with `Units`), the two middle collapses, and the frozen
+  snake statements with the final double-sum collapse residual (surviving
+  term identified: `coev c · F^{c c* c}_c(0,0) · ev c = 1`, i.e.
+  `S.snake_left`; the resolution is the engine's next application).  The
+  numeric regression `docs/snake_check.py` passes on `Vec_{Z/2}`, the twisted
+  `κ_g = −1` case, **and Fibonacci** — the 2×2-block `Finv ≠ swapped F` case
+  that separates the corrected snake normalisation from both earlier wrong
+  versions.
+* `ReconTraceCorrespondence.lean` (m7) — **Task 2.2 discharged**: all four
+  frozen trace Props for the reconstruction's concrete trace
+  (`TraceOfScalar`, `TraceOfPivotalComponent`, `TraceProduct_eq_kappa`,
+  `TraceGlobalDim_eq_pseudoUnitary` at ℂ), three of them composed through the
+  freeze's own glue theorems; no F-entry enters the trace of a simple's
+  endomorphism (kernel-checked); Schur on the nose (`End(sim i) ≃+* k`), the
+  non-vacuity iff, and gauge invariance of the trace.  Residual: the
+  identification `trSimple = WP2.trDualScalar` is `rfl`-level once the
+  monoidal/rigid instances satisfy three compatibility conditions (whisker =
+  `tensorHom`, unit = `sim 0`, the pairing's coev/ev = the block matrices) —
+  recorded as obligations on the assembly.
+* `DerivedJScalar.lean` + `DerivedJLaws.lean` + `DerivedJPointed.lean` (m8) —
+  **Task 2.3's obligations (i)–(iii)**: `derivedJGen` is the ψ-comparison ratio
+  built from `F`/`Finv`/`ev` along one explicit associator path (never reading
+  `S.J` — the J-blindness is `rfl`), with B4's frozen type;
+  **the general pointed `δ(κ)` theorem** (arbitrary `n`, `k`, from the axioms
+  alone — pointed Frobenius reciprocity, `F ≠ 0` on supported 1×1 blocks,
+  `Finv = F⁻¹`, three pentagon instances, a cocycle identity), which
+  kernel-checks what `honest_twist_check.py` did at script level; gauge
+  covariance in the freeze's form; and the three unit laws at arbitrary data
+  (three of the four twist laws are now theorems for `derivedJGen`;
+  coherence is WP3's).  Residuals: the tensorator as a scaffold morphism
+  (whose (c,c)-entry would *be* `derivedJGen`), general `DerivedJ_ne_zero`,
+  and `DerivedJ_eq_settledJ` (WP3's).
+
+**The round's open map** (Round 3's targets): `AssociatorNatural` (the `HEq`
+entry formula plan), `PentagonShape` (Round 1's m5 left side is proved and the
+engine is in place — the direction produced no submission this round),
+the snake collapse (surviving term identified; the engine applies), the
+`trSimple = trDualScalar` identification (three compatibility conditions),
+the `WP2.ReconFusion` restatement on the canonical scaffold (the m4 finding),
+and then the `ReconIsFusion` inhabitation itself.  m3's probe files are
+recorded under `.ultramath/smw1222bv/m3/`.
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could
