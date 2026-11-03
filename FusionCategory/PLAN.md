@@ -182,24 +182,25 @@ normalisation `ev_{i*} = ev_i`,
     Ω(a,b;c) = F^{b* a* c}_0(c*,b) · (M_b)^{-1}(0,c),    M_b(E,c') = F^{a* a b}_b(E,c'),
     J a b c  = Ω(b*,a*;c*) / Ω(a,b;c).
 
-**This formula is refuted, and so is the derivation it came from.**  On
+**The construction is right; the formula as written here is not.**  On
 `(Z/2)²` with `ω = (-1)^{a₁b₂c₁}` the honest twist is `J = δ(κ)`, i.e. `-1` on
-six channels (see the correction below), while `Ω` returns `1` there.  It
-returns `1` because it is built from `F` alone and does not see the `δ(κ)`
-factor: every data set on which it was checked is cyclic, where `κ` is a
-character and `δ(κ) = 1`.  An independent evaluation of `φ` from its defining
-property `ev ∘ (φ ⊗ id) = ev`, through the partial evaluation
-`((a⊗b)* ⊗ a) → b*`, gives
+six channels.  Read literally, the displayed `Ω` above — entry `(c*,b)`,
+inverse-block index `(0,c)` — evaluates to `+1` there, so the transcription is
+defective even though `ψ`'s construction is correct.  Implemented properly
+(`swarm smvzybdp8` m6, three independent assemblies: the `Ω` coefficient form, a
+`coev`-side assembly, and an `ev`-side assembly) the construction reproduces
+`δ(κ)` on `(Z/2)²` channel by channel.
 
-    φ(a,b) = C_a · ω(-(a+b),a,-a)⁻¹ · ω(-(a+b),a,b) · E_{a+b}/E_b,   C_g E_g = κ_g,
-
-and `J = φ(b*,a*;c*)/φ(a,b;c) = δ(κ)`, which agrees with (M) on `(Z/2)²`,
-`sVec` and the trivial twist (`docs/honest_twist_check.py`).  The same defect was
-found independently in swarm `smvzybdp8` (m1's ψ formula returns `1` on the same
-channels).  So the
-`J`-diagram has still never been evaluated correctly in general, and the
-`J ≡ 1` census below is evidence of nothing: it cannot distinguish `J ≡ 1`
-from `δ(κ)` on any of its samples.
+The honest value is confirmed independently by evaluating `φ` from its defining
+property `ev ∘ (φ ⊗ id) = ev` with the full associator bookkeeping:
+`λ(X,Y) = E_X E_Y ω(-(X+Y),X,Y)⁻¹ ω(-Y,-X,X)/E_{X+Y}`, `J = λ(b*,a*)/λ(a,b)`,
+which agrees with `κ_aκ_b/κ_c` on all 16 channels of `(Z/2)²`
+(`docs/honest_twist_check.py`).  So what is refuted is the *trivial-twist*
+reading: `J ≡ 1` fails (K) on `(Z/2)²`, and `J ≡ 1` holds iff `κ` is a
+character.  `m1`'s scalar `ψ` formula returns `1` on the same channels and is
+wrong.  The `J ≡ 1` census below is still evidence of nothing: `δ(κ) = 1` on
+every cyclic group in the standard gauge, and Fibonacci and Ising have
+`κ = FPdim`, so none of its samples distinguishes `J ≡ 1` from `δ(κ)`.
 
 `M_b` is the block `F^{a* a b}_b` **restricted to its support** — rows `E`
 channels of `a*⊗a` with `b ∈ E⊗b`, columns `c'` channels of `a⊗b` with

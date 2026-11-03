@@ -38,11 +38,17 @@ i.e. J = kappa_a kappa_b / kappa_{a+b} =: delta(kappa).  This is a function of F
 alone, through kappa_g = 1/omega(g,-g,g).
 
 What the script shows: on G = (Z/2)^2 with omega = (-1)^{a1 b2 c1}, delta(kappa)
-is -1 on six channels, and the phi evaluation returns exactly that.  So the
-plan's Omega reconstruction and m1's psi formula, which both return +1 there,
-are wrong; and since delta(kappa) = 1 on every cyclic group in the standard
-gauge, a census of cyclic examples (or of Fibonacci and Ising, where
-kappa = FPdim) cannot see the difference.
+is -1 on six channels, and the phi evaluation derived from the defining property
+returns exactly that (all 16 channels, 0 mismatches).  So J = delta(kappa), and
+the trivial-twist reading is what fails: J = 1 holds iff kappa is a character.
+Two reconstructions went wrong here and it is worth keeping them apart: the
+plan's Omega formula *as written* (entry (c*,b), inverse-block index (0,c))
+evaluates to +1 on that datum, so its transcription is defective, while the
+construction implemented with the full associator bookkeeping reproduces
+delta(kappa) (swarm smvzybdp8, m6, three independent assemblies); and m1's
+scalar psi formula also returns +1 there and is wrong.  Since delta(kappa) = 1
+on every cyclic group in the standard gauge, and Fibonacci and Ising have
+kappa = FPdim, a census of those examples cannot see the difference.
 
 Run:  python3 FusionCategory/docs/honest_twist_check.py
 """
