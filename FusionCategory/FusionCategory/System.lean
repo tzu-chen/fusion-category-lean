@@ -106,7 +106,16 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
   the inverse "a matrix indexed by `Fin n`", and restricting to subtypes gives
   two index types that are not syntactically equal.  Carrying `α⁻¹` with its
   two inverse laws is the honest formulation (an associator *is* an
-  isomorphism), and it is exactly what the right snake equation needs. -/
+  isomorphism), and it is exactly what the right snake equation needs.
+
+  The order of the last two arguments is part of the contract and is easy to
+  get wrong: `Finv a b c d f e` is the transpose of the inverse block, which is
+  **not** in general `F a b c d e f`.  For `Vec_{Z/2}` every block is `1 × 1`,
+  so both readings agree and the witness below may set `Finv` to the swapped
+  `F`; Fibonacci's block `[[1/φ, 1], [1/φ, -1/φ]]` is an involution but not
+  symmetric, and there the swapped `F` fails `Finv_comp`
+  (`Examples/FibonacciIsing.lean` proves this as
+  `Fibonacci.swapped_Finv_comp_ne_one`). -/
   Finv : Fin n → Fin n → Fin n → Fin n → Fin n → Fin n → k
   /-- `Finv` vanishes off the channels: a non-zero entry requires `f` to be a
   channel of `b ⊗ c` with `d` in `a ⊗ f`, and `e` a channel of `a ⊗ b` with
