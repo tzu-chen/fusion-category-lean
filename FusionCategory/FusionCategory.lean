@@ -25,6 +25,14 @@ import FusionCategory.Coverage
 import FusionCategory.Prop821CNorm
 import FusionCategory.Prop821CEq
 import FusionCategory.Transport
+import FusionCategory.Recon
+import FusionCategory.ReconTensor
+import FusionCategory.ReconTensorApply
+import FusionCategory.ReconUnit
+import FusionCategory.ReconAssoc
+import FusionCategory.ReconAssocStatements
+import FusionCategory.Statements2
+import FusionCategory.NoteFormula
 import FusionCategory.Examples.Z2SqFalseJ
 import FusionCategory.Witnesses.Z3sqTwist
 import FusionCategory.Witnesses.Z3sqTwisted

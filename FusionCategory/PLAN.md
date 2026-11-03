@@ -89,6 +89,74 @@ guards in `Statements.lean` record why).  WP2 (reconstruction, `derivedJ`,
 `J_match` discharge) is the next package; the `settledJ`/`J_match` interface in
 `Prop821CNorm.lean` is its entry point.
 
+## WP2 Round 1 landed (the reconstruction's foundation, swarm `smw10qjp3`)
+
+WP2 started per the proposal's order (Task 2.1 first). The design was frozen in
+`docs/wp2-design.md`, the swarm ran eight directions, and six solutions were
+accepted — every artefact re-elaborated by the coordinator before acceptance.
+Chain state after landing: build 8751 jobs, audit 1418 declarations (940
+theorem-kind), Gate 4 and the self-test green.
+
+**The round's record of falsified design decisions** (all kernel-checked by
+members, all corrections pushed to the design note at `b0e83b5`):
+
+* The note's tensor-on-morphisms entry was **wrong** — the `i = i'`, `j = j'`
+  conjuncts truncate every block to its diagonal and destroy functoriality
+  (three independent counterexamples; the smallest is `NoteFormula.lean`'s
+  `noteBlock_not_mul`: the transposition on a `2 × 2` multiplicity block gives
+  `1 ≠ 0`).  The correct entry is label-diagonal with the full Kronecker block
+  inside.
+* A `Prop`-valued `IsFusionCategory` cannot *carry* `MonoidalCategory` /
+  `RigidCategory` (data-carrying classes); they are instance arguments.
+* The unit is `sim 0`, **not** the empty direct sum; the trap is recorded.
+
+**Landed (the canonical scaffold, m3's block-carrying model — the mid-round
+ruling, recorded in the design note):**
+
+* `Recon.lean` — `FusionMat` (`m`, abstract block types `blk` with
+  `card_blk`, `ofM` embedding the literal model), `Category` / `Preadditive` /
+  `Linear k`, and the `blockDiag` calculus (`blockDiag_mul_apply`,
+  `mul_blockDiag_apply`, `blockDiag_mul_blockDiag`) — the engine that makes
+  every entrywise argument a label-level computation.
+* `ReconTensor.lean` + `ReconTensorApply.lean` — the tensor bifunctor, proved
+  (`tensorHom_id`, `tensorHom_comp`, whiskers, `kroneckerMap_mul` — absent
+  from this Mathlib), with the entrywise apply lemmas; `sim` and
+  `tensorObj_sim_m` (the reconstruction reproduces the fusion rules).
+* `ReconUnit.lean` — the unit object and the object-level unit laws.
+* `ReconAssoc.lean` + `ReconAssocStatements.lean` — the associator and its
+  inverse as **matrices between two different index types** (no cardinality
+  transport in any definition — the model's decisive design win), with the
+  three coherence statements **frozen but not proved**:
+  `AssociatorIso`, `AssociatorNatural`, `ObjectAssociativity`.
+* `Statements2.lean` (m1) — the WP2 freeze: `IsFusionCategory k C` (the four
+  property fields over seven Mathlib classes), `ReconFusion` / `ReconIsFusion`,
+  the trace's definition site (`trDual` — the classical trace into the double
+  dual, no pivotal structure needed; **no `F`-entry enters the trace of a
+  simple's endomorphism** — a real simplification of Task 2.2), the three trace
+  statements parameterized in `trSimple` (the B4 device), and `derivedJ`'s
+  interface with the `settledJ` bridge and gauge covariance.  Note:
+  `WP2.FusionMat` inside it is the literal model (=`ofM`); the canonical
+  scaffold is `FusionCategory.FusionMat`.  Round 2 connects them.
+* `NoteFormula.lean` — the design-note refutation, landed as the regression
+  record.
+
+**Not landed this round — the other members' green content, recorded in
+`.ultramath/smw10qjp3/` and porting to the canonical model in Round 2:**
+m2's `Simple`/Schur/biproduct/decomposition layer (127 audited declarations;
+`simple_iff_exists_sim` — the simples are exactly the `sim i` — and the
+mono-based `Simple` proof are the highlights); m5's pentagon (the left side
+proved entrywise, `pentagon_of_rhs_entry_all` reducing the whole pentagon to
+the frozen right-side entry statement; numerically verified on `Vec_{Z/2}`
+with both cocycles); m6's rigidity data (`dual`, `ev`/`coev` green, `homFun`
+the round's cleanest formulation of index-diagonality, and the phantom-`k`
+hazard finding); m4's lemma library (`reindex_*`, `kron_mul` — on the literal
+model).  The **residual map** for Round 2: the associator's three Props (the
+elaboration blocker is the nested-`Sigma` composite — `blockDiag2` or
+`Matrix.reindex_mul`), the pentagon's right-side entry collapse (the *same*
+blocker), the unitors and triangle, the two snakes (the surviving scalar is
+exactly `S.snake_left` / `S.snake_right`), the trace correspondence, and
+`derivedJ` itself (m8's partial files included).
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could
