@@ -1,12 +1,14 @@
 # FusionCategory — Plan for ENO Proposition 8.23
 
-**Goal:** `pseudo-unitary → spherical` with `dim = FPdim`, unconditional in Lean 4.33.1.
+**Goal:** `pseudo-unitary → spherical` with `dim = FPdim`, in Lean 4.33.1 —
+conditional on the quadruple-dual input `g` being supplied or discharged
+(proposal S3), never silently assumed.
 This is the lemma that makes every recent classification/certification paper work,
 and the only tractable piece of ENO Conjecture 2.8. Full `Id ≅ **` for arbitrary
 fusion categories requires weak Hopf `S⁴` and is not attempted.
 
 **Source theorem:** Etingof–Nikshych–Ostrik, *On fusion categories*, Annals 162 (2005),
-§2.2, §3, §8.4, Prop. 8.23–8.26. Secondary: EGNO *Tensor Categories* Thm 9.6.10–9.6.12,
+§2.2, §3, §8.4, Prop. 8.23–8.26.  Secondary: EGNO *Tensor Categories* Prop 9.5.1,
 Bartlett 2009 PhD Prop 5.7 Lemma 6.2, Shimizu *Frobenius–Schur*.
 
 **Source of truth (set by the second review).**  `docs/research-proposal.tex`
@@ -18,8 +20,9 @@ reproduce the clean build, implement the enforcing axiom audit, repair the
 cocycle census, and settle the corrected signature and theorem statement —
 and **no dependent theorem work starts until that batch has passed review**.
 The contradictory instructions named by the review are corrected in this
-revision (see "Still owed" below for the withdrawn label-permutation request);
-the original step list (§0–7 below) is retained under a superseded banner.
+revision (see the paragraph after "Still owed" below for the withdrawn
+label-permutation request); the original step list (§0–7 below) is retained
+under a superseded banner that enumerates its retired instructions.
 
 ## Status after the Step-2 rewrite
 
@@ -63,8 +66,9 @@ again here; see the next section.  `snake_consistency` now records what the two
 snakes actually force: the `(0,0)` entry of `F^{i i* i}_i` equals the `(0,0)`
 entry of the inverse block `(F^{i* i i*}_{i*})⁻¹`.
 
-`J` is **derived** from the duality data in the strict self-dual normalisation
-(`DoubleDual.lean`).  The definition that file originally carried,
+`J` is **derived** from the duality data only in the strict self-dual
+normalisation of `DoubleDual.lean` (and that file's original formula is
+retracted — see below); in `FusionSystem` at large `J` is carried data.  The definition that file originally carried,
 `J a b c = ev a * ev b / ev c`, is the ψ-scalar and *not* `J`; that was retracted
 in `a168b32`, together with the coboundary gauge law.  The correct statement is
 the ratio formula recorded under "The derived twist: result" below.  What is
@@ -219,9 +223,12 @@ which agrees with `κ_aκ_b/κ_c` on all 16 channels of `(Z/2)²`
 (`docs/honest_twist_check.py`).  So what is refuted is the *trivial-twist*
 reading: `J ≡ 1` fails (K) on `(Z/2)²`, and `J ≡ 1` holds iff `κ` is a
 character.  `m1`'s scalar `ψ` formula returns `1` on the same channels and is
-wrong.  The `J ≡ 1` census below is still evidence of nothing: `δ(κ) = 1` on
-every cyclic group in the standard gauge, and Fibonacci and Ising have
-`κ = FPdim`, so none of its samples distinguishes `J ≡ 1` from `δ(κ)`.
+wrong.  The `J ≡ 1` census below is still evidence of nothing on its pointed samples:
+`δ(κ) = 1` on every cyclic group in the standard gauge (κ is a character
+there).  Fibonacci and Ising are the *distinguishing* cases: there `κ = FPdim`
+makes the right side of (K) equal to `1`, so the honest twist is `J ≡ 1`, while
+`δ(κ) ≠ 1` (`φ²`, `2`) and is not even a legal twist there (it violates
+`J_dual`).
 
 `M_b` is the block `F^{a* a b}_b` **restricted to its support** — rows `E`
 channels of `a*⊗a` with `b ∈ E⊗b`, columns `c'` channels of `a⊗b` with
@@ -245,11 +252,13 @@ What is established, in order of strength:
   `p ≡ 1` is pivotal with `dim = κ`.  This is *checked*, not proved: nobody
   produced an independent evaluation of the `J`-diagram from raw category data,
   so the formula is a reconstruction whose consequences are verified, not a
-  derivation from first principles.  **The census cannot distinguish `J ≡ 1`
-  from `J = δ(κ)`**: every pointed sample is cyclic (where `κ` is a character,
-  so the two agree) and for Fibonacci and Ising `κ = FPdim`, which likewise
-  makes the two right sides agree.  `(Z/2)²` separates them; see the correction
-  under "Three further results" below.
+  derivation from first principles.  **The pointed half of the census cannot distinguish `J ≡ 1`
+  from `J = δ(κ)`**: every pointed sample is cyclic, where `κ` is a character
+  and `δ(κ) = 1`.  Fibonacci and Ising *do* distinguish: there `κ = FPdim`,
+  the right side of (K) is `1` and the honest twist is `J ≡ 1`, while `δ(κ) ≠ 1`
+  (`φ²`, `2` — not even a legal twist, since it violates `J_dual`).  `(Z/2)²`
+  separates the pointed readings; see the correction under "Three further
+  results" below.
 * the gauge law `J ↦ J·(λ_a λ_b λ_{c*})/(λ_c λ_{a*} λ_{b*})`.  The invariant is
   `ν_i = κ_{i*}/κ_i`, not `κ` itself: under the vertex gauge
   `κ_i ↦ κ_i·v^{i i*}_0 v^{i* i}_0`, and `ν` is unchanged.  A channel gauge
@@ -267,8 +276,12 @@ carries the associator on both sides,
     J a b e · J e c d · F^{abc}_d(e,f) = J b c f · J a f d · F^{a**b**c**}_{d**}(e**,f**),
 
 and the F-free form `J a b e · J e c d = J b c f · J a f d` — which is
-`FusionSystem.J_coherent` — is that equation only when `(−)**` is the identity
-on labels.  The rest of `FusionSystem` fixes exactly that case: `J` has type
+`FusionSystem.J_coherent` — follows from that equation only when `(−)**` is
+the identity on labels **and** the common entry `F^{abc}_d(e,f)` is nonzero
+(`h_F`); where the entry vanishes the displayed equation is vacuous (`0 = 0`)
+and licenses nothing.  As it stands `J_coherent` is therefore *stronger* than
+the monoidal-functor pentagon on channels with `F = 0`; WP1 Task 1.3 of the
+proposal restates it in the qualified or retained-factor form.  The rest of `FusionSystem` fixes exactly that case: `J` has type
 `Fin n → Fin n → Fin n → k` with no slot for a label transport, and `p_mon`
 reads `p c = J a b c · p a · p b` with `c` the channel of `a ⊗ b`.  Every model
 used has `a** = a`, so nothing is lost for the examples, but the general
@@ -296,8 +309,9 @@ Three further results from the same swarm, worth keeping:
   `δ(κ) = 1` iff `κ` is a character.  That holds for every cyclic group in the
   standard gauge — `Z/2,3,4,5,6` — which is why the census below saw `J ≡ 1`
   everywhere; the whole tested set was cyclic or built from Fibonacci and
-  Ising, whose `κ = FPdim` makes `δ(κ) = FPdim_c κ_aκ_b/(κ_c FPdim_a FPdim_b)`
-  the right side of (K) with `J = 1`.  It fails on `(Z/2)²`: with
+  Ising, whose `κ = FPdim` makes the right side of (K) equal to `1`, so the
+  honest twist there is `J ≡ 1` — and `δ(κ) ≠ 1` on those data (`φ²`, `2`),
+  `δ(κ)` not even being a legal twist there (it violates `J_dual`).  It fails on `(Z/2)²`: with
   `ω = (-1)^{a₁b₂c₁}` one has `κ = (1,1,1,-1)`, not a character, `δ(κ) ≠ 1`,
   and the per-channel form of (K) is false for `J ≡ 1` while the sum form (M)
   survives.  Earlier versions of this plan asserted the per-channel identity
@@ -324,6 +338,10 @@ Three further results from the same swarm, worth keeping:
   entries are `1` — but a signature that claims to be a skeletal monoidal
   category should carry it, and it is the one axiom of Mac Lane's list that is
   missing.
+  [Superseded by the proposal, WP1 Task 1.2: the entry is *derivable* — the
+  pentagon at `(a,1,1,c)` gives `t = t²`, and the block is `1 × 1` (the unit
+  laws force `e = a`, `f = c`) so `Finv_comp` gives `t ≠ 0` — so it is proved
+  as a lemma, not added as an axiom.]
 
 One claim from the swarm to *not* adopt: that `X** ≅ X` in any rigid monoidal
 category, so a skeleton can always be chosen with `(−)** = id` on labels and
@@ -331,8 +349,10 @@ the F-free pentagon is therefore general.  The proof offered was "`X*` is both
 a left and a right dual of `X`", which is precisely what a rigid category does
 not give — identifying the left and right duals of an object is the content of
 a pivotal structure, and `id ≅ (−)**` is exactly what need not exist.  So the
-caveat above stands: the F-free form is the right statement for a skeleton in
-which `i** = i`, which is the case for every model used here.
+caveat above stands: the F-free form is available to a skeleton in
+which `i** = i` (the case for every model used here) **only on channels where
+the cancelled `F`-entry is nonzero** (`h_F`); the retained-factor form is the
+unconditional one.
 
 **Not derived:** the independent diagram evaluation of `J` itself (above); and the
 analytic input for `ENO823`.  (The case `(−)** ≠ id` on labels is not a case at
@@ -375,9 +395,11 @@ The duality normalisation is a second, independent defect. ENO's
 every datum in `Examples/` but not in general. `FusionSystem.kappaD` is the
 right normalisation and `SqrtData.d_eq_kappa` records the agreement.
 
-What is left is unchanged in kind and smaller in extent: the pseudo-unitarity
-input (positivity, hence `d = FPdim` by `PFUnique`) is invisible in a
-multiplicity-free skeleton, and `J` is still data rather than derived — but the
+What is left is unchanged in kind and smaller in extent: the *positivity half*
+of the pseudo-unitarity input (positivity, hence `d = FPdim` by `PFUnique`) is
+invisible in a multiplicity-free skeleton — the hypothesis itself,
+`IsPseudoUnitary`, is the visible scalar equation — and `J` is still data
+rather than derived — but the
 condition it has to satisfy is now (M) itself, a statement about `(N, J, κ')`
 that `mult_iff_twist`, `twist_sum_of_perChannel` and `SqrtData.trace_iff`
 already surround. Checked on six data sets: (M) holds for Fibonacci, Ising,
@@ -449,10 +471,11 @@ with no `J` in it.  So (K) ⟹ (C) is a two-line theorem, and (C) is exactly the
 statement that `p = FPdim/κ` is *spherical* (`isSpherical_iff`).  The converse,
 (C) ⟹ (K), is ENO 8.23.  In other words, in this formalism
 
-    (K) ⟺ ENO 8.23 ⟺ pseudo-unitarity of the datum,
+    (K) ⟺ ENO 8.23,   and   (K) ⟹ pseudo-unitarity of the datum,
 
 and the residual mathematical content is `pseudo-unitarity ⟹ (C)` — a statement
-about `κ` and `FPdim` only, *not* about `J`.  This retires the "derive the
+about `κ` and `FPdim` only, *not* about `J`.  (The converse,
+pseudo-unitarity ⟹ (K), *is* ENO 8.23; the chain above must not assume it.)  This retires the "derive the
 `J`-diagram" programme as the route to ENO 8.23 (it stays necessary to make the
 signature honest, since `p_mon` mentions `J`).
 
@@ -481,8 +504,9 @@ is left; `eno823_of_exact` recovers the bare `ENO823`.
 
 What is *not* formalised is ENO's proof: Proposition 8.21 (`|V|² ≤ FPdim(V)²`,
 via domination of the `T`-matrix by the fusion matrix) turns the sum equality
-into a termwise one, and then twisting by the tensor automorphisms `σ = d²/|d|²`
-and `τ = d/|d|` produces the pivotal structure with positive dimensions.  That is
+into a termwise one, and then the twisting argument --- by the *tensor*
+automorphism `σ = d²/|d|²` and then the *natural, non-monoidal* automorphism
+`τ = d/|d|` --- produces the pivotal structure with positive dimensions.  That is
 the analytic heart and the next target.
 
 **Step 1, done: Proposition 8.21's spectral bound.**  `Prop821.lean`:
@@ -551,9 +575,11 @@ comparison, and then prove (M) for it.  What is known:
 * pointed data: `J = δ(κ) = κ_aκ_b/κ_{a+b}`, proved (swarm `smvzybdp8`, m3) and
   verified independently — this is the one class where the settlement is done;
 * every non-pointed example in the repo (Fibonacci, Ising, the Tambara-Yamagami
-  family) has `κ = FPdim`, so `δ(κ) = 1` and `J ≡ 1`: they cannot distinguish
-  the honest twist from the coboundary, and the direct `φ`-evaluation of
-  `docs/honest_twist_check.py` confirms `J = δ(κ)` there too;
+  family) has `κ = FPdim`, so the right side of (K) is `1` and the honest twist
+  is `J ≡ 1`.  **`δ(κ) ≠ 1` there** (`φ²` on Fibonacci's `(τ,τ;1)` channel, `2`
+  on Ising's), and `δ(κ)` is not even a legal twist on those data (it violates
+  `J_dual`) — `J = δ(κ)` is a pointed-only statement, and the pointed
+  `φ`-evaluation script does not touch these examples;
 * general multiplicity-free data: the closed form of `ψ` is open.  The reason it
   is hard, stated precisely: through a channel the comparison `ψ` involves the
   associator at the *non-simple* object `a⊗b`, so evaluating it needs the
@@ -639,12 +665,17 @@ only — matching `haagerup-odd/`. No `sorry`.
 
 > **Superseded (read the record above and the proposal first).**  The step
 > list below (§0–7) is this project's original scaffold.  It predates the
-> Step-2 rewrite, the results recorded above, and the proposal, and several of
-> its instructions are retired: step 2's `skeletalEquivCategory` bridge was to
-> be stated as an `axiom` with `sorry` (forbidden by the axiom budget and the
-> audit), step 5's `pseudoUnitary_spherical` and its corollaries are retired
-> (see "Status after the Step-2 rewrite"), and the work-package structure,
-> gates and theorem contracts now live in `docs/research-proposal.tex`.
+> Step-2 rewrite, the results recorded above, and the proposal, and these
+> instructions of it are retired: step 2's `skeletalEquivCategory` bridge was
+> to be stated as an `axiom` with `sorry` (forbidden by the axiom budget and
+> the audit); step 2's pivotal axiom `p k • F = F • (p i * p j)` is the
+> retracted `p_fusion` (no twist factor — defect D3 of the proposal); step 3's
+> square-root criterion `pivotal_iff_square` and its no-2-torsion corollary
+> are withdrawn (proposal WP5 Task 5.3); step 5's `pseudoUnitary_spherical`
+> and its corollaries are retired (see "Status after the Step-2 rewrite"),
+> including the Hermitian-hypothesis corollary (no Hermitian structure enters
+> the hypothesis or the proof).  The work-package structure, gates and theorem
+> contracts now live in `docs/research-proposal.tex`.
 > Retained for the record; where it conflicts with the sections above or with
 > the proposal, those govern.
 
@@ -720,6 +751,9 @@ only — matching `haagerup-odd/`. No `sorry`.
 * `structure PivotalStructure (S : FusionSystem R k)` with
   `p : Fin n → kˣ`, `p (dual i) = p i⁻¹`, monoidality:
   `p k • F = F • (p i * p j)` on each multiplicity factor.
+  **[Superseded: this is the retracted `p_fusion` (no twist factor); the
+  current axiom is `p_mon` with the `J` factor — see "Status after the
+  Step-2 rewrite".]**
   Show this is equivalent to `p : 𝟙 ≅ ** ` monoidal in skeletal model.
 * Define `dim_p i := p i * ...` (trace) and `dim_p i = p_i * dim0`
   where `dim0` is formal dimension; prove `dim (dual i) = (p_i)⁻¹ ...`,
@@ -807,8 +841,10 @@ Proof plan (formalize exactly as ENO):
 
 All polynomial identities are `ring`/`norm_num` after PF eigenvector.
 
-**Corollary:** every unitary fusion category (assumed `dim>0` Hermitian)
-is spherical — state as `instance` if desired, but keep hypothesis explicit.
+**Corollary:** every unitary fusion category is spherical — state as
+`instance` if desired, but keep the hypothesis explicit.  **[Superseded: the
+Hermitian parenthetical is removed — no Hermitian structure enters the
+hypothesis or the proof; see the proposal's WP4.]**
 
 ## 6. Step 6 — Concrete certificates (makes the library testable)
 
@@ -859,10 +895,12 @@ These files are the CI smoke test; they should build in <30s.
 From repo root `fusion-category-lean/`:
 
 ```sh
-cd FusionCategory && lake exe cache get   # first time
-cd FusionCategory && lake build            # or per-file:
-python ../haagerup-odd/safe_lean.py --build FusionCategory/PFDim.lean  # pattern
+(cd FusionCategory && lake exe cache get)  # first time
+(cd FusionCategory && lake build)         # whole package
 sh FusionCategory/tools/audit-gate.sh      # Gate 4: enforcing axiom audit
+# per-file elaboration, once the oleans exist (no lake needed):
+#   LEAN_PATH="FusionCategory/.lake/build/lib/lean:$LEAN_PATH" \
+#     lean FusionCategory/FusionCategory/PFDim.lean
 ```
 
 All files must pass `lake build` with linter warnings only, same as
@@ -872,11 +910,12 @@ All files must pass `lake build` with linter warnings only, same as
 The axiom audit is a **gate, not a report** (proposal Gate 4): running
 `lake env lean AxiomAudit.lean` and reading — or `grep`-ing — its output
 cannot fail on a Lean error or on an out-of-budget dependency, and a
-`grep -v` exit status says nothing usable.  `tools/audit-gate.sh` (specified
-in the proposal, to be landed by batch item B2) exits non-zero on Lean errors,
-on any dependency outside `[propext, Classical.choice, Quot.sound]`, and on
-unrecognised output, and it must be self-tested against a deliberate
-`sorry`/`axiom` before it is trusted.
+`grep -v` exit status says nothing usable.  `FusionCategory/tools/audit-gate.sh`
+(now landed, with its self-test fixtures under `FusionCategory/tools/selftest/`)
+exits non-zero on Lean errors, on any dependency outside
+`[propext, Classical.choice, Quot.sound]`, on unrecognised output, on an empty
+audit, and on any mismatch against the checked-in manifest of audited names;
+batch item B2 wires it into CI and generates the audit list mechanically.
 
 ## References to keep open
 

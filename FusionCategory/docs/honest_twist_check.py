@@ -47,8 +47,14 @@ evaluates to +1 on that datum, so its transcription is defective, while the
 construction implemented with the full associator bookkeeping reproduces
 delta(kappa) (swarm smvzybdp8, m6, three independent assemblies); and m1's
 scalar psi formula also returns +1 there and is wrong.  Since delta(kappa) = 1
-on every cyclic group in the standard gauge, and Fibonacci and Ising have
-kappa = FPdim, a census of those examples cannot see the difference.
+on every cyclic group in the standard gauge (kappa is a character there), and
+Fibonacci and Ising have kappa = FPdim -- where delta(kappa) is NOT 1 (phi^2
+and 2 respectively; it is not even a legal twist there, since it violates
+J_dual) and the honest twist is J = 1, the (K) right-hand side being 1 -- a
+census of those examples cannot distinguish the honest twist from the
+coboundary reading.  [corrected in the post-audit pass: an earlier version of
+this note inferred delta(kappa) = 1 for Fibonacci and Ising from
+kappa = FPdim; that inference is false.]
 
 Run:  python3 FusionCategory/docs/honest_twist_check.py
 """

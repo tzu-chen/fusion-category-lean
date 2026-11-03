@@ -195,9 +195,12 @@ solving for `J`,
 That identity is the whole remaining content of ENO 8.23 in this signature, and
 it is *not* a consequence of the axioms of `FusionSystem`: `J` is data there,
 constrained only by the unit, dual and coherence laws, so a system may carry a
-coherent `J` for which no pivotal structure exists.  Pseudo-unitarity — a
-condition on Hom spaces and Hermitian forms, which the multiplicity-free
-skeleton does not see — is what has to produce it.
+coherent `J` for which no pivotal structure exists.  Pseudo-unitarity — the
+scalar equation `Σ_i κ_i κ_{i*} = Σ_i FPdim_i²`, which the multiplicity-free
+skeleton *does* see (`IsPseudoUnitary`) — is what has to produce it; what the
+skeleton cannot see is the *positivity of the produced dimension function*,
+which is ENO's σ/τ argument, not a hypothesis.  No Hermitian structure enters
+the hypothesis or the proof.
 -/
 
 section TwistNorm

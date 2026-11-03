@@ -1,0 +1,2 @@
+'FusionCategory.Bad.WrappedSorry' depends on axioms: [propext,
+ sorryAx]

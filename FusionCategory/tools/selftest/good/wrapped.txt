@@ -1,0 +1,4 @@
+'FusionCategory.Examples.AVeryLongModuleNameThatWrapsPastOneHundredAndTwentyColumns' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'FusionCategory.Example.short' depends on axioms: [propext]

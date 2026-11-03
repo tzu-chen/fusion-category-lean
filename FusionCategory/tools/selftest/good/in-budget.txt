@@ -1,0 +1,5 @@
+'FusionCategory.Example.a' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FusionCategory.Example.b' depends on axioms: [propext, Quot.sound]
+'FusionCategory.Example.c' does not depend on any axioms
+
+warning: declaration uses 'sorry'

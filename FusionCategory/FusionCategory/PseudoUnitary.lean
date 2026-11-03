@@ -191,7 +191,8 @@ section PseudoUnitary
 ## Categorical dimensions vs FP-dimensions
 
 For Step 5 we distinguish the *categorical* dimension
-`dim : Fin n → k` (a priori complex, satisfies the same fusion
+`dim : Fin n → k` (a priori `k`-valued, with no reality or positivity
+assumed, satisfies the same fusion
 eigenvector equations as `FPdim` but not assumed positive) from the
 *Frobenius–Perron* dimension `FPdim : Fin n → ℝ_{>0}`.
 Both satisfy `N_i · v = λ_i v` with `λ_i = v i` (ENO §2.5).
@@ -199,10 +200,10 @@ Both satisfy `N_i · v = λ_i v` with `λ_i = v i` (ENO §2.5).
 
 /-- Skeletal categorical dimension data.
 
-`dim i` is the (complex) categorical dimension of simple `X_i`
+`dim i` is the `k`-valued categorical dimension of simple `X_i`
 for a chosen pivotal structure or for the (non-pivotal) category
 itself via the cover.  It satisfies the same fusion rules as
-`FPdim`, but may be signed/complex.
+`FPdim`, but may be signed, and non-real when `k = ℂ`.
 -/
 structure CategoricalDimData {n : ℕ} {k : Type u} [Field k]
     (S : FusionSystem n k) where
@@ -227,7 +228,7 @@ def IsPseudoUnitaryCategoricalDim [Algebra ℝ k] (d : CategoricalDimData (S := 
     (h : S.ring.FPData) : Prop :=
   globalCategoricalDim d = algebraMap ℝ k h.globalDim
 
-/-- **ENO 8.23 / EGNO Thm 9.6.10**, as an open target: a pseudo-unitary fusion
+/-- **ENO 8.23 / EGNO Prop 9.5.1**, as an open target: a pseudo-unitary fusion
 system admits a spherical pivotal structure whose dimensions are the
 FP-dimensions.
 
@@ -402,7 +403,8 @@ a single equation on `κ` and `FPdim`, with no `P` in it — exactly the source'
 the remark ENO make.  What is *not* formalised is their proof: Proposition 8.21
 (`|V|² ≤ FPdim(V)²` for every simple, via domination of the `T`-matrix by the
 fusion matrix) turns the sum equality into a termwise one, and then the twisting
-argument by the tensor automorphisms `σ = d²/|d|²` and `τ = d/|d|` produces the
+argument --- by the *tensor* automorphism `σ = d²/|d|²` and then the *natural,
+non-monoidal* automorphism `τ = d/|d|` --- produces the
 pivotal structure with positive dimensions.  That is the remaining gap, and it
 is the analytic heart of the proposition.
 -/

@@ -68,7 +68,7 @@
 \title{\vspace{-1.2cm}\textbf{Machine-Checked Dimension Theory\\ for Fusion Categories}\\[0.35cm]
 \large A research proposal: pivotal and spherical structures, the double-dual twist,\\ and a verified proof of Etingof--Nikshych--Ostrik Proposition~8.23}
 \author{Tzu-Chen Huang}
-\date{November 2026 \quad\textbar\quad proposal v1.2 (second revision) \quad\textbar\quad repository state \texttt{d3d320e}}
+\date{November 2026 \quad\textbar\quad proposal v1.2.1 (second revision, audited) \quad\textbar\quad library state \texttt{d3d320e} (last green build)}
 
 \begin{document}
 
@@ -133,7 +133,7 @@ $\Z[\sqrt d]$; kernel-checked counterexamples; axiom audit; bridge to Mathlib's 
 \textbf{Still open} & A corrected signature and an exact target; the twist derivation (the
 $\Omega$ formula in \texttt{PLAN.md} is retracted); the $\Cx$ scalar contract; the reconstruction and
 trace correspondence; ENO's $\sigma/\tau$ normalisation; the quadruple-dual theorem.\\
-\textbf{Horizon} & 24 months, 7 work packages, 12 numbered deliverables; a first delegation
+\textbf{Horizon} & 24 months, 8 work packages (WP0--WP7), 12 numbered deliverables; a first delegation
 batch (B1--B4, \S\ref{sec:batch}) gates all dependent theorem work.\\
 \end{tabularx}
 \vspace{0.15cm}
@@ -252,7 +252,7 @@ ENO's trace identity \emph{is} the multiplicativity identity that the twist redu
 The library builds (3{,}032 jobs, warnings only), contains no \texttt{sorry}, and its axiom
 audit over 73 declarations reports \texttt{[propext, Classical.choice, Quot.sound]} throughout.
 
-\subsection{What is not yet established}
+\subsection{What is not yet established}\label{sec:whatnot}
 
 The gap is now sharp, and it is not the algebra. It is ENO's analytic argument: the passage from
 the pseudo-unitarity equation (one scalar identity, Definition~\ref{def:pseudo}) to a dimension
@@ -296,11 +296,12 @@ systematic, and can they be detected mechanically rather than by luck?
 
 \S\ref{sec:background} fixes notation and states the target precisely. \S\ref{sec:prior}
 surveys prior work, mathematical and formal. \S\ref{sec:prelim} reports the preliminary
-results in enough detail to be checked. \S\ref{sec:programme} sets out the seven work packages
+results in enough detail to be checked. \S\ref{sec:programme} sets out the eight work packages
 and their milestones. \S\ref{sec:techniques} describes the techniques, including the ones that
 failed. \S\ref{sec:risk}--\S\ref{sec:deliverables} give risks, timeline and deliverables.
-\S\ref{sec:significance} argues for significance. Three appendices record the module
-inventory, the audit protocol, and the Lean statements of the main targets.
+\S\ref{sec:significance} argues for significance. The appendices record the module
+inventory, the audit protocol, the Lean statements of the main targets, and the changes made
+in each revision.
 
 \section{Background}\label{sec:background}
 
@@ -443,6 +444,10 @@ $\gamma$ is spherical; $\dim_\gamma(X) > 0$ for every $X \neq 0$; $\dim_\gamma(X
 \FPdim(X_i)$ for every simple $X_i$; and $\gamma$ is the unique such structure.
 \end{theorem}
 
+In this proposal the theorem is read over $\Cx$: ``$\dim_\gamma(X) > 0$'' through the
+positivity predicate of S2, the FP dimensions embedded from $\R$; the $\R$ form is the
+$k = \R$ specialisation, toward which the library currently works.
+
 The two supporting results that ENO use are:
 
 \begin{theorem}[ENO Proposition~8.21]\label{thm:eno821}
@@ -499,10 +504,11 @@ consequence of the multiplicity-free theorem.
 infrastructure --- fusion rings, systems, pivotal structures, the twist reduction, the census ---
 is developed over a field $\field$ of characteristic zero, where every statement is polynomial.
 The \emph{analytic} theorem is stated over $\Cx$ and only over $\Cx$: a field of characteristic
-zero supplies no absolute value, no square root, and no order, so the eigenvector bound of
-Proposition~8.21, the $\sigma/\tau$ normalisation, and \code{ENO823Exact} are meaningless over a
-general $\field$. In the $\Cx$ statement the Frobenius--Perron dimensions are a real
-\code{FPData} ($f : \mathrm{Fin}\,n \to \R_{>0}$) embedded by the structural inclusion
+zero supplies no absolute value, no square root, and no order \emph{as part of its structure}, so the eigenvector bound of
+Proposition~8.21, the $\sigma/\tau$ normalisation, and \code{ENO823Exact} have no meaning over a
+general $\field$. In the $\Cx$ statement the Frobenius--Perron dimensions are a
+\code{FPData} on the ring ($\code{fpdim} : \mathrm{Fin}\,n \to \R$ with
+$\code{pos} : \forall i,\ 0 < \code{fpdim}\, i$), read in $\Cx$ through the structural inclusion
 $\R \to \Cx$, the absolute values are complex moduli, and positivity of a scalar $z \in \Cx$ is
 \emph{defined, once}, as ``$z$ is real and $z > 0$'' (equivalently $\exists\, r \in \R_{>0}$,
 $z = r$). The instances stay over $\R$/$\Q$ where they are and are joined by $\Cx$-valued ones
@@ -686,7 +692,7 @@ claim with its epistemic status:
 \midrule
 kernel & proved in Lean 4; in \code{AxiomAudit.lean}; axioms within budget \\
 kernel (witness) & a structure is exhibited and its fields are proved in Lean \\
-script & verified by exhaustive computation in Python (\code{docs/*.py}), not formalised \\
+script & verified by exhaustive computation in Python (\code{FusionCategory/docs/*.py}), not formalised \\
 conjecture & stated in \texttt{PLAN.md}, no proof \\
 \bottomrule
 \end{tabular}
@@ -905,7 +911,7 @@ positive dimensions.
 For $\Vect^{\omega}_{(\Z/2)^2}$ with $\omega = (-1)^{a_1 b_2 c_1}$ one has
 $\kappa = (1,1,1,-1)$, which is not a character of $(\Z/2)^2$. With $J \equiv 1$, (M) fails;
 with $J = \delta(\kappa) = \kappa_a\kappa_b/\kappa_c$ it holds. This computation is in
-\code{docs/pointed_twist_check.py} and is \emph{not} yet kernel-checked. It is the reason the
+\code{FusionCategory/docs/pointed_twist_check.py} and is \emph{not} yet kernel-checked. It is the reason the
 signature must not add $J^{2} = 1$ as an axiom: for $\Vect^{\omega}_{(\Z/3)^2}$ with
 $\omega = \zeta^{a_1 b_2 c_1}$ the honest twist squares to a primitive cube root of unity, and
 that category is unitary, so such an axiom would exclude a category to which the theorem
@@ -1046,7 +1052,7 @@ the derivation of $J$, not from the axioms.
 \item \textbf{The analytic step is absent, and its statement needs care.} Positivity is not
 formalised, and neither is ENO's two-stage normalisation: a \emph{tensor} automorphism
 $\sigma = d^{2}/|d|^{2}$ of the identity, followed by a \emph{natural} automorphism
-$\tau = d/|d|$ which is not monoidal. Neither is sign-valued a priori (WP3).
+$\tau = d/|d|$ which is not monoidal. Neither is sign-valued a priori (WP4).
 \item \textbf{The signature is narrower than the mathematics.} Real rather than complex scalars;
 multiplicity-freeness assumed; the triangle axiom not stated (it is derivable, WP1);
 $\mathrm{ev}_{i^*} = \mathrm{ev}_i$ not assumed, so (K) is gauge-fragile. The label question is
@@ -1071,8 +1077,9 @@ The programme has three aims, corresponding to Q1--Q3, and one exploratory stran
 is deliberately kept off the critical path.
 
 \begin{description}[leftmargin=2.2em,style=nextline]
-\item[A1 (Signature and scope).] A corrected signature and an \emph{exact} target: complex
-scalars, the triangle law derived rather than assumed, the coherence law with the nonzero-entry
+\item[A1 (Signature and scope).] A corrected signature and an \emph{exact} target: the $\Cx$
+scalar contract for the analytic statements (S2), the
+triangle law derived rather than assumed, the coherence law with the nonzero-entry
 qualification, a gauge-invariant duality normalisation, and a statement of ENO~8.23 whose
 hypotheses and conclusion match the source line by line. A1 also includes the reconstruction:
 the skeletal datum must be shown to \emph{be} a fusion category before any categorical word in
@@ -1143,16 +1150,21 @@ and nothing that depends on it starts until the batch has passed review. The bat
 override --- the ``green build'' of \S\ref{sec:prior} becomes a reproducible one, or the
 reproducibility debt is diagnosed while it is still cheap.
 \item \textbf{Implement the enforcing axiom audit} (WP0 Task~0.2, Gate~4 of
-Appendix~\ref{app:audit}): a checked-in script that fails on Lean errors and on any dependency
-outside \texttt{[propext, Classical.choice, Quot.sound]}, with a negative self-test. The
+Appendix~\ref{app:audit}): wire the checked-in gate (\code{FusionCategory/tools/audit-gate.sh},
+landed with its manifest and twelve-fixture self-test) into CI, and generate the audit list
+mechanically, so that coverage is not maintained by hand --- the gate checks the manifest, and
+mechanical generation is the remaining work. The
 \code{\#print axioms}-plus-\code{grep} report is withdrawn.
 \item \textbf{Repair the cocycle census} (WP3 Task~3.4, pulled forward): genuine cocycles in
 place of the identically-trivial carry cocycle, and the two script-level witnesses
 kernel-checked.
-\item \textbf{Settle the corrected signature and the theorem statement} (WP1 Tasks~1.1--1.5):
-the scalar contract, the qualified coherence, the carried-versus-derived distinction for $J$
-(\code{derivedJ} and the \code{J_match} hypothesis of Task~2.3), and the exact target together
-with its equivalence with the bare form.
+\item \textbf{Settle the corrected signature and the theorem statement} (the \emph{statements}
+of WP1 Tasks~1.1--1.5): record the choices --- the scalar contract, which coherence form the
+signature restates, the gauge normalisation, and the exact target with its two qualifications
+from Task~1.5 (the conditional equivalence with the bare form, and the
+\code{J_match}/derived-twist form of the antecedent; the \code{derivedJ} \emph{definitions}
+remain WP2 Task~2.3, held by the rule below). Proofs and the six instance re-verifications
+stay in WP1/M2.
 \end{enumerate}
 
 \paragraph{Source of truth.} This document, at this revision, is the source of truth for the
@@ -1161,7 +1173,7 @@ programme: work packages, theorem contracts, gates, and scope. The implementatio
 among them the request for a nontrivial double-dual label permutation (withdrawn: ENO
 Proposition~2.1 fixes isomorphism classes, Remark~\ref{rem:trap}) and the description of
 positivity as coming from a Hermitian structure (removed: positivity is part of what ENO's
-$\sigma/\tau$ argument produces, \S\ref{sec:whatdone}). Where the two documents conflict, this
+$\sigma/\tau$ argument produces, \S\ref{sec:whatnot}). Where the two documents conflict, this
 proposal governs; \texttt{PLAN.md} is brought into conformance in the same revision, its
 corrections are visible in the commit history, and its original step list is retained under a
 superseded banner rather than rewritten. Agents delegated work on this programme are given this
@@ -1190,10 +1202,11 @@ make the build reproducible from a clean checkout.
 root of the fusion matrix; prove Theorem~\ref{thm:pf} and delete \code{FPData} where it is not
 needed. Where uniqueness is genuinely required, keep the weaker \code{PFUnique} already in
 \code{PFDim.lean}; otherwise \code{FPData} stays an explicit hypothesis with a per-example
-certificate, and the scope statement (S\ref{sec:scope}) says so.
+certificate, as the FP-dimension subsection of \S\ref{sec:background} records.
 \item Clean-tree CI: fresh clone, \code{lake exe cache get}, \code{lake build}, and the
 \emph{enforcing} audit gate of Gate~4 (Appendix~\ref{app:audit}) --- the checked-in script
-\code{tools/audit-gate.sh} with its negative self-test, not the \code{\#print axioms} report
+\code{FusionCategory/tools/audit-gate.sh} with its manifest and self-test, not the
+\code{\#print axioms} report
 --- as separate gates, each of which fails the build. A from-clean build of the committed
 tree has never been verified --- earlier builds used a path override --- and that is a
 reproducibility debt no deliverable should inherit. This is also what turns the ``green build''
@@ -1216,19 +1229,34 @@ formal statement of the theorem say exactly what ENO and EGNO say.
 \begin{enumerate}[label=1.\arabic*]
 \item \textbf{The scalar contract.} Keep the algebraic layer --- \code{FusionSystem},
 \code{PivotalStructure}, the twist reduction, the census --- over a field $\field$ of
-characteristic zero, where every obligation is polynomial. State the \emph{analytic} target over
-$\Cx$ and only over $\Cx$: \code{ENO823Exact} is a statement about a \code{FusionSystem} over
-$\Cx$ whose \code{FPData} is real ($f : \mathrm{Fin}\,n \to \R_{>0}$) embedded by
-$\R \to \Cx$, whose absolute values are complex moduli, and whose positivity conjunct uses the
-predicate defined in S2 --- over a general $\field$ none of these so much as typechecks, and an
-earlier draft of this task asked for the target ``over a field of characteristic zero'', which
-is not a meaningful contract for an analytic statement. The instances are not migrated: the
-$\R$/$\Q$ ones stay, and $\Cx$-valued instances are added where the source demands them
-(\S\ref{sec:scope}, S2; R5).
+characteristic zero, where every obligation is polynomial. State the \emph{analytic} target
+over $\Cx$ and only over $\Cx$. Concretely: define, once, the positivity predicate
+\code{Pos} on $\Cx$ --- $\code{Pos}\, z := \exists\, r : \R,\ 0 < r \wedge z = r$, marked
+\code{noncomputable} --- and state the $\Cx$ target as \emph{new} declarations alongside the
+retained $\R$ originals: \code{IsPseudoUnitaryC} and \code{ENO823ExactC} (the rendering of
+Appendix~\ref{app:statements} with \code{Pos (dim P i)} in place of \code{0 < dim P i}), and
+the $\Cx$ forms of \code{pivotal_ext}, \code{IsPseudoUnitaryPivotal} and
+\code{eno823_of_pseudoUnitary} (their proofs are field-generic, but the $\R$ statements
+cannot simply be generalised: the order, the modulus and the positivity conjunct fail). The
+bare \code{ENO823} is already $k$-polymorphic with \code{[Algebra R k]} and elaborates at
+$\Cx$; the $\R$ originals are \emph{retained} --- the six instances and the Yang--Lee witness
+instantiate them, and transporting that witness to $\Cx$ is part of this task. The port of
+the analytic chain is an explicit work item: the 8.21 bound and its equality case
+(\code{abs_le_fpdim_of_eigenvector}, \code{eq_abs_of_sum_sq}, at present $\R$-valued)
+restated with the complex modulus, and the \code{PFUnique} step applied once
+\code{Pos (dim P i)} is turned into a real positive witness. The instances are not migrated:
+the $\R$/$\Q$ ones stay, and $\Cx$-valued instances are added where the source demands them
+(\S\ref{sec:scope}, S2; R5). (Two earlier drafts of this task were wrong about the tree:
+\code{ENO823Exact} is at present $\R$-only --- not ``a statement about a \code{FusionSystem}
+over $\Cx$'' --- and the bare form does typecheck over a general field.)
 \item \textbf{The triangle law, derived.} The middle-unit entry
 $t = F^{a\,1\,c}_{d}(a,c)$ is \emph{not} independent of the present axioms: the pentagon at
-$(a,1,1,c)$ gives $t = t^{2}$, and invertibility of the associator gives $t = 1$. Prove it as a
-lemma. The earlier plan to add it as a new axiom was wrong about its independence.
+$(a,1,1,c)$ gives $t = t^{2}$; the block $F^{a\,1\,c}_{d}$ is $1 \times 1$ (the unit laws
+force the channels $e = a$ and $f = c$), so the inverse law \code{Finv_comp} gives
+$\code{Finv} \cdot t = 1$ and hence $t \ne 0$; therefore $t = 1$. Prove it as a lemma. (An
+earlier draft said ``invertibility of the associator gives $t = 1$''; an invertible matrix
+may have vanishing entries, and the nonvanishing here is the $1 \times 1$ block plus the
+inverse law. The earlier plan to add the axiom was wrong about its independence.)
 \item \textbf{Coherence with the nonzero-entry qualification.} The scalar coherence law may only
 cancel an associator entry that is nonzero; Bartlett's Corollary~3.26 states the pivotal-symbol
 coherence exactly that way. Neither support axiom supplies the qualification, and an earlier
@@ -1242,7 +1270,13 @@ follows on that channel; or (ii) the law with the $F$-factors retained,
 J^{e}_{ab}\, J^{d}_{ec}\, F^{abc}_{d}(e,f) \;=\; J^{f}_{bc}\, J^{d}_{af}\,
 F^{abc}_{d}(e,f),
 \]
-from which nothing is cancelled and the F-free law is a corollary under $h_F$. The choice is
+from which nothing is cancelled and the F-free law is a corollary under $h_F$. The restatement
+is a \emph{weakening of the field} --- \code{J_coherent} as it stands is replaced, not kept
+alongside --- and it is conservative: no theorem in the library consumes the field, and the
+five instances close either form by \code{simp}. The citation is for the \emph{shape} of the
+law: Bartlett's Corollary~3.26 is stated for pivotal symbols (his $T$-symbols, with
+$T^{2} = \mathrm{id}$), not for the unnormalised $J$, which must \emph{not} satisfy
+$J^{2} = 1$; transferring the law to $J$ is WP3's work. The choice of form is
 recorded in the blueprint, and WP3 proves whichever form is chosen for the derived twist. No
 proof in the programme cancels an $F$-entry without an explicit nonzero hypothesis, and no
 proof derives nonvanishing from \code{F_support} or \code{J_ne_zero}.
@@ -1251,7 +1285,7 @@ proof derives nonvanishing from \code{F_support} or \code{J_ne_zero}.
 do. The first makes (K) gauge-invariant; the second matches the source but changes every instance
 proof. The proposal is to do the first and prove the two normalisations agree in the self-dual
 case.
-\item \textbf{The exact target, and which forms are equivalent.} The library's
+\item \textbf{The exact target: its hypothesis, and which forms are equivalent.} The library's
 \code{ENO823Exact} is
 \[
 \code{IsPseudoUnitary}\ S \to \exists!\, P,\
@@ -1261,23 +1295,42 @@ which does carry existence. Every statement \emph{about} it must reproduce the e
 conjunction verbatim; the earlier rendering of the target in this proposal split it into a
 spherical-structure field plus separate positivity and uniqueness fields --- asserted only
 conditionally --- which is strictly weaker; it is withdrawn and is \emph{not} a proof target
-(Appendix~\ref{app:statements}). What is to be proved is the equivalence of the exact form and
-the \emph{bare} form \code{ENO823} ($\exists P$, spherical, $\dim_P = f$): the bare form is an
-immediate consequence of the exact one, and the exact form follows from the bare one given
-\code{pivotal_ext} (a pivotal structure is determined by its dimension function) and the
-positivity of the FP dimensions ($\dim_P i = f_i > 0$ supplies the positivity conjunct). State
-the conditional form \code{eno823_of_pseudoUnitary} separately; it assumes a pivotal structure
-rather than producing one and is strictly weaker than both.
+(Appendix~\ref{app:statements}). Two qualifications on the statement itself, both fixed in this
+revision:
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{The equivalence with the bare form is conditional.} The bare form \code{ENO823}
+($\exists P$, spherical, $\dim_P = f$) has no pseudo-unitarity antecedent, so
+\code{ENO823Exact} does \emph{not} imply it unconditionally: on Yang--Lee the exact form holds
+vacuously (its antecedent is refuted by \code{YangLee.not_pseudoUnitary}) while the bare form
+is false (\code{YangLee.not_eno823}). What is to be proved is the equivalence \emph{under} the
+hypothesis: given \code{IsPseudoUnitary}, exact $\Rightarrow$ bare is \code{eno823_of_exact},
+and bare $\Rightarrow$ exact is unconditional, by \code{pivotal_ext} (a pivotal structure is
+determined by its dimension function) together with the positivity of the FP dimensions
+($\dim_P i = f_i > 0$ supplies the positivity conjunct). State the conditional form
+\code{eno823_of_pseudoUnitary} separately; it assumes a pivotal structure rather than
+producing one and is strictly weaker than both.
+\item \textbf{The target is stated for the derived twist.} As displayed, the statement
+quantifies over the \emph{carried} $J$, and as such it is \emph{false}: the pointed
+$\Vect^{\omega}_{(\Z/2)^{2}}$ datum with $J \equiv 1$ is pseudo-unitary
+($\sum_i \kappa_i\kappa_{i^*} = \sum_i f_i^{2} = 4$) and admits no pivotal structure with
+$\dim = \FPdim$ --- with $J \equiv 1$, \code{p_mon} forces $p$ to be a character, and
+$1/\kappa$ is not one. The exact target is therefore stated either in the corrected signature,
+the carried $J$ field replaced by \code{derivedJ} (Task~2.3), or with the compatibility
+hypothesis \code{J_match} in the antecedent, on the model of (a). Every statement of the
+target in this proposal (Task~4.6, D6, M6, Appendix~\ref{app:statements}) carries this
+qualification.
+\end{enumerate}
 \item \textbf{The label question, recorded as closed.} Double duality fixes isomorphism classes
 (ENO Proposition~2.1), so there is no label permutation to add. The plan to add one was based on
 the error corrected in Remark~\ref{rem:trap}; the blueprint records the retraction and no work
 item remains.
 \end{enumerate}
 \paragraph{Deliverables.} D3. \quad \textbf{Success criterion.} All six existing instances
-re-verified under the corrected signature, with the same axiom budget; the triangle law and the
-qualified coherence proved as lemmas, not assumed; a target statement that matches
-Theorem~\ref{thm:eno823} field by field, stated over $\Cx$ under the scalar contract of
-Task~1.1.
+re-verified under the corrected signature, with the same axiom budget; the triangle law and
+the F-free coherence law under $h_F$ proved as lemmas, the coherence axiom itself recorded in
+the form chosen in the blueprint and supplied by the instances; a target statement that
+matches Theorem~\ref{thm:eno823} field by field, stated over $\Cx$ under the scalar contract
+of Task~1.1 and with the derived twist (or \code{J_match}) in its antecedent (Task~1.5).
 
 \subsubsection*{WP2 --- Reconstruction and the trace correspondence (months 3--10)}
 
@@ -1290,7 +1343,9 @@ theorem is a statement about a formal system.
 \item \textbf{A small reconstruction.} For multiplicity-free data, define the $\field$-linear
 category whose objects are formal finite direct sums of simples and whose morphisms are matrices
 indexed by channels; prove it is monoidal, rigid, semisimple, and that $\mathrm{End}(\one) =
-\field$. The associativity and unit constraints are the $F$-data and the unit laws; the snakes
+\field$ --- and package the four properties as a named predicate (\code{IsFusionCategory}; no
+such predicate exists in the library today, so WP2's success criterion and D4 have nothing to
+check until it is named). The associativity and unit constraints are the $F$-data and the unit laws; the snakes
 are the snake axioms. This is the piece of the programme that converts a formal calculation into
 a theorem about fusion categories, and it is scheduled before the twist because the twist is a
 morphism of the reconstructed category.
@@ -1300,10 +1355,11 @@ is ENO's $d_i$, and that $\kappa_i \kappa_{i^*} = |X_i|^{2}$ in the sense of
 Definition~\ref{def:pseudo}. This is small, checkable, and closes the gap between the library's
 scalars and the source's dimensions.
 \item \textbf{The twist as a morphism: derived $J$, and its relation to the carried field.}
-From the reconstructed category, \emph{define} \code{derivedJ} as the scalar of the
-monoidal structure of $(-)^{**}$ on the channel $(i,j;k)$ --- i.e.\ a specific morphism
-$X_i^{**} \otimes X_j^{**} \to (X_i \otimes X_j)^{**}$ --- so that WP3 derives a morphism and
-not a table. Do \emph{not} identify \code{derivedJ} with the datum's carried field $S.J$: that
+From the reconstructed category, \emph{define} \code{derivedJ} as the $(k,k)$-entry, in the
+channel basis, of the monoidal structure of $(-)^{**}$ --- a specific morphism
+$X_i^{**} \otimes X_j^{**} \to (X_i \otimes X_j)^{**}$, a matrix indexed by channels (the
+diagonal reading is forced once a pivotal structure exists, but \code{derivedJ} is defined
+before any is known) --- so that WP3 derives a morphism and not a table. Do \emph{not} identify \code{derivedJ} with the datum's carried field $S.J$: that
 field is free data constrained only by the four twist laws, and the pointed false-$J$ datum
 ($\Vect^{\omega}_{(\Z/2)^{2}}$ with $J \equiv 1$, \S\ref{sec:refute}) satisfies every law the
 signature imposes while its honest tensorator is $\delta(\kappa)$. The relation between the
@@ -1333,7 +1389,7 @@ displayed formula
 is \emph{defective as written}: read literally it returns $+1$ on $(\Z/2)^2$ with
 $\omega = (-1)^{a_1b_2c_1}$, where the honest twist is $\delta(\kappa)$, i.e.\ $-1$ on six
 channels. The construction of the comparison is right and the transcription is not.
-\code{docs/honest\_twist\_check.py} evaluates the twist from its defining property and never
+\code{FusionCategory/docs/honest\_twist\_check.py} evaluates the twist from its defining property and never
 evaluates the displayed $\Omega$. No milestone below depends on the displayed formula.
 
 \paragraph{Tasks.}
@@ -1346,7 +1402,11 @@ J^{c}_{ab} \;=\; \frac{\psi_{a,b}|_{c}}{\psi_{b^*,a^*}|_{c^*}},
 \]
 and \emph{then} derive a closed form in terms of $F$; if the closed form differs from the
 retracted $\Omega$, the retraction is the correct record and the new formula replaces it in
-\texttt{PLAN.md} and the blueprint.
+\texttt{PLAN.md} and the blueprint. Here \code{derivedJ} is the tensorator composite of
+Task~2.3 (its $(k,k)$-entry in the channel basis), so the ratio is a \emph{theorem}, and its
+statement includes the nonvanishing of both components on every supported channel ---
+available because $\psi$ is an isomorphism and the channels are one-dimensional under
+\code{mult_free}, not by cancellation.
 \item \textbf{The four laws and the qualified coherence} of WP1 Task~1.3, proved for the
 derived twist \code{derivedJ} of WP2 Task~2.3. This is the step that
 turns ``$J$ is data'' into ``$J$ is computed'', and it is independent of pseudo-unitarity. For
@@ -1366,9 +1426,10 @@ the check.
 dimension of a pivotal category is multiplicative. A failure of (M) after the derivation means
 the derivation is wrong; it is not evidence that (M) is an extra hypothesis.
 \end{enumerate}
-\paragraph{Deliverables.} D5. \quad \textbf{Success criterion.} The library contains no
-hypothesis on $J$ beyond the four laws; they are theorems about the derived object; the census
-contains at least four genuinely non-trivial cocycles and is kernel-checked. \textbf{Explicit
+\paragraph{Deliverables.} D5. \quad \textbf{Success criterion.} No hypothesis on
+\code{derivedJ} beyond the four laws --- they are theorems about the derived object; a
+carried $J$, where one remains, is linked to it by \code{J_match} proved per instance; the
+census contains at least four genuinely non-trivial cocycles and is kernel-checked. \textbf{Explicit
 non-goal:} WP3 does not prove (K). The target is the strictly stronger per-channel identity,
 which fails for Yang--Lee and is WP4's content.
 
@@ -1391,30 +1452,44 @@ is budgeted as such; if it slips, the theorem is stated conditionally.
 $T^{ij}_c = N^{ij}_c b^{ij}_c$ and $|b| = 1$, derive $|d_i| \le f_i$ by ENO's weighted norm. The
 library has the weighted-norm argument (\code{abs_le_fpdim_of_eigenvector}); what is missing is
 the passage from the $T$-matrix to the $N$-matrix, i.e.\ the triangle inequality
-$|\sum_j T^{ik}_j d_j| \le \sum_j N^{ik}_j |d_j|$.
+$|\sum_j T^{ik}_j d_j| \le \sum_j N^{ik}_j |d_j|$. (Both 8.21 statements are $\R$-valued in
+the library at present; their $\Cx$ restatements with the complex modulus are part of
+Task~1.1's port.)
 \item \textbf{The sum identity.} Prove $\sum_i |d_i|^{2} = \dim \C$ for $d_i = a_i \kappa'_i$,
 which under pseudo-unitarity gives $\sum_i |d_i|^{2} = \sum_i f_i^{2}$; the equality case of
 Theorem~\ref{thm:821} then yields $|d_i| = f_i$.
 \item \textbf{The two normalisations, correctly typed.} This is the step the earlier draft of this
 proposal misstated, and it is worth stating exactly.
   \begin{enumerate}[label=(\alph*)]
-  \item The chain $f_i f_j = |d_i d_j| \le \sum_c N^{c}_{ij} f_c = f_i f_j$ is an equality; hence
-  $T^{c}_{ij} = \pm N^{c}_{ij}$ and $d_i d_j/d_c$ is real whenever $N^{c}_{ij} > 0$. Consequently
-  $\sigma_i = d_i^{2}/|d_i|^{2}$ defines a \emph{tensor automorphism of the identity functor}.
-  It is not sign-valued a priori --- it is a phase --- and its monoidality is exactly a
-  statement about \emph{squares}: on every channel,
+  \item The chain $f_i f_j = |d_i d_j| \le \sum_c N^{c}_{ij} f_c = f_i f_j$ is an equality.
+  Equality in the triangle bound gives $b^{c}_{ij} d_c = \varphi_i\varphi_j f_c$ on every
+  channel (with $\varphi_i = d_i/f_i$, $|\varphi_i| = 1$); since moreover
+  $(b^{c}_{ij})^{2} = 1$ (Task~4.1, \code{b_sq}: it follows from $a^{2} = g$ monoidal, not
+  from the chain), $T^{c}_{ij} = b^{c}_{ij} N^{c}_{ij} = \pm N^{c}_{ij}$ and $d_i d_j/d_c$ is
+  real whenever $N^{c}_{ij} > 0$. Consequently $\sigma_i = d_i^{2}/|d_i|^{2}$ defines a
+  \emph{tensor automorphism of the identity functor}. It is not sign-valued a priori --- it
+  is a phase --- and its monoidality is \emph{equivalent} to a statement about \emph{squares}:
+  on every channel,
   \[
   (d_i d_j/d_c)^{2} \;=\; (f_i f_j / f_c)^{2} \;>\; 0 ,
   \]
-  so only the squares of the ratios are pinned down and positive at this stage; the ratios
-  themselves are real of fixed modulus and undetermined sign, and fixing the signs is precisely
-  the work of the $\tau$-step below. (An earlier draft of this task said the ratios themselves
-  were positive here; that presupposes the $\tau$-step and is corrected.)
-  \item Twisting $g$ by $\sigma$ makes the new dimensions real. After this, $\tau_i = d_i/|d_i|$
-  is $\pm 1$; it is a \emph{natural} automorphism, not a monoidal one, and it is applied to $a$,
-  not to $g$.
-  \item After the $\tau$-twist, $T = N$ and $b = 1$, so $a$ is a pivotal structure with
-  $\dim = f > 0$.
+  since $\sigma_i\sigma_j/\sigma_c = (b^{c}_{ij})^{2} = 1$; so only the squares of the ratios
+  are pinned down and positive at this stage, the ratios themselves being real of fixed
+  modulus and undetermined sign. (Two earlier drafts mis-stated this step: one said the
+  ratios themselves were positive --- which presupposes the sign-fixing --- and one derived
+  $T^{c}_{ij} = \pm N^{c}_{ij}$ from the chain alone, which needs \code{b_sq}.)
+  \item \textbf{The normalisation, as one rescaling.} Rescale
+  $a_i \mapsto a'_i = a_i\, f_i/d_i$ (the character $\chi_i = f_i/d_i = \overline{\varphi_i}$;
+  note $\chi^{2} = \sigma^{-1}$, so this is ENO's ``twist by $\sigma$'' up to the inverse
+  convention, ENO's $\tau_i = d_i/|d_i|$ naming the residual sign freedom in the choice of
+  $\chi$). Then, directly: $d'_i = a'_i\kappa'_i = f_i > 0$; the defect becomes
+  $b'^{c}_{ij} = b^{c}_{ij}\,\chi_i\chi_j/\chi_c =
+  (\varphi_i\varphi_j/\varphi_c)\cdot\varphi_c/(\varphi_i\varphi_j) = 1$ on every channel;
+  and $a'_0 = 1$ (\code{a_unit}, \code{kappa_unit}, $f_0 = 1$), so \code{toPivotal} applies:
+  $a'$ is a pivotal structure with $\dim = f > 0$, spherical because $f_{i^*} = f_i$
+  (\code{FPData.dual_eq}). ENO's two-step $\sigma$-then-$\tau$ description is this single
+  rescaling compressed; an earlier draft of this task reproduced it with ``twist $g$ by
+  $\sigma$'' left undefined --- not executable --- and it is replaced here by the rescaling.
   \end{enumerate}
   The point to keep: multiplying $a$ by a monoidal character leaves the defect
   $b^{ij}_{c} = J^{ij}_{c} a_i a_j/a_c$ \emph{unchanged}, so the $\sigma$-step cannot remove a
@@ -1423,8 +1498,10 @@ proposal misstated, and it is worth stating exactly.
   both counts. (For a concrete illustration: in $\Vect_{\Z/3}$ the tuple $a = (1,-1,1)$ satisfies
   $a^{2} = 1 = g$ but is not a character, so rescaling a square root by arbitrary scalars changes
   the defect.)
-\item \textbf{Assembly and uniqueness.} \code{eno823\_exact}: existence, positivity, equality with
-$\FPdim$, uniqueness via \code{pivotal\_ext} and \code{PFUnique}.
+\item \textbf{Assembly and uniqueness.} \code{eno823_exact}: existence, positivity, equality
+with $\FPdim$, uniqueness via \code{pivotal_ext} and \code{PFUnique} --- stated as the exact
+target of Task~1.5: over $\Cx$ under the scalar contract, with the derived twist (or
+\code{J_match}) in the antecedent.
 \end{enumerate}
 \paragraph{Deliverables.} D6. \quad \textbf{Success criterion.} \code{ENO823Exact} proved for
 multiplicity-free data over $\Cx$ under the scalar contract of WP1 Task~1.1, with the
@@ -1517,13 +1594,13 @@ them script-only, at least four with genuinely non-trivial cocycles, and the cen
 \toprule
 \textbf{Milestone} & \textbf{Month} & \textbf{Content} & \textbf{Deliverable} \\
 \midrule
-M0 & 2 & First delegation batch passed review: reproduced clean build; enforcing audit gate green with its self-test; census repaired; signature and exact target settled & D2 (part) \\
+M0 & 2 & First delegation batch passed review: reproduced clean build; enforcing audit gate green with its self-test; census repaired; signature and exact target settled (statements and choices recorded; proofs and re-verification due at M2/D3) & D2 (part) \\
 M1 & 4 & \code{FPData} proved or labelled; clean-tree CI with the enforcing audit gate; blueprint with the statement-to-source table & D1, D2 \\
 M2 & 8 & Signature v2 (the $\Cx$ scalar contract, triangle derived, qualified coherence, gauge fix); \emph{exact} target; six instances re-verified & D3 \\
-M3 & 10 & Reconstruction and trace correspondence; $J$ identified as a morphism & D4 \\
-M4 & 14 & $J$ derived; four laws and qualified coherence proved; census repaired and kernel-checked & D5 \\
-M5 & 18 & $a$ constructed; $T$-matrix domination; bound $|d_i| \le f_i$; sum identity and equality case & D6 (part) \\
-M6 & 20 & $\sigma$ (tensor) and $\tau$ (natural) normalisations; \code{ENO823Exact} proved & D6 \\
+M3 & 10 & Reconstruction and trace correspondence; \code{derivedJ} defined as the tensorator morphism & D4 \\
+M4 & 14 & $J$ derived; four laws and qualified coherence proved; census repaired and kernel-checked & D5, D11 \\
+M5 & 18 & $a$ constructed; $T$-matrix domination; bound $|d_i| \le f_i$; sum identity and equality case & D6 (part), D9 \\
+M6 & 20 & $\sigma$ (tensor) and $\tau$ (natural) normalisations; \code{ENO823Exact} proved (over $\Cx$, derived twist / \code{J_match} in the antecedent) & D6 \\
 M7 & 22 & Cover as equivariantization; torsor for differences; withdrawn criterion recorded & D7 \\
 M8 & 24 & Bridge to \code{PivotalCategory}; placeholders deleted; release v1.0; papers submitted & D8, D10--D12 \\
 \bottomrule
@@ -1582,7 +1659,7 @@ statement on the counterexample candidate before attempting the theorem.
 
 This order is not a heuristic. Two of the project's four defects were found this way, and a
 third --- the `$J \equiv 1$` claim for pointed categories --- was refuted by an exhaustive
-computation in \code{docs/pointed_twist_check.py} after it had been stated in the plan. The
+computation in \code{FusionCategory/docs/pointed_twist_check.py} after it had been stated in the plan. The
 Python step matters because matrix composition over channel bases is where index conventions
 break, and because a script that recomputes every scalar from the snake axioms is an independent
 implementation, not a restatement.
@@ -1623,7 +1700,7 @@ different routes:
 \item the $\Omega$-coefficient form of WP2 Task 2.2;
 \item the direct $\varphi$-evaluation from its defining property
 $\mathrm{ev} \circ (\varphi \otimes \mathrm{id}) = \mathrm{ev}$, with full associator
-bookkeeping (\code{docs/honest_twist_check.py}).
+bookkeeping (\code{FusionCategory/docs/honest_twist_check.py}).
 \end{itemize}
 Agreement of four independent assemblies on sixteen data sets is the current standard of evidence
 for a formula, and it is what caught the defective transcription of $\Omega$ recorded in the
@@ -1759,7 +1836,7 @@ R8 & Elaboration cost: \code{decide} over $3^{n}$ label tuples grows fast; examp
 cost 100\,s. & Exact arithmetic in $\Z[\sqrt d]$; per-file builds; abstraction barriers so the
 core does not import the examples; \texttt{native\_decide} forbidden. & low \\
 R9 & \textbf{Scope.} A single investigator over 24 months, on a theorem whose unconditional form
-exceeds the plan. & The scope statement (S\ref{sec:scope}) is part of every deliverable; D1--D6
+exceeds the plan. & The scope statement of \S\ref{sec:scope} is part of every deliverable; D1--D6
 are the core and D7--D12 are additive; WP5 is off the critical path. & med \\
 \end{longtable}
 }
@@ -1788,14 +1865,14 @@ most in need of justification.
 \midrule
 WP0 Foundations & $\blacksquare$ & $\blacksquare$ & & & & & & \\
 WP1 Signature \& exact target & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & & \\
-WP2 Reconstruction \& trace & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & \\
+WP2 Reconstruction \& trace & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & \\
 WP3 Derived twist & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & \\
 WP4 ENO normalisation \& theorem & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & \\
 WP5 Cover \& grading & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
 WP6 Bridge \& upstream & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
 WP7 Instances \& tests & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
 \midrule
-\emph{Milestones} & M0 & M1 & M2 & M3 & M4 & M5 & M6, M7, M8 \\
+\emph{Milestones} & M0 & M1 & M2 & M3 & M4 & M5 & M6 & M7, M8 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1833,16 +1910,19 @@ matching ENO 8.23 / EGNO 9.5.1 field by field. & All six existing instances re-v
 lemmas proved, not assumed; the target's existential conjunction reproduced verbatim, stated
 over $\Cx$ with FP dimensions embedded from $\R$. & 8 \\
 D4 & \textbf{Reconstruction and trace correspondence}: the multiplicity-free datum is a fusion
-category; every scalar in the target is the corresponding categorical trace; $J$ identified as a
-morphism. & The reconstructed category satisfies the library's own \code{FusionCategory}
-predicate, and the trace identities are theorems. & 10 \\
+category; every scalar in the target is the corresponding categorical trace; \code{derivedJ}
+defined as the tensorator morphism, independently of the carried field. & The reconstructed
+category satisfies the \code{IsFusionCategory} predicate of Task~2.1; the trace identities
+are theorems; the carried-versus-derived relation is \code{J_match} or a field replacement. & 10 \\
 D5 & \textbf{Derived twist}: the comparison $\psi$, the ratio formula, the four laws, the
 qualified coherence, a repaired census with genuine cocycles, and the Bartlett comparison. & No
-hypothesis on $J$ remains; at least four genuinely non-trivial cocycles, kernel-checked; the
-retracted $\Omega$ either corrected or replaced in \texttt{PLAN.md}. & 14 \\
+hypothesis on \code{derivedJ} beyond the four laws --- a carried $J$, where one remains, linked
+by \code{J_match} proved per instance; at least four genuinely non-trivial cocycles,
+kernel-checked; the retracted $\Omega$ either corrected or replaced in \texttt{PLAN.md}. & 14 \\
 D6 & \textbf{ENO 8.23}: $a$ constructed, $T$-matrix domination, the bound $|d_i| \le f_i$, the
 sum identity, the $\sigma/\tau$ normalisation, uniqueness. & \code{ENO823Exact} proved for
-multiplicity-free data over $\Cx$ under the scalar contract of WP1 Task~1.1; the hypothesis on
+multiplicity-free data over $\Cx$ under the scalar contract of WP1 Task~1.1, with the derived
+twist (or \code{J_match}) in the antecedent per Task~1.5; the hypothesis on
 $g$ either discharged
 (Bartlett) or explicitly labelled. & 20 \\
 D7 & \textbf{Cover and torsor}: the cover as an equivariantization, with doubled dimension; the
@@ -2056,7 +2136,8 @@ global dimension. Complete; \code{FPData} is a hypothesis. \\
 \code{System} & 451 & 19 & \code{FusionSystem}: $F$, \code{Finv}, snakes, $J$; $\Vect_{\Z/2}$
 inhabitant with the 512-tuple pentagon. Complete. \\
 \code{Pivotal} & 191 & 21 & \code{PivotalStructure}, \code{dim}, \code{IsSpherical},
-\code{isSpherical_iff}, \code{pVal_dual}. Complete. \\
+\code{isSpherical_iff}, \code{pVal_dual}. Complete; the nontrivial-$J$ witness is owed
+(batch item B3, Gate~1). \\
 \code{PFDim} & 49 & 5 & \code{PFUnique}, $\varphi$ and its uniqueness. Complete (conditional on
 \code{FPData}). \\
 \code{Cover} & 128 & 8 & \code{S4Data}, \code{CoverObj}, forgetful functor,
@@ -2065,12 +2146,12 @@ inhabitant with the 512-tuple pentagon. Complete. \\
 open targets. Formerly three axioms; now axiom-free. \\
 \code{DoubleDual} & 155 & 9 & the older derived twist in the strict self-dual normalisation.
 Lags the $\psi$-derivation; to be rewritten against \code{Finv}. \\
-\code{Coboundary} & 331 & 15 & \code{twistNorm}, \code{dim_eq_twistNorm},
+\code{Coboundary} & 334 & 15 & \code{twistNorm}, \code{dim_eq_twistNorm},
 \code{eno823_of_twistNorm} and its converse; the pointed \code{KappaMultiplicative} layer
 retained for reference. Complete. \\
 \code{Prop821} & 474 & 21 & cyclic symmetry, \code{fpdim_char}, the weighted-norm bound, the
 equality case, \code{tMatrix}, \code{mult_iff_twist}. Complete modulo \code{DimEigen}. \\
-\code{PseudoUnitary} & 452 & 37 & \code{ENO823}, \code{ENO823Exact}, \code{IsPseudoUnitary},
+\code{PseudoUnitary} & 459 & 37 & \code{ENO823}, \code{ENO823Exact}, \code{IsPseudoUnitary},
 \code{IsPseudoUnitaryPivotal}, \code{eno823_of_pseudoUnitary}, \code{pivotal_ext}. Complete as
 a conditional reduction. \\
 \code{ENOSqrt} & 232 & 13 & \code{SqrtData}, $b$, \code{Tmat}, $d$, \code{b_sq},
@@ -2082,10 +2163,10 @@ spherical, $\dim = \FPdim$. Complete; $\sim$100\,s. \\
 \code{Examples/YangLee} & 419 & 39 & the refutation of the un-hypothesised target. Complete. \\
 \code{Examples/VecZ2Twisted} & 86 & 11 & two pivotal structures, $\dim g = \pm 1$. Complete. \\
 \code{Examples/Ostrik} & 154 & 21 & the rank-three ring $K(1,0,1)$ and its \code{FPData}. Complete. \\
-\code{Examples/}$\cdots$ & 638 & 38 & Fibonacci, Ising, pseudo-unitary instances, $Z/3$ note. \\
+\code{Examples/}$\cdots$ & 438 & 38 & Fibonacci, Ising, pseudo-unitary instances, $Z/3$ note. \\
 \code{MathlibPatches} & 55 & 0 & stubs for \#42150 and the PF chain. Stub: WP0/WP5. \\
 \midrule
-\textbf{Total} & \textbf{5{,}231} & \textbf{414} & 23 files; build 3{,}032 jobs; audit 73 declarations. \\
+\textbf{Total} & \textbf{5{,}241} & \textbf{414} & 23 files; build 3{,}032 jobs; audit 73 declarations. \\
 \end{longtable}
 }
 
@@ -2102,11 +2183,14 @@ degenerate one. For \code{FusionSystem} the witness is $\Vect_{\Z/2}$; for
 Ising, $\Vect_{\Z/2}$) and a \emph{nonconstant} $p$ on a datum with nontrivial $J$: the pointed
 $\Vect^{\omega}_{(\Z/2)^{2}}$ datum with the honest twist $J = \delta(\kappa)$ and
 $p_i = 1/\kappa_i$, spherical with $\dim \equiv 1 = \FPdim$. A constant $p$ cannot witness a
-nontrivial-$J$ datum --- through \code{p_mon}, $p \equiv 1$ forces $J = 1$ on every active
-channel, so the pairing an earlier draft of this gate requested is contradictory --- and until
+datum whose $J$ is nontrivial \emph{on an active channel} --- through \code{p_mon},
+$p \equiv 1$ forces $J = 1$ on every channel with $N_{ij}^{k} > 0$, while off the active
+channels $J$ is unconstrained by every axiom, so a constant $p$ can accompany an
+off-channel-perturbed $J$ and the witness must be non-degenerate --- so the pairing an
+earlier draft of this gate requested is contradictory on the active channels. Until
 the $(\Z/2)^{2}$ witness is kernel-checked (WP3 Task~3.4) the nontrivial-$J$ slot of this gate
-is unfilled and the pivotal layer counts as unwitnessed. A structure with no witness is not
-merged.
+is unfilled: the pivotal layer is merged with a debt, its nontrivial-$J$ witness being due at
+B3/M0. A structure with no witness is not merged.
 
 \paragraph{Gate 2 --- Sharpness.} Every hypothesis is either used essentially or is recorded as
 unused. A hypothesis $H$ is \emph{used essentially} if dropping it makes the statement false on a
@@ -2121,43 +2205,37 @@ the carrier, (iv) any hypothesis of the source that is absent and why. The ENO n
 cannot automate, and the only one that catches drift.
 
 \paragraph{Gate 4 --- Axiom audit, enforcing.} \code{AxiomAudit.lean} prints the axioms of
-every exported theorem, but printing is a \emph{report}, not a gate: the earlier instruction
---- run the print and \code{grep} its output --- cannot fail on a Lean error or on an
-out-of-budget dependency that prints after one, and a non-zero exit from \code{grep -v} usually
-meant \emph{success}. The gate is a checked-in script, \code{tools/audit-gate.sh}, whose
-contract is: exit non-zero if (i) \code{lake env lean AxiomAudit.lean} exits non-zero or its
-output contains an error (a \texttt{\#print axioms} applied to an \code{axiom} declaration
-itself errors, and a name whose module is not imported returns \texttt{Unknown constant}; both
-have been mistaken for real findings in this project); (ii) any audited declaration depends on
-an axiom outside \texttt{[propext, Classical.choice, Quot.sound]} (strict subsets are within
-budget); or (iii) any output line is not a recognised audit line. The script:
-\begin{verbatim}
-#!/bin/sh
-# tools/audit-gate.sh -- Gate 4: enforcing axiom audit.
-# Lives at FusionCategory/tools/audit-gate.sh; runnable from anywhere.
-set -e
-cd "$(dirname "$0")/.."
-lake build
-out=$(mktemp); trap 'rm -f "$out"' EXIT
-lake env lean AxiomAudit.lean > "$out" 2>&1 || { cat "$out"; exit 1; }
-grep -q "error" "$out" && { cat "$out"; exit 1; } || true
-awk '
-  /^$/ { next }
-  /does not depend on any axioms/ { next }
-  /depends on axioms: \[/ {
-    s = $0; sub(/.*depends on axioms: \[/, "", s); sub(/\].*/, "", s)
-    n = split(s, a, ", ")
-    for (i = 1; i <= n; i++)
-      if (a[i] != "propext" && a[i] != "Classical.choice" &&
-          a[i] != "Quot.sound") { print "GATE 4: out of budget: " $0; exit 1 }
-    next }
-  { print "GATE 4: unrecognised audit line: " $0; exit 1 }
-' "$out"
-echo "gate 4: all audited declarations within budget"
-\end{verbatim}
-Before the gate is trusted it is \emph{self-tested}: on a scratch branch it is run against an
-audit file containing one \code{sorry}-proved theorem and one deliberate \code{axiom}, and it
-must fail on both. A gate that has never been observed to fail is a report.
+the declarations it lists, but printing is a \emph{report}, not a gate: the earlier instruction
+--- run the print and \code{grep} its output --- could not fail on a Lean error or on an
+out-of-budget dependency, and a non-zero exit from \code{grep -v} usually meant \emph{success}.
+The gate is the checked-in script \code{FusionCategory/tools/audit-gate.sh}, with the
+checked-in manifest of audited names \code{tools/audit-manifest.txt} and a self-test under
+\code{tools/selftest/}. Its contract: exit non-zero if (i) \code{lake env lean
+AxiomAudit.lean} exits non-zero, or its output contains a Lean error marker
+(\code{error:} / \code{error(}; a declaration \emph{name} containing ``error'' does not match
+the marker); (ii) any audited declaration depends on an axiom outside
+\texttt{[propext, Classical.choice, Quot.sound]} --- strict subsets are within budget; a
+\code{sorry} appears as \code{sorryAx}, and an \code{axiom} declaration by listing its own
+name, which this branch rejects (\texttt{\#print axioms} applied to an \code{axiom} does
+\emph{not} error on the pinned toolchain, it prints the axiom's own name; a name whose module
+is not imported produces an \code{Unknown constant} error line, caught by (i); both were
+mistaken for real findings in this project); (iii) any output line is not a recognised audit
+line --- recognised are the two \texttt{\#print axioms} forms with wrapped lines rejoined
+before matching, blank lines, and \code{warning:} lines (a \code{sorry} is caught by (ii) via
+\code{sorryAx}, not by its warning line; trailing text after the bracket list is rejected);
+or (iv) the output is empty, or its set of declaration names differs from the manifest ---
+so deleting or editing a \code{\#print axioms} line fails the gate. Generating the audit
+list mechanically (every declaration, not a hand-maintained list) is batch item B2, and until
+then coverage is exactly the manifest. The gate reports every violation before failing.
+
+The self-test is checked in: one fixture per failure mode under \code{tools/selftest/bad/}
+(a \code{sorryAx} dependency, a declared \code{axiom}, a Lean error line, junk, trailing text
+after the bracket, a name containing ``error'', a wrapped out-of-budget line, and an audit
+with a line missing against the manifest), plus the passing cases under
+\code{tools/selftest/good/} (in-budget, strict subsets, wrapped compliant lines, and a frozen
+snapshot of the real audit output checked against the real manifest);
+\code{tools/selftest/run.sh} asserts the gate fails on every bad fixture and passes on every
+good one, and is a CI gate itself. A gate that has never been observed to fail is a report.
 
 \paragraph{Gate 5 --- Build hygiene.} No \texttt{sorry}, no \texttt{axiom}, no bare
 \code{module} header, warnings permitted. The full build must pass from a clean tree (WP0 Task
@@ -2196,7 +2274,10 @@ positivity predicate of S2 --- $z$ real with $z > 0$ --- and in both the $\R$ an
 statements it follows from $\dim_P i = f_i$ with $f_i > 0$; it is kept because the source states
 it (Gate~3), not because it is logically independent. The library's current \code{ENO823Exact}
 is stated over $\R$; the $\Cx$ restatement is the same rendering under the scalar contract,
-with a real \code{FPData} embedded by $\R \to \Cx$.
+with a real \code{FPData} embedded by $\R \to \Cx$. And the target as displayed quantifies
+over the \emph{carried} $J$: the exact form takes the derived twist (or \code{J_match}) as a
+further antecedent, exactly as Task~1.5(b) records --- without it, the statement is false on
+the pseudo-unitary $(\Z/2)^{2}$ datum with $J \equiv 1$.
 
 \paragraph{The conditional form already proved.} \code{IsPseudoUnitaryPivotal P} is the
 conjunction
@@ -2231,7 +2312,8 @@ Bartlett's Theorem~4.17.
 
 \paragraph{An ASCII rendering of the headline declaration.} The Unicode binders are spelled out;
 this is a rendering for readability, not the source, and it reproduces the existential
-conjunction of \code{ENO823Exact} verbatim.
+conjunction of \code{ENO823Exact} verbatim --- the source's $\R$ is spelled R in this ASCII
+rendering, and the source's Fin n and Prop are unchanged.
 \begin{verbatim}
 -- the target, as the library actually defines it
 def ENO823Exact (S : FusionSystem n R) (hFP : S.ring.FPData) : Prop :=
@@ -2271,8 +2353,9 @@ removed. Remark~\ref{rem:trap} now separates the objectwise statement from the m
 WP1 records the label question as closed; failure mode F3 no longer cites it. \\
 2 & The promised unconditional theorem exceeds the stated scope (multiplicities, the
 quadruple-dual theorem, complex scalars). & \S\ref{sec:scope} states (S1)--(S4); $g$ is a
-hypothesis or Bartlett's Theorem~3.28; complex scalars are a WP1 task; the abstract says
-``multiplicity-free, characteristic zero''. \\
+hypothesis or Bartlett's Theorem~3.28; complex scalars are a WP1 task; the v1.1 abstract said
+``multiplicity-free, characteristic zero'' (the v1.2 abstract states the $\Cx$ scalar
+contract instead). \\
 3 & The analytic package (old WP3, now WP4) misstates the phase correction: $\sigma$ is a tensor
 automorphism of the identity, $\tau$ is an ordinary natural automorphism, and $\sigma$ need not be
 sign-valued. & WP4 Task~4.5 rewritten with the two steps correctly typed, including the observation that a monoidal character
@@ -2298,7 +2381,9 @@ determined by the ring, and note that the set of structures is a torsor once one
 a & The triangle axiom is derivable, not independent. & WP1 Task~1.2 proves $t = t^{2} \Rightarrow
 t = 1$ from the pentagon and invertibility. \\
 b & The twist coherence needs the nonzero-entry qualification. & WP1 Task~1.3 states it, citing
-Bartlett's Corollary~3.26, and derives the F-free form only on the support. \\
+Bartlett's Corollary~3.26, and derives the F-free form only where the cancelled entry is
+nonzero (v1.2: ``only on the support'' was the wrong notion --- the support does not supply
+nonvanishing --- and is corrected in the second-revision appendix, item~1). \\
 c & (C)$\Rightarrow$(K) is not available in the signature. & Figure~\ref{fig:logic} redrawn: (C)
 and (M) are marked necessary and not sufficient, with the pointed false-$J$ datum as the witness;
 the missing implication is attributed to the reconstruction and the twist. \\
@@ -2345,7 +2430,8 @@ absolute values, no square roots, no positivity; and a remaining reference deriv
 from a Hermitian structure. & The scalar contract (S2, Task~1.1): algebraic layer over a
 characteristic-zero field, analytic theorem over $\Cx$ only, with real \code{FPData} embedded,
 complex moduli, and positivity defined once; the Hermitian description removed from
-\S\ref{sec:whatdone}, WP4, \texttt{PLAN.md} and the Lean doc comments. \\
+\S\ref{sec:whatnot}, \texttt{PLAN.md} and the Lean doc comments (\code{Coboundary.lean},
+\code{PseudoUnitary.lean}). \\
 
 3 & WP2 Task~2.3 asked reconstruction to identify the carried field $S.J$ with the double-dual
 tensorator --- an identification the false-$J$ datum refutes. & Task~2.3 rewritten:
@@ -2365,9 +2451,11 @@ self-test. \\
 label permutation; Task~1.5 asked for an equivalence with a form it had just withdrawn as
 strictly weaker; Task~4.5 called the dimension ratios positive where only their squares are
 determined. & The request is withdrawn (ENO Prop.~2.1; \texttt{PLAN.md} now records the
-closure); Task~1.5 names its forms --- exact $\leftrightarrow$ bare via \code{pivotal_ext} and
-FPdim positivity, the withdrawn rendering is not a target; Task~4.5 states the squared identity
-and defers the signs to the $\tau$-step. \\
+closure); Task~1.5 names its forms and both qualifications: exact $\leftrightarrow$ bare
+\emph{under} \code{IsPseudoUnitary} (bare $\to$ exact via \code{pivotal_ext} and FPdim
+positivity, exact $\to$ bare via \code{eno823_of_exact}), and the target itself stated for the
+derived twist or under \code{J_match}; Task~4.5 states the squared identity and defers the
+signs to the normalisation. \\
 
 6 & Structure: the review asked for a first delegation batch and an explicit source of truth
 before any unattended run. & \S\ref{sec:batch}: batch B1--B4 (reproduce the clean build,
@@ -2377,5 +2465,26 @@ that gates WP2--WP4 on the batch's review. \\
 
 \end{longtable}
 \end{center}
+
+\paragraph{Post-audit corrections (v1.2.1).} After v1.2 was committed, an eight-member audit
+--- one direction per review point, plus cross-document consistency, Lean-source fidelity and
+an adversarial pass --- found thirty-one further defects (consolidated; every one recorded
+with location, quote and minimal fix in the audit's reports), all fixed in this pass. The
+most substantial: the Hermitian-derived-positivity wording survived in \texttt{PLAN.md} and
+in two Lean doc comments (\code{Coboundary.lean}, \code{PseudoUnitary.lean});
+\texttt{PLAN.md} asserted $\delta(\kappa) = 1$ on Fibonacci and Ising, which is false
+($\varphi^{2}$ and $2$ --- not even legal twists there, since they violate \code{J_dual}) and
+was contradicted by a later bullet of the same file; the carried-versus-derived distinction
+did not reach the target statement itself, which is false on the pseudo-unitary
+$(\Z/2)^{2}$ datum with $J \equiv 1$ (Task~1.5(b)); the exact$\leftrightarrow$bare
+equivalence was stated unconditionally (Task~1.5(a)); the $\sigma$-step of Task~4.5 was not
+executable as written and is replaced by the one-rescaling normalisation; the enforcing
+audit gate passed on empty input, accepted trailing text after the bracket list, and
+rejected wrapped lines and names containing ``error'' --- it is now checked in as
+\code{FusionCategory/tools/audit-gate.sh}, with a twelve-fixture self-test (every fixture
+verified to behave), a manifest of audited names, and a live run against the real audit
+output; and the module inventory, the timeline, and a set of cross-references were
+corrected. The gate's decision logic was validated independently by three executed harnesses
+during the audit.
 
 \end{document}

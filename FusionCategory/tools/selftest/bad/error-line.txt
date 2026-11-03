@@ -1,0 +1,2 @@
+'FusionCategory.Bad.fine' depends on axioms: [propext]
+AxiomAudit.lean:3:0: error(lean.unknownIdentifier): Unknown constant noSuchName
