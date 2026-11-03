@@ -382,15 +382,23 @@ about `κ` and `FPdim` only, *not* about `J`.  This retires the "derive the
 `J`-diagram" programme as the route to ENO 8.23 (it stays necessary to make the
 signature honest, since `p_mon` mentions `J`).
 
-**The witness that (C) is not automatic is Yang-Lee.**  Rank 2 with
-`τ ⊗ τ = 1 ⊕ τ`, `F^{τττ}_τ = [[-φ, 1], [-φ, φ]]`, `FPdim_τ = φ`; both snakes
-give `κ_τ = -1/φ` from both branches (the pentagon holds on all `2^9` tuples),
-and `κ_τ κ_{τ*} = 1/φ² ≠ φ² = FPdim_τ²`.  So (K) fails on Yang-Lee for *every*
-`J`, every other axiom of `FusionSystem` holds, and Yang-Lee is not
+**The witness that (C) is not automatic is Yang-Lee, and it is kernel-checked.**
+Rank 2 with `τ ⊗ τ = 1 ⊕ τ`, `F^{τττ}_τ = [[-φ, 1], [-φ, φ]]`, `FPdim_τ = φ`;
+both snakes give `κ_τ = -1/φ` from both branches (the pentagon holds on all `2^9`
+tuples), and `κ_τ κ_{τ*} = 1/φ² ≠ φ² = FPdim_τ²`.  So (K) fails on Yang-Lee for
+*every* `J`, every other axiom of `FusionSystem` holds, and Yang-Lee is not
 pseudo-unitary.  Fibonacci is the control: same check, `κ_τ = φ`, (C) holds.
-`docs/yang_lee_check.py` recomputes both.  Since Yang-Lee is a two-label model,
-`¬ ENO823` for it is cheap to kernel-check — that is the next formal brick, and
-it refutes the target as stated in the smallest available case.
+`docs/yang_lee_check.py` recomputes both, and `Examples/YangLee.lean` carries the
+formal statement:
+
+    YangLee.system : FusionSystem 2 ℝ
+    YangLee.not_eno823 : ¬ ENO823 YangLee.system FibonacciFPData
+
+with the pentagon, the unit laws, both inverse laws and both snakes checked by
+`decide` in `ℤ[√5]`, and `not_eno823` from `dim_eq_twistNorm`: a pivotal
+structure with `dim = FPdim` would give `1 = twistNorm τ τ 1 · φ² = φ⁴`.  So
+`ENO823` as stated is **false**, in a two-label model, and no hypothesis on `J`
+can rescue it — the missing hypothesis is pseudo-unitarity, i.e. (C).
 
 Two further results from the same swarm, both about constructions rather than
 the identity:

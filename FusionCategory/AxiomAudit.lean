@@ -8,6 +8,7 @@ import FusionCategory.Examples.Ostrik
 import FusionCategory.Examples.PseudoUnitaryInstances
 import FusionCategory.Examples.VecZ2Twisted
 import FusionCategory.Examples.FibonacciIsing
+import FusionCategory.Examples.YangLee
 
 /-!
 # Axiom audit — ENO 8.23
@@ -65,6 +66,15 @@ open FusionCategory.Examples
 #print axioms exists_spherical_of_twistNorm
 #print axioms eno823_of_twistNorm
 #print axioms twistNorm_eq_fpdim_ratio_of_dim_eq
+
+-- Yang-Lee: a complete rigid datum on which ENO823 is FALSE (no J can save (K))
+#print axioms YangLee.pentagon
+#print axioms YangLee.snake_left
+#print axioms YangLee.snake_right
+#print axioms YangLee.system
+#print axioms YangLee.kappa_val
+#print axioms YangLee.twisted_norm_one_one_zero
+#print axioms YangLee.not_eno823
 
 -- The second witness: non-trivial associator, two pivotal structures
 #print axioms VecZ2Twisted.kappa_g

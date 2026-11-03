@@ -7,6 +7,7 @@ import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples
 import FusionCategory.Examples.PseudoUnitaryInstances
+import FusionCategory.Examples.YangLee
 import FusionCategory.Step4Checks
 import FusionCategory.Sanity
 import FusionCategory.DoubleDual
