@@ -182,6 +182,25 @@ normalisation `ev_{i*} = ev_i`,
     Ω(a,b;c) = F^{b* a* c}_0(c*,b) · (M_b)^{-1}(0,c),    M_b(E,c') = F^{a* a b}_b(E,c'),
     J a b c  = Ω(b*,a*;c*) / Ω(a,b;c).
 
+**This formula is refuted, and so is the derivation it came from.**  On
+`(Z/2)²` with `ω = (-1)^{a₁b₂c₁}` the honest twist is `J = δ(κ)`, i.e. `-1` on
+six channels (see the correction below), while `Ω` returns `1` there.  It
+returns `1` because it is built from `F` alone and does not see the `δ(κ)`
+factor: every data set on which it was checked is cyclic, where `κ` is a
+character and `δ(κ) = 1`.  An independent evaluation of `φ` from its defining
+property `ev ∘ (φ ⊗ id) = ev`, through the partial evaluation
+`((a⊗b)* ⊗ a) → b*`, gives
+
+    φ(a,b) = C_a · ω(-(a+b),a,-a)⁻¹ · ω(-(a+b),a,b) · E_{a+b}/E_b,   C_g E_g = κ_g,
+
+and `J = φ(b*,a*;c*)/φ(a,b;c) = δ(κ)`, which agrees with (M) on `(Z/2)²`,
+`sVec` and the trivial twist (`docs/honest_twist_check.py`).  The same defect was
+found independently in swarm `smvzybdp8` (m1's ψ formula returns `1` on the same
+channels).  So the
+`J`-diagram has still never been evaluated correctly in general, and the
+`J ≡ 1` census below is evidence of nothing: it cannot distinguish `J ≡ 1`
+from `δ(κ)` on any of its samples.
+
 `M_b` is the block `F^{a* a b}_b` **restricted to its support** — rows `E`
 channels of `a*⊗a` with `b ∈ E⊗b`, columns `c'` channels of `a⊗b` with
 `b ∈ a*⊗c'`.  Unrestricted the matrix is rectangular (Ising at
