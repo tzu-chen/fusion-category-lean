@@ -12,3 +12,4 @@ import FusionCategory.Step4Checks
 import FusionCategory.Sanity
 import FusionCategory.DoubleDual
 import FusionCategory.Coboundary
+import FusionCategory.Prop821

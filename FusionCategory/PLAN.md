@@ -411,6 +411,31 @@ into a termwise one, and then twisting by the tensor automorphisms `σ = d²/|d|
 and `τ = d/|d|` produces the pivotal structure with positive dimensions.  That is
 the analytic heart and the next target.
 
+**Step 1, done: Proposition 8.21's spectral bound.**  `Prop821.lean`:
+
+* `cyclic`, `cyclic1`, `cyclic2` — the cyclic symmetry `N^k_{ij} = N^i_{j k*}`
+  of the fusion coefficients, from associativity at `l = 1` and `dual_coeff`.
+  The repo's axioms do not otherwise connect the second and third slots, and
+  both index conventions occur below;
+* `fpdim_char` — the FP-dimension is a character, `Σ_c N a b c f_c = f_a f_b`
+  (the repo's `FPData.eigenvector` is the *middle*-slot form; `cyclic1`
+  converts it);
+* `abs_le_fpdim_of_eigenvector` — the bound itself: any `d` with
+  `Σ_j N i j k d_j = d_i d_k` satisfies `|d_i| ≤ f_i`, by ENO's weighted norm
+  `‖x‖ = Σ_j f_j|x_j|`, which `fpdim_char` bounds by `f_i`;
+* `abs_dim_le_fpdim` — the same for the dimension of a pivotal structure, with
+  the hypothesis `DimEigen S (dim P)` isolated;
+* `eq_abs_of_sum_sq` — the equality case: `Σ_i |d_i|² = Σ_i f_i²` plus
+  termwise `|d_i| ≤ f_i` forces `|d_i| = f_i`.
+
+What Proposition 8.21 still needs in this signature is the *hypothesis*
+`DimEigen`: ENO obtain `T_i d = d_i d` for a `T`-matrix whose entries are
+FS-indicator twists of the fusion coefficients, and that construction uses the
+duality data, not multiplicativity of `dim`.  Deriving `DimEigen` for `dim P`
+here is the remaining half of step 1 — and it is *not* the same as assuming
+(M), which is why it is worth doing: the `T`-matrix route does not presuppose
+that `dim` is multiplicative or spherical.
+
 **The hypothesis, restored, and the theorem that follows from it.**  Since
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:
 

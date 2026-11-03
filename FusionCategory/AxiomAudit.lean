@@ -1,5 +1,6 @@
 import FusionCategory.DoubleDual
 import FusionCategory.Coboundary
+import FusionCategory.Prop821
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples.Fibonacci
@@ -75,6 +76,13 @@ open FusionCategory.Examples
 #print axioms YangLee.kappa_val
 #print axioms YangLee.twisted_norm_one_one_zero
 #print axioms YangLee.not_eno823
+
+-- ENO Proposition 8.21: the spectral bound |d_i| <= FPdim_i
+#print axioms fpdim_char
+#print axioms abs_le_fpdim_of_eigenvector
+#print axioms abs_le_fpdim_of_char
+#print axioms abs_dim_le_fpdim
+#print axioms eq_abs_of_sum_sq
 
 -- ENO 8.23 with its source statement: pseudo-unitary means dim C = FPdim C,
 -- the conclusion carries positivity and uniqueness
