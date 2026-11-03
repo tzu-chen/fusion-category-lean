@@ -21,6 +21,25 @@ Push goes through the platform connector instead:
 while the remote was several commits behind. It is not evidence that a push
 landed. `git ls-remote omm` is the authoritative check.
 
+## Workflow files cannot be pushed through the connector
+
+GitHub refuses to let an App create or update files under `.github/workflows/`
+without a `workflows` permission, and this platform's connection does not hold
+it. A push containing a workflow file is rejected with:
+
+```
+! <sha>:refs/heads/main [remote rejected] (refusing to allow a GitHub App
+  to create or update workflow `.github/workflows/<f>` without `workflows` permission)
+```
+
+So a workflow file stays untracked in the working tree and must be committed by
+a person (GitHub web editor, or a push with credentials that carry workflow
+scope). The batch-B2 CI file
+(`.github/workflows/fusion-category-ci.yml`, 167 lines, complete and
+self-contained) is in this state: keep it in the working tree, and when
+landing it, commit it separately from everything else so the rest of the work
+can still be pushed.
+
 ## If a push is genuinely rejected
 
 A "cannot push" is often a stale local tracking ref, not a diverged remote:

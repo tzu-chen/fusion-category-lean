@@ -18,7 +18,6 @@ import FusionCategory.Statements
 import FusionCategory.Examples.Z2SqHonest
 import FusionCategory.Triangle
 import FusionCategory.Coherence
-import FusionCategory.Statements
 import FusionCategory.Examples.Z2SqFalseJ
 import FusionCategory.Witnesses.Z3sqTwist
 import FusionCategory.Witnesses.Z3sqTwisted
