@@ -63,19 +63,46 @@ The index type of the `c`-block is `Σ (a b : Fin n), Fin (N a b c) × Fin (X.m 
 (and `Fin (N a b c)` is `Fin 0` or `Fin 1` by `mult_free` — the channel is
 unique when it exists; this is where multiplicity-freeness earns its keep).
 
-**Tensor on morphisms** — entrywise on channel-refined indices: for `f : X ⟶ Y`
-and `g : X' ⟶ Y'`, the `c`-block of `f ⊗ g` at row `(a, b, _, i, j)` and column
-`(a', b', _, i', j')` is
+**Tensor on morphisms** — label-diagonal with the full Kronecker block inside:
+for `f : X ⟶ Y` and `g : X' ⟶ Y'`, the `c`-block of `f ⊗ g` at row
+`(a, b, _, i, j)` and column `(a', b', _, i', j')` is
 
 ```
-if a = a' ∧ b = b' ∧ i = i' ∧ j = j' then (f a) i i' * (g b) j j' else 0
+if a = a' ∧ b = b' then (f a) i i' * (g b) j j' else 0
 ```
 
-The channel positions (`Fin (N a b c)`) ride along: a row channel and a column
-channel of the *same* block are both the unique `c`-channel, so the block is
-"diagonal in the labels and indices, scalar f·g on the diagonal". Functoriality
-(`(f₁ ≫ f₂) ⊗ (g₁ ≫ g₂) = (f₁ ⊗ g₁) ≫ (f₂ ⊗ g₂)`) holds by the collapse of the
-intermediate channel sums (`δδ`).
+**[Corrected in-round; the original note was wrong, kernel-refuted by the
+round's members]** The original formula here carried the extra conjuncts
+`i = i'` and `j = j'`; they truncate every block to its diagonal and make the
+assignment non-functorial (`(f₁ ≫ f₂) ⊗ (g₁ ≫ g₂) = (f₁ ⊗ g₁) ≫ (f₂ ⊗ g₂)`
+fails — on a `2 × 2` multiplicity block with the transposition, the left side
+is the identity and the right side is `0`; the counterexample is
+`.ultramath/smw10qjp3/m3/NoteFormula.lean`, `noteBlock_not_mul`).  The correct
+block is the Kronecker product `1 ⊗ₖ (f a) ⊗ₖ (g b)` — diagonal in the *labels*
+only, full matrix inside the block.  The two readings coincide on simples
+(all blocks `1 × 1`), which is why the channel-block analysis of the
+associator below survives unchanged.
+
+**[Model ruling, mid-round]** The round landed two viable object models: the
+note's literal `structure FusionMat where m : Fin n → ℕ` (m4's
+`ReconTensor.lean`: viable — the index transports are paid once in
+`tensorBlockEquiv`), and the **block-carrying** generalization (m3's
+`Recon.lean`/`ReconTensor.lean`): a structure with `m : Fin n → ℕ`,
+`blk : Fin n → Type`, `[∀ i, Fintype (blk i)]` and
+`card_blk : ∀ i, Fintype.card (blk i) = m i`, with `FusionMat.ofM m` giving
+the note's model (`blk i := Fin (m i)`) definitionally.  **The block-carrying
+model is the canonical model for the reconstruction** (ruled by the
+coordinator, mid-round): the tensor's block index type is then *definitional*
+(`TensorIdx S X Y c = Σ p, Fin (N p.1 p.2 c) × X.blk p.1 × Y.blk p.2`), and —
+the decisive point — the associator is a *matrix between two different index
+types*, which is legal, so the associativity cardinality computation never
+enters any definition.  The note-literal model pays that transport at every
+layer; the pentagon (the round's hardest proof) is meaningfully easier
+without it.  Objects are no longer skeletal in the strict sense (two objects
+with the same `m` and different `blk` are isomorphic, not equal) — immaterial:
+every consumer (simples, trace, `derivedJ`) works with `sim i` and `ofM`, both
+canonical.  m4's matrix lemmas (`reindex_mul`, `kron_mul`, the non-vacuity
+checks) are model-independent and land with the round.
 
 **The associator** is the F-data: `α_{X,Y,Z} : (X ⊗ Y) ⊗ Z ⟶ X ⊗ (Y ⊗ Z)` has,
 in the `d`-block, at row `((a,b)-channel e, then (e,c)-channel) with indices`
