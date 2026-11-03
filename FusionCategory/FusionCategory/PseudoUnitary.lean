@@ -295,8 +295,9 @@ dimension `κ = (1, -1/φ)` is negative (`YangLee.not_eno823`).  What is missing
 the hypothesis of ENO 8.23 itself.  Here it is, in the form the skeletal axioms
 can see:
 
-* positivity of the dimension function of a pivotal structure — this is what a
-  Hermitian structure supplies, and Yang-Lee fails it;
+* positivity of the dimension function of a pivotal structure — part of the
+  conclusion of ENO 8.23, assumed here for the conditional form; Yang-Lee
+  fails it;
 * multiplicativity of that dimension (`dim(X⊗Y) = dim X · dim Y`, in eigenvector
   form) — a theorem of pivotal categories, which in this signature is equivalent
   to the sum identity `Σ_c N^c_ab J^c_ab κ_c = κ_a κ_b` on the twist, and hence
@@ -305,8 +306,11 @@ can see:
 
 With both, Perron–Frobenius uniqueness (`PFUnique`) identifies `dim P` with
 `FPdim`, and sphericity is then automatic — so `ENO823` holds.  What remains
-open is exactly the passage from a Hermitian structure to these two conditions,
-i.e. ENO 8.23 itself.
+open is exactly the passage from the pseudo-unitarity equation
+(`IsPseudoUnitary`) to these two conditions, i.e. ENO 8.23's σ/τ argument
+itself.  (An earlier version of this comment described the gap as a passage
+from a Hermitian structure; removed — no Hermitian structure enters the
+hypothesis or the proof.)
 -/
 
 variable {n : ℕ} {S : FusionSystem n ℝ}
@@ -332,7 +336,8 @@ point of pseudo-unitarity is not an equation between global dimensions but the
 positivity of a *dimension function*, and that is what a pivotal structure
 carries. -/
 structure IsPseudoUnitaryPivotal (P : PivotalStructure S) : Prop where
-  /-- Positivity — what a Hermitian structure gives. -/
+  /-- Positivity — part of the source's conclusion, a hypothesis of this
+  conditional form.  Yang-Lee fails it. -/
   pos : ∀ i : Fin n, 0 < dim P i
   /-- Multiplicativity of the dimension on the fusion ring. -/
   mult : ∀ i kk : Fin n,

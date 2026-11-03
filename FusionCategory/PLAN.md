@@ -9,6 +9,18 @@ fusion categories requires weak Hopf `S⁴` and is not attempted.
 §2.2, §3, §8.4, Prop. 8.23–8.26. Secondary: EGNO *Tensor Categories* Thm 9.6.10–9.6.12,
 Bartlett 2009 PhD Prop 5.7 Lemma 6.2, Shimizu *Frobenius–Schur*.
 
+**Source of truth (set by the second review).**  `docs/research-proposal.tex`
+(proposal v1.2) is the controlling document for this programme: work packages,
+theorem contracts, gates, and scope.  This file is the implementation-level
+record; where the two conflict, **the proposal governs**.  The first delegation
+batch is fixed there ("The first delegation batch, and the source of truth"):
+reproduce the clean build, implement the enforcing axiom audit, repair the
+cocycle census, and settle the corrected signature and theorem statement —
+and **no dependent theorem work starts until that batch has passed review**.
+The contradictory instructions named by the review are corrected in this
+revision (see "Still owed" below for the withdrawn label-permutation request);
+the original step list (§0–7 below) is retained under a superseded banner.
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could
@@ -61,10 +73,19 @@ than chosen, and the twist is a genuine ratio of composites.
 
 Still owed: an independent evaluation of the `J`-diagram (the non-self-dual
 `F`-twisted case is now *checked* on nine data sets and *derived* only as a
-reconstruction — see "The derived twist: result" below); a model with
-`(−)** ≠ id` on labels, which `FusionSystem` cannot represent as it stands; the
-multiplicity-free restriction (`N ≤ 1`) as a separate general-multiplicity
-development; and the analytic input for `ENO823`.
+reconstruction — see "The derived twist: result" below); the multiplicity-free
+restriction (`N ≤ 1`) as a separate general-multiplicity development; and the
+analytic input for `ENO823`.
+
+**The label question is closed, and the earlier request for a
+nontrivial-permutation model is withdrawn.**  By ENO Prop 2.1 every simple is
+isomorphic to its double dual, so a skeleton always has `i** = i` on labels:
+there is no nontrivial double-dual label permutation to model, and
+`FusionSystem`'s lack of a label-transport slot is not a defect.  The item that
+used to stand here asked for such a model and contradicted both the record
+above and the proposal (Remark on the trap); it is removed.  The monoidal
+content it was gesturing at is the twist `J` itself, which is carried as data
+and derived in WP3 of the proposal.
 
 ## Prior art, checked
 
@@ -313,8 +334,9 @@ a pivotal structure, and `id ≅ (−)**` is exactly what need not exist.  So th
 caveat above stands: the F-free form is the right statement for a skeleton in
 which `i** = i`, which is the case for every model used here.
 
-**Not derived:** the independent diagram evaluation of `J` itself (above); the
-case `(−)** ≠ id` on labels; and the analytic input for `ENO823`.
+**Not derived:** the independent diagram evaluation of `J` itself (above); and the
+analytic input for `ENO823`.  (The case `(−)** ≠ id` on labels is not a case at
+all: see the withdrawn request under "Still owed".)
 
 ## ENO's own proof, transplanted: `a`, `b`, and (M)
 
@@ -410,10 +432,13 @@ per-channel identity
 and that identity is the whole of what remains.  It is not a consequence of the
 axioms of `FusionSystem`: `J` is data there, constrained only by its unit, dual
 and coherence laws, so a system may carry a coherent `J` admitting no pivotal
-structure at all.  Pseudo-unitarity — a condition on Hom spaces and Hermitian
-forms, invisible to a multiplicity-free skeleton where every Hom space is
-one-dimensional — is what has to supply it.  `ENO823` still carries no
-hypothesis expressing that, which is the substantive gap, not the algebra above.
+structure at all.  What has to supply the identity is pseudo-unitarity — the
+scalar equation `Σ_i κ_i κ_{i*} = Σ_i FPdim_i²`, which *is* visible in the
+skeleton and is carried as `IsPseudoUnitary`.  The bare `ENO823` carried no
+such hypothesis; it was restored after Yang–Lee refuted the unhypothesised
+statement (see "The hypothesis, restored" below), and the substantive gap is
+ENO's σ/τ normalisation itself — the passage from that equation to positivity
+and multiplicativity — not the algebra above.
 
 **The identity is `J`-free on the coevaluation channel.**  On the channel
 `(i, i*; 1)` the axiom `J^{1}_{i i*} = 1` is used, so (K) there reads
@@ -545,7 +570,7 @@ square root `a` of `g`, and `SqrtData.trace_iff` is the identification.
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:
 
     structure IsPseudoUnitaryPivotal (P : PivotalStructure S) : Prop where
-      pos  : ∀ i, 0 < dim P i                              -- what a Hermitian structure gives
+      pos  : ∀ i, 0 < dim P i                              -- part of the source's conclusion, a hypothesis here
       mult : ∀ i kk, ∑ j, N i j kk * dim P j = dim P i * dim P kk   -- dim is a ring character
 
     theorem eno823_of_pseudoUnitary (hn) (hFP) (huniq : PFUnique S.ring hFP)
@@ -557,8 +582,10 @@ fails (`YangLee.not_eno823`), and **multiplicativity** is what
 `dim = p·κ` is equivalent to the sum identity (M) `Σ_c N^c_ab J^c_ab κ_c = κ_aκ_b`
 on the twist, which a non-canonical `J` violates.  With both, `PFUnique` forces
 `dim P = FPdim`, and sphericity then follows from `p_{i*} = p_i⁻¹` rather than
-being assumed.  So what remains open is exactly the passage from a Hermitian
-structure to those two conditions — ENO 8.23's own argument — not the algebra.
+being assumed.  So what remains open is exactly the passage from the
+pseudo-unitarity equation (`IsPseudoUnitary`) to those two conditions — ENO
+8.23's own σ/τ argument — not the algebra.  (An earlier version of this
+paragraph called it a passage from a Hermitian structure; removed.)
 
 **The witness that (C) is not automatic is Yang-Lee, and it is kernel-checked.**
 Rank 2 with `τ ⊗ τ = 1 ⊕ τ`, `F^{τττ}_τ = [[-φ, 1], [-φ, φ]]`, `FPdim_τ = φ`;
@@ -609,6 +636,17 @@ Axiom budget for all new theorems: `[propext, Classical.choice, Quot.sound]`
 only — matching `haagerup-odd/`. No `sorry`.
 
 ---
+
+> **Superseded (read the record above and the proposal first).**  The step
+> list below (§0–7) is this project's original scaffold.  It predates the
+> Step-2 rewrite, the results recorded above, and the proposal, and several of
+> its instructions are retired: step 2's `skeletalEquivCategory` bridge was to
+> be stated as an `axiom` with `sorry` (forbidden by the axiom budget and the
+> audit), step 5's `pseudoUnitary_spherical` and its corollaries are retired
+> (see "Status after the Step-2 rewrite"), and the work-package structure,
+> gates and theorem contracts now live in `docs/research-proposal.tex`.
+> Retained for the record; where it conflicts with the sections above or with
+> the proposal, those govern.
 
 ## 0. Repository decisions (do first, ~30 min)
 
@@ -824,12 +862,21 @@ From repo root `fusion-category-lean/`:
 cd FusionCategory && lake exe cache get   # first time
 cd FusionCategory && lake build            # or per-file:
 python ../haagerup-odd/safe_lean.py --build FusionCategory/PFDim.lean  # pattern
-lake env lean AxiomAudit.lean
+sh FusionCategory/tools/audit-gate.sh      # Gate 4: enforcing axiom audit
 ```
 
 All files must pass `lake build` with linter warnings only, same as
 `haagerup-odd/`. Keep `weakLeanArgs = ["-j2","-s8192"]` as in
 `haagerup-odd/lakefile.toml` for CI memory limits.
+
+The axiom audit is a **gate, not a report** (proposal Gate 4): running
+`lake env lean AxiomAudit.lean` and reading — or `grep`-ing — its output
+cannot fail on a Lean error or on an out-of-budget dependency, and a
+`grep -v` exit status says nothing usable.  `tools/audit-gate.sh` (specified
+in the proposal, to be landed by batch item B2) exits non-zero on Lean errors,
+on any dependency outside `[propext, Classical.choice, Quot.sound]`, and on
+unrecognised output, and it must be self-tested against a deliberate
+`sorry`/`axiom` before it is trusted.
 
 ## References to keep open
 
