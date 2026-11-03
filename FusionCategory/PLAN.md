@@ -316,6 +316,55 @@ which `i** = i`, which is the case for every model used here.
 **Not derived:** the independent diagram evaluation of `J` itself (above); the
 case `(−)** ≠ id` on labels; and the analytic input for `ENO823`.
 
+## ENO's own proof, transplanted: `a`, `b`, and (M)
+
+ENO's proof of 8.23 does not start from a pivotal structure — it produces one —
+and the signature had no room for its input. What it uses (§3.1 of the arXiv
+version, where the proposition is numbered 8.22) is a **tensor** isomorphism
+`g : Id → ****` (their Thm 2.6, the Radford input we take as `S4Data`) and an
+**additive** isomorphism `a : Id → **` with `a² = g`; `a` is *not* monoidal, and
+the defect of its monoidality is the cochain `b^{ij}_c`. `ENOSqrt.lean` now
+carries this: `SqrtData` is `a`, and `b`, `Tmat`, `d` are ENO's `b^{ij}_c`,
+`T^{ij}_c` and `d_i = Tr(a_i)`.
+
+Three things came out of it, all kernel-checked:
+
+* **`b` carries `J` in the numerator**, `b = J i j c · a_i · a_j / a_c`, and
+  `(b^{ij}_c)² = 1` follows from `a² = g` monoidal — *not* from `J² = 1`. The
+  monoidality has to be stated against `J²`, because in a skeleton `(−)**` is
+  the identity on labels and on morphisms, so the tensorator of
+  `(−)**** = (−)** ∘ (−)**` is `J²`. `Cover.lean`'s `S4Data.g_fusion`, which
+  reads `g c = g i · g j` on channels, is the `J = 1` special case and is wrong
+  in general.
+* **The trace identity is (M).** `d_i d_j = Σ_c T^{ij}_c d_c` is equivalent,
+  after the `a`'s cancel, to `κ'_i κ'_j = Σ_c N i j c · J i j c · κ'_c` with
+  `κ'_i = coev_i · ev_{i*}` (`SqrtData.trace_iff`). So ENO's "by the definition
+  of `b`" step *is* the sum identity that `Prop821.mult_iff_twist` isolated:
+  the fork between "derive `J`" and "assume multiplicativity" is not a fork,
+  it is one theorem.
+* **Do not add `J² = 1`.** It is false for honest pseudo-unitary data:
+  `Vec^ω_{(Z/3)²}` with `ω = ζ^{a₁b₂c₁}` has honest twist `δ(κ)` squaring to a
+  primitive cube root of unity, and the category is unitary, so adding
+  `J² = 1` would exclude a category that ENO 8.23 applies to.
+
+The duality normalisation is a second, independent defect. ENO's
+`d_i = Tr(a_i)` is `a_i · coev_i · ev_{i*}`, not `a_i · κ_i` with
+`κ_i = coev_i · ev_i`; the two agree exactly when `i* = i`, which holds for
+every datum in `Examples/` but not in general. `FusionSystem.kappaD` is the
+right normalisation and `SqrtData.d_eq_kappa` records the agreement.
+
+What is left is unchanged in kind and smaller in extent: the pseudo-unitarity
+input (positivity, hence `d = FPdim` by `PFUnique`) is invisible in a
+multiplicity-free skeleton, and `J` is still data rather than derived — but the
+condition it has to satisfy is now (M) itself, a statement about `(N, J, κ')`
+that `mult_iff_twist`, `twist_sum_of_perChannel` and `SqrtData.trace_iff`
+already surround. Checked on six data sets: (M) holds for Fibonacci, Ising,
+Yang-Lee and `Vec^ω_{Z/2}` with `J = 1`; it fails on `Vec^ω_{(Z/2)²}` with
+`J = 1` (`κ = (1,1,1,−1)` is not a character) and is repaired there by
+`J = δ(κ) = κ_a κ_b / κ_c`; Yang-Lee satisfies (M) and its trace identity and
+fails only at positivity (`|d_τ| = 1/φ < φ = FPdim_τ`), which is exactly the
+sharpness that `YangLee.not_eno823` records.
+
 ## ENO 8.23: the sharp form
 
 `Coboundary.lean` reduces the target to an equation.  With
@@ -487,7 +536,10 @@ comparison, and then prove (M) for it.  What is known:
   is where both `Ω` and m1's formula went wrong.
 
 So the settlement is a real computation, not bookkeeping, and it is the last
-piece of step 1.
+piece of step 1.  **It has since been identified:** (M) is ENO's trace
+identity, `d_i d_j = Σ_c T^{ij}_c d_c` after the `a`'s cancel — see "ENO's own
+proof, transplanted" below.  What ENO compute is exactly the `b`-cochain of a
+square root `a` of `g`, and `SqrtData.trace_iff` is the identification.
 
 **The hypothesis, restored, and the theorem that follows from it.**  Since
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:

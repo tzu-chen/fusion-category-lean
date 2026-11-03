@@ -1,6 +1,7 @@
 import FusionCategory.DoubleDual
 import FusionCategory.Coboundary
 import FusionCategory.Prop821
+import FusionCategory.ENOSqrt
 import FusionCategory.PFDim
 import FusionCategory.PseudoUnitary
 import FusionCategory.Examples.Fibonacci
@@ -126,3 +127,11 @@ open FusionCategory.Examples
 #print axioms globalDim_pos_of_fpdim
 #print axioms coverGlobalDim_double
 #print axioms cover_preserves_squaredReal
+
+-- ENO's square root `a` of `g`, the `b`-cochain, and the trace identity = (M)
+#print axioms FusionSystem.kappaD_ne_zero
+#print axioms SqrtData.d_eq_kappa
+#print axioms SqrtData.b_sq
+#print axioms SqrtData.trace_iff
+#print axioms SqrtData.dim_toPivotal
+#print axioms SqrtData.d_mult
