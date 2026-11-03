@@ -68,7 +68,7 @@
 \title{\vspace{-1.2cm}\textbf{Machine-Checked Dimension Theory\\ for Fusion Categories}\\[0.35cm]
 \large A research proposal: pivotal and spherical structures, the double-dual twist,\\ and a verified proof of Etingof--Nikshych--Ostrik Proposition~8.23}
 \author{Tzu-Chen Huang}
-\date{November 2026 \quad\textbar\quad proposal v1.2.1 (second revision, audited) \quad\textbar\quad library state \texttt{d3d320e} (last green build)}
+\date{November 2026 \quad\textbar\quad proposal v1.2.2 (second revision, batch landed) \quad\textbar\quad library state: this revision}
 
 \begin{document}
 
@@ -127,9 +127,10 @@ auditing formal statements against their sources.
 \textbf{Object} & Pivotal and spherical structures on fusion categories, and ENO Prop.~8.23.\\
 \textbf{Method} & Skeletal finite data in Lean~4 (pinned to Mathlib \texttt{0df444a3}); exact arithmetic in
 $\Z[\sqrt d]$; kernel-checked counterexamples; axiom audit; bridge to Mathlib's categorical layer.\\
-\textbf{Already done} & $\sim$5{,}200 lines, 23 modules; a green 3{,}032-job build at \texttt{d3d320e}
-(not yet a reproduced clean build); 73 audited declarations at
-\texttt{[propext, Classical.choice, Quot.sound]}; no \texttt{sorry}.\\
+\textbf{Already done} & $\sim$8{,}100 lines, 31 modules; a reproduced clean build (batch B1:
+fresh clone, fresh Mathlib cache, no path override; content-reproducible, not
+byte-reproducible); 1{,}058 audited declarations at
+\texttt{[propext, Classical.choice, Quot.sound]}, mechanically enumerated; no \texttt{sorry}.\\
 \textbf{Still open} & A corrected signature and an exact target; the twist derivation (the
 $\Omega$ formula in \texttt{PLAN.md} is retracted); the $\Cx$ scalar contract; the reconstruction and
 trace correspondence; ENO's $\sigma/\tau$ normalisation; the quadruple-dual theorem.\\
@@ -907,23 +908,38 @@ cannot distinguish the two. What the witness establishes is the dependence of th
 rather than a technical convenience: it selects, among the pivotal structures, the one with
 positive dimensions.
 
-\begin{remark}[A third witness, at script level]
+\begin{remark}[A third witness --- corrected and kernel-checked by the batch]
 For $\Vect^{\omega}_{(\Z/2)^2}$ with $\omega = (-1)^{a_1 b_2 c_1}$ one has
-$\kappa = (1,1,1,-1)$, which is not a character of $(\Z/2)^2$. With $J \equiv 1$, (M) fails;
-with $J = \delta(\kappa) = \kappa_a\kappa_b/\kappa_c$ it holds. This computation is in
-\code{FusionCategory/docs/pointed_twist_check.py} and is \emph{not} yet kernel-checked. It is the reason the
-signature must not add $J^{2} = 1$ as an axiom: for $\Vect^{\omega}_{(\Z/3)^2}$ with
-$\omega = \zeta^{a_1 b_2 c_1}$ the honest twist squares to a primitive cube root of unity, and
-that category is unitary, so such an axiom would exclude a category to which the theorem
-applies.
+$\kappa = (1,1,1,-1)$, which is not a character of $(\Z/2)^2$. With $J \equiv 1$, (M) fails
+--- kernel-checked, with the refutation of the target under a \emph{satisfied}
+pseudo-unitarity hypothesis, in \code{Examples/Z2SqFalseJ.lean}; with $J = \delta(\kappa) =
+\kappa_a\kappa_b/\kappa_c$ it holds (verified in the census; its kernel check is the batch's
+one open follow-up). The census itself is
+\code{FusionCategory/docs/pointed_twist_check.py}, now exact, reference-checked and
+self-tested.
+It is the reason the signature must not add $J^{2} = 1$ as an axiom --- and the witness for
+that has been \emph{corrected} by the batch's census repair: the $\omega =
+\zeta^{a_1 b_2 c_1}$ family on $(\Z/3)^2$ originally quoted here is a
+\textbf{coboundary} (kernel-checked: \code{Witnesses/Z3sqTwist.lean},
+\code{om\_is\_coboundary}, with the explicit trivialising $\mu$), so its $J^{2} \neq 1$ is a
+statement about the gauge, not the category. The corrected family is
+$\omega = \mathrm{carry} \times \mathrm{carry} \times \zeta^{a_1 b_2 c_1}$: genuinely
+twisted (\code{Witnesses/Z3sqTwisted.lean}, \code{no\_trivialising\_cochain}), with
+$\kappa$ not a character and $J^{2}$ a primitive cube root of unity on 36 of the 81
+channels --- and that category is unitary, so such an axiom would exclude a category to
+which the theorem applies.
+\end{remark}
 
-The script's own census is weaker than it looks, and the proposal does not rely on it. The
+\begin{remark}[The census, after the batch]
+The script's census is weaker than it looks, and the proposal does not rely on it. The
 cyclic families $\Vect^{\omega}_{\Z/n}$ are run with a ``carry cocycle'' whose exponent is a
 multiple of $n$, so the cocycle is identically $1$ up to floating-point error; and for cyclic
 groups in the standard gauge $\kappa$ is a character, so $J = \delta(\kappa) = 1$ and the
 census cannot separate the honest twist from the trivial one. The only data sets that test a
 non-trivial $\kappa$ are $\Vect^{\omega}_{(\Z/2)^2}$ and $\Vect^{\omega}_{(\Z/3)^2}$, and
-neither is kernel-checked. Repairing this census is WP3 Task~3.4.
+neither is kernel-checked. Repairing this census was WP3 Task~3.4 --- \emph{done} in the batch
+landing: \code{FusionCategory/docs/pointed_twist_check.py} is now exact, reference-checked and
+self-tested, with six genuinely non-trivial families.
 \end{remark}
 
 \subsection{ENO Proposition 8.21}\label{sec:821}
@@ -1012,8 +1028,8 @@ $J^{2} = 1$ and $b^{2} = 1$ must not be added as axioms (\S\ref{sec:refute}).
 \toprule
 \textbf{Datum} & \textbf{Ring} & $\field$ & $\kappa$ & \textbf{Role} \\
 \midrule
-\code{VecZ2.system} & $\Z/2$ & $\R$ & $(1,1)$ & inhabitant; pentagon on 512 tuples \\
-\code{VecZ2Twisted.system} & $\Z/2$, $\omega \neq 1$ & $\R$ & $(1,-1)$ & two pivotal structures \\
+\code{VecZ2.system} & $\Z/2$ & $\Q$ & $(1,1)$ & inhabitant; pentagon on 512 tuples \\
+\code{VecZ2Twisted.system} & $\Z/2$, $\omega \neq 1$ & $\Q$ & $(1,-1)$ & two pivotal structures \\
 \code{FibonacciSystem} & Fib & $\R$ & $(1,\varphi)$ & $\dim = \FPdim$, spherical \\
 \code{IsingSystem} & Ising & $\R$ & $(1,\sqrt2,1)$ & $\dim = \FPdim$, spherical \\
 \code{k2210} & $K(1,0,1)$ & $\R$ & --- & \code{FPData} certificate; $\FPdim = (1,2,1)$, $D^2 = 6$ \\
@@ -1152,8 +1168,12 @@ reproducibility debt is diagnosed while it is still cheap.
 \item \textbf{Implement the enforcing axiom audit} (WP0 Task~0.2, Gate~4 of
 Appendix~\ref{app:audit}): wire the checked-in gate (\code{FusionCategory/tools/audit-gate.sh},
 landed with its manifest and twelve-fixture self-test) into CI, and generate the audit list
-mechanically, so that coverage is not maintained by hand --- the gate checks the manifest, and
-mechanical generation is the remaining work. The
+mechanically, so that coverage is not maintained by hand --- done in the batch landing:
+\code{tools/gen-audit.sh} enumerates every exported declaration from the elaborated
+environment (1{,}058 at this revision), \code{.github/workflows/fusion-category-ci.yml} chains
+the clean build, the completeness build, the gate and the self-test, and the
+\code{set\_option\ linter.auxLemma\ false} line in the generated file keeps the
+\code{match\_1} auxiliaries' linter notes out of the gate's input. The
 \code{\#print axioms}-plus-\code{grep} report is withdrawn.
 \item \textbf{Repair the cocycle census} (WP3 Task~3.4, pulled forward): genuine cocycles in
 place of the identically-trivial carry cocycle, and the two script-level witnesses
@@ -1208,8 +1228,10 @@ certificate, as the FP-dimension subsection of \S\ref{sec:background} records.
 \code{FusionCategory/tools/audit-gate.sh} with its manifest and self-test, not the
 \code{\#print axioms} report
 --- as separate gates, each of which fails the build. A from-clean build of the committed
-tree has never been verified --- earlier builds used a path override --- and that is a
-reproducibility debt no deliverable should inherit. This is also what turns the ``green build''
+tree is now \emph{reproduced} (batch B1: fresh clone from GitHub, a genuinely fresh Mathlib
+cache --- 8690 artifacts into a cache directory that did not exist before, no path override;
+content-reproducible, not byte-reproducible, so the gates judge the audit's content and never
+artifact hashes). This is also what turned the ``green build''
 of \S\ref{sec:prior} into a reproducible one; it is batch item B1 (\S\ref{sec:batch}).
 \item A per-file build harness with a timeout, so that a 100-second example file does not block
 work on the core.
@@ -1218,7 +1240,12 @@ statement-to-source table of Appendix~\ref{app:audit} (Gate~3), and the scope la
 (S1)--(S4) attached to every theorem that depends on them.
 \end{enumerate}
 \paragraph{Deliverable.} D1, D2. \quad \textbf{Success criterion.} A machine with the toolchain
-and no network builds the library and passes the audit from a clean clone.
+and the Mathlib cache available builds the library and passes the audit from a clean
+clone. (The batch's reproduction found the honest form of this criterion: the Mathlib
+cache server is a \emph{hard} network dependency of a fresh machine --- a network-free
+build requires the cache to be pre-seeded --- and the artifacts are
+content-reproducible, not byte-reproducible; the kit gates on the audit's content, never
+on artifact hashes.)
 
 \subsubsection*{WP1 --- The corrected signature and the exact target (months 1--8)}
 
@@ -1239,8 +1266,10 @@ the $\Cx$ forms of \code{pivotal_ext}, \code{IsPseudoUnitaryPivotal} and
 \code{eno823_of_pseudoUnitary} (their proofs are field-generic, but the $\R$ statements
 cannot simply be generalised: the order, the modulus and the positivity conjunct fail). The
 bare \code{ENO823} is already $k$-polymorphic with \code{[Algebra R k]} and elaborates at
-$\Cx$; the $\R$ originals are \emph{retained} --- the six instances and the Yang--Lee witness
-instantiate them, and transporting that witness to $\Cx$ is part of this task. The port of
+$\Cx$; the $\R$ originals are \emph{retained} --- three of the six data (Fibonacci,
+Ising, Yang--Lee) instantiate them directly; the two $\Vect_{\Z/2}$ data are $\Q$-valued
+and $K(1,0,1)$ is a ring, so those three need the $\Q \to \R$ (or $\Q \to \Cx$) transport,
+which is part of this task. The port of
 the analytic chain is an explicit work item: the 8.21 bound and its equality case
 (\code{abs_le_fpdim_of_eigenvector}, \code{eq_abs_of_sum_sq}, at present $\R$-valued)
 restated with the complex modulus, and the \code{PFUnique} step applied once
@@ -1498,7 +1527,8 @@ proposal misstated, and it is worth stating exactly.
   both counts. (For a concrete illustration: in $\Vect_{\Z/3}$ the tuple $a = (1,-1,1)$ satisfies
   $a^{2} = 1 = g$ but is not a character, so rescaling a square root by arbitrary scalars changes
   the defect.)
-\item \textbf{Assembly and uniqueness.} \code{eno823_exact}: existence, positivity, equality
+\item \textbf{Assembly and uniqueness.} \code{ENO823ExactC} (the statement Task~1.1
+freezes; the proof's working name is \code{eno823_exact}): existence, positivity, equality
 with $\FPdim$, uniqueness via \code{pivotal_ext} and \code{PFUnique} --- stated as the exact
 target of Task~1.5: over $\Cx$ under the scalar contract, with the derived twist (or
 \code{J_match}) in the antecedent.
@@ -2121,11 +2151,11 @@ separately by the audit.}
 {\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.05\textwidth}>{\raggedright\arraybackslash}p{0.05\textwidth}>{\raggedright\arraybackslash}p{0.60\textwidth}@{}}
 \toprule
-\textbf{Module} & \textbf{Lines} & \textbf{Decls} & \textbf{Content and status} \\
+\textbf{Module} & \textbf{Lines} & \textbf{Decls}$^{\dagger}$ & \textbf{Content and status} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Module} & \textbf{Lines} & \textbf{Decls} & \textbf{Content and status} \\
+\textbf{Module} & \textbf{Lines} & \textbf{Decls}$^{\dagger}$ & \textbf{Content and status} \\
 \midrule
 \endhead
 \bottomrule
@@ -2133,7 +2163,7 @@ separately by the audit.}
 
 \code{Basic} & 229 & 26 & fusion ring, fusion/FP matrices, \code{IsPFEigenvector}, \code{FPData},
 global dimension. Complete; \code{FPData} is a hypothesis. \\
-\code{System} & 451 & 19 & \code{FusionSystem}: $F$, \code{Finv}, snakes, $J$; $\Vect_{\Z/2}$
+\code{System} & 468 & 19 & \code{FusionSystem}: $F$, \code{Finv}, snakes, $J$ (retained-$F$ coherence), \code{ev_dual}; $\Vect_{\Z/2}$
 inhabitant with the 512-tuple pentagon. Complete. \\
 \code{Pivotal} & 191 & 21 & \code{PivotalStructure}, \code{dim}, \code{IsSpherical},
 \code{isSpherical_iff}, \code{pVal_dual}. Complete; the nontrivial-$J$ witness is owed
@@ -2158,17 +2188,39 @@ a conditional reduction. \\
 \code{trace_iff}, \code{toPivotal}. Complete; existence of $a$ is assumed. \\
 \code{Sanity}, \code{Step4Checks} & 136, 147 & 8 & numerical and consistency checks. Complete;
 imported by the umbrella. \\
-\code{Examples/FibonacciIsing} & 951 & 115 & Fibonacci and Ising over $\R$: every field proved,
+\code{Examples/FibonacciIsing} & 953 & 115 & Fibonacci and Ising over $\R$: every field proved,
 spherical, $\dim = \FPdim$. Complete; $\sim$100\,s. \\
-\code{Examples/YangLee} & 419 & 39 & the refutation of the un-hypothesised target. Complete. \\
-\code{Examples/VecZ2Twisted} & 86 & 11 & two pivotal structures, $\dim g = \pm 1$. Complete. \\
+\code{Examples/YangLee} & 420 & 39 & the refutation of the un-hypothesised target. Complete. \\
+\code{Examples/VecZ2Twisted} & 89 & 12 & two pivotal structures, $\dim g = \pm 1$; pseudo-unitary (the corrected doc). Complete. \\
 \code{Examples/Ostrik} & 154 & 21 & the rank-three ring $K(1,0,1)$ and its \code{FPData}. Complete. \\
 \code{Examples/}$\cdots$ & 438 & 38 & Fibonacci, Ising, pseudo-unitary instances, $Z/3$ note. \\
+\code{Examples/Z2SqFalseJ} & 684 & 76 & the $(\Z/2)^{2}$ false-$J$ witness: \code{not_eno823},
+\code{not_eno823Exact} under satisfied pseudo-unitarity, (M)/(K) failures. Complete. \\
+\code{Examples/Z2SqHonest} & 1273 & 135 & the honest-twist witness: $J = \delta(\kappa)$, the
+nonconstant pivotal $p = 1/\kappa$ (Gate 1's witness), spherical with $\dim = \FPdim$; the
+positive instance of the corrected target; the forcing theorems ($\dim \equiv 1$ forces
+$J = \delta(\kappa)$, so \code{J_match} is a consequence on this datum). Complete. \\
+\code{Witnesses} & 486 & 90 & the $(\Z/3)^{2}$ coboundary certificate
+(\code{om_is_coboundary}), the genuinely twisted family (\code{no_trivialising_cochain},
+$J^{2}$ a primitive cube root), and the $D_{8}$ row. Complete. \\
+\code{Triangle} & 89 & 3 & the triangle law from the pentagon and the $1 \times 1$ block +
+\code{Finv_comp}. Complete. \\
+\code{Coherence} & 54 & 6 & the retained-$F$ and qualified coherence forms, both directions. Complete. \\
+\code{Statements} & 287 & 21 & the frozen $\Cx$ statements, the four decisions, the two
+collapse guards. Complete. \\
 \code{MathlibPatches} & 55 & 0 & stubs for \#42150 and the PF chain. Stub: WP0/WP5. \\
 \midrule
-\textbf{Total} & \textbf{5{,}241} & \textbf{414} & 23 files; build 3{,}032 jobs; audit 73 declarations. \\
+\textbf{Total} & \textbf{8{,}135} & \textbf{745} & 31 content files (plus 3 umbrellas and the
+generated audit); clean build reproduced (B1); audit 1{,}058 declarations (715 theorem-kind),
+mechanically enumerated. \\
 \end{longtable}
 }
+
+\noindent$^{\dagger}$The Decls column is a keyword grep (the honest source-level count; the
+conformance audit found the v1.2 figure of 414 was this grep with one hand correction).
+The \emph{audited} declaration count --- every exported constant, including compiler-generated
+lemmas and structure projections, enumerated mechanically from the elaborated environment ---
+is 1{,}058, and that is the number the gate covers.
 
 \section{The audit protocol}\label{app:audit}
 
@@ -2486,5 +2538,35 @@ verified to behave), a manifest of audited names, and a live run against the rea
 output; and the module inventory, the timeline, and a set of cross-references were
 corrected. The gate's decision logic was validated independently by three executed harnesses
 during the audit.
+
+\paragraph{The first delegation batch, landed (v1.2.2).} The batch ran as an eight-member
+delegation (plus a three-member follow-up for the one open item), every report accepted only
+after the coordinator's own verification runs, and its artefacts are now in the tree:
+the false-$J$ witness \code{Examples/Z2SqFalseJ.lean} (the target refuted under a satisfied
+pseudo-unitarity hypothesis --- the kernel-checked justification for the \code{J_match}
+qualification); the census witnesses \code{Witnesses/} (the $(\Z/3)^{2}$ coboundary
+certificate and the genuinely twisted $J^{2}$ family); the frozen statements
+\code{Statements.lean} (with the two collapse guards: the \code{ENO823ExactC} family must be
+instantiated at Task 2.3's \code{derivedJ}, never universally quantified); the triangle law
+and the coherence equivalence (\code{Triangle.lean}, \code{Coherence.lean}); the corrected
+signature --- \code{J_coherent} restated in the retained-$F$ form and the
+\code{ev_dual} gauge normalisation added as a field, with all inhabitants unchanged
+(\code{rfl}); the mechanical audit (\code{tools/AuditList.lean} + \code{tools/gen-audit.sh};
+73 hand-picked names became 1{,}058 mechanically enumerated); the CI workflow
+(\code{.github/workflows/fusion-category-ci.yml}, with the completeness gate covering
+\code{lake build}'s import-closure blind spot); and the clean-build kit
+(\code{tools/clean-build.sh}). The batch's findings that changed this document: the
+$(\Z/3)^{2}$ $\zeta^{a_{1}b_{2}c_{1}}$ family is a coboundary (the third-witness Remark now
+quotes the corrected family); the instance table's $\R$ entries for the two $\Vect_{\Z/2}$
+data (they are $\Q$-valued, so the $\R$ originals are instantiated directly by three of the
+six); \code{eno823_exact} tied to the name Task 1.1 freezes; WP0's ``no network'' criterion
+restated (the Mathlib cache server is a hard dependency of a fresh machine); the inventory
+recomputed (31 content files, 8{,}135 lines, 1{,}058 audited declarations). The clean build is
+reproduced; the audit is mechanical and green; the self-test is 13/13 (a prime-name fixture
+joined it after the landing itself found that Lean identifiers may contain primes, which the
+gate's recogniser and name extraction now handle greedily). The batch's one open item closed
+with the follow-up run: the honest-twist witness \code{Examples/Z2SqHonest.lean} (Gate 1's
+nonconstant-pivotal witness, the positive instance of the corrected target, and the forcing
+theorems showing \code{J_match} is a consequence rather than extra data on that datum).
 
 \end{document}

@@ -41,7 +41,11 @@ grep -qE 'error[:(]' "$out" && { cat "$out"; exit 1; } || true
 # Rejoin Lean's 120-column wrapped lines, then recognise only:
 #   '<name>' does not depend on any axioms
 #   '<name>' depends on axioms: [a, b, c]        (list may be empty)
-# Anything else -- including trailing text after the bracket -- fails.
+# Names may contain primes (Lean identifiers allow '), so the name match is
+# GREEDY; the manifest comparison below rejects any line whose extracted name
+# is not in the mechanically generated list, which is what keeps greedy
+# matching sound.  Anything else -- including trailing text after the
+# bracket -- fails.
 awk '
   BEGIN { q = sprintf("%c", 39) }
   /^[ \t]*$/ { next }
@@ -56,8 +60,8 @@ awk '
            (getline nxt) > 0) {
       line = line nxt; joins++
     }
-    if (line ~ ("^" q "[^" q "]*" q " does not depend on any axioms$")) { next }
-    if (line ~ ("^" q "[^" q "]*" q " depends on axioms: \\[")) {
+    if (line ~ ("^" q ".*" q " does not depend on any axioms$")) { next }
+    if (line ~ ("^" q ".*" q " depends on axioms: \\[")) {
       s = line
       sub(("^.*" q " depends on axioms: \\["), "", s)
       if (s !~ /^([A-Za-z0-9._]+(, [A-Za-z0-9._]+)*)?\]$/) {
@@ -73,8 +77,9 @@ awk '
   END { if (bad) exit 1 }
 ' "$out"
 
-# Coverage: the audited names must match the manifest exactly.
-sed -n "s/^'\([^']*\)'.*/\1/p" "$out" | LC_ALL=C sort > "$tmp/names"
+# Coverage: the audited names must match the manifest exactly.  (Greedy
+# extraction: Lean identifiers may contain primes.)
+sed -n "s/^'\(.*\)'.*/\1/p" "$out" | LC_ALL=C sort > "$tmp/names"
 LC_ALL=C sort "${GATE4_MANIFEST:-tools/audit-manifest.txt}" > "$tmp/manifest"
 if ! cmp -s "$tmp/names" "$tmp/manifest"; then
   echo "GATE 4: audited declarations differ from the manifest:"

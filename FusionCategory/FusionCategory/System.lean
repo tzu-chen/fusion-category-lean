@@ -163,6 +163,15 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
   snake_right : ∀ (hn : 0 < n) (i : Fin n),
     coev i * ev i * Finv (ring.dual i) i (ring.dual i) (ring.dual i)
       ⟨0, hn⟩ ⟨0, hn⟩ = 1
+  /-- The gauge-invariant duality normalisation (decision 3 of the delegation
+  batch, WP1 Task 1.4): `ev` is invariant under duality.  This is a gauge
+  fixing, not a restriction --- the vertex gauge `coev i ↦ λ i • coev i`,
+  `ev i ↦ ev i / λ i` preserves the snakes and `κ`, and reaches this
+  normalisation with `λ_{i*} = λ_i • ev_{i*} / ev i`.  It is `rfl` on every
+  current inhabitant (all duals are the identity); with it, the library's
+  `dim P i = p i * κ i` and ENO's `p i * coev i * ev (i*)` agree
+  (`Statements.lean`: `dimENO_eq_dim`). -/
+  ev_dual : ∀ i : Fin n, ev (ring.dual i) = ev i
   /-- The double-dual twist: the scalar of `X_a** ⊗ X_b** → (X_a ⊗ X_b)**`
   on the channel `c`. -/
   J : Fin n → Fin n → Fin n → k
@@ -174,10 +183,16 @@ structure FusionSystem (n : ℕ) (k : Type u) [Field k] where
   J_dual : ∀ (hn : 0 < n) (i : Fin n), J i (ring.dual i) ⟨0, hn⟩ = 1
   /-- Coherence of the twist: the two ways of comparing `(a ⊗ b ⊗ c)**` with
   `a** ⊗ b** ⊗ c**` agree.  This is the pentagon of a monoidal structure on an
-  endofunctor that is the identity on objects. -/
+  endofunctor that is the identity on objects, with the associator factors
+  RETAINED on both sides (decision 2 of the delegation batch, WP1 Task 1.3):
+  nothing is cancelled, so no nonzero side condition is needed at the signature
+  level.  The F-free form follows on any channel with
+  `F a b c d e f ≠ 0` (`Coherence.lean` proves the two forms equivalent);
+  `F_support` forces zeros only OFF the channels and `J_ne_zero` says nothing
+  about `F`, so the F-free form must not be assumed there. -/
   J_coherent : ∀ a b c d e f : Fin n,
     0 < ring.N a b e → 0 < ring.N e c d → 0 < ring.N b c f → 0 < ring.N a f d →
-    J a b e * J e c d = J b c f * J a f d
+    J a b e * J e c d * F a b c d e f = J b c f * J a f d * F a b c d e f
 
 namespace FusionSystem
 
@@ -338,6 +353,7 @@ def system : FusionSystem 2 ℚ where
   J_unit_left := fun _ _ => rfl
   J_unit_right := fun _ _ => rfl
   J_dual := fun _ _ => rfl
+  ev_dual := fun i => rfl
   J_coherent := by
     intro a b c d e f _ _ _ _
     simp
@@ -433,6 +449,7 @@ def system : FusionSystem 2 ℚ where
   J_unit_left := fun _ _ => rfl
   J_unit_right := fun _ _ => rfl
   J_dual := fun _ _ => rfl
+  ev_dual := fun i => rfl
   J_coherent := by
     intro a b c d e f _ _ _ _
     simp

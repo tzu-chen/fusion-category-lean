@@ -1,0 +1,2 @@
+'FusionCategory.Z2Sq.gadd_zero_left'' depends on axioms: [propext]
+'FusionCategory.Examples.primed'' does not depend on any axioms

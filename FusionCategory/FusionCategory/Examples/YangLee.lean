@@ -319,6 +319,7 @@ noncomputable def system : FusionSystem 2 ℝ where
   J_unit_left := fun _ _ => rfl
   J_unit_right := fun _ _ => rfl
   J_dual := fun _ _ => rfl
+  ev_dual := fun i => rfl
   J_coherent := by
     intro a b c d e f _ _ _ _
     simp

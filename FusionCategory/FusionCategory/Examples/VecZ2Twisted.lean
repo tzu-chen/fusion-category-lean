@@ -19,8 +19,11 @@ So `Vec^ω_{Z/2}` is an example where the conclusion of ENO 8.23 (`dim = FPdim`,
 spherical) holds — but only for the *second* pivotal structure.  Which pivotal
 structure a category "has" is not a property of the fusion ring, and
 `pseudo-unitarity` is exactly the hypothesis that selects the one with positive
-dimensions.  This category is not pseudo-unitary, which is why the trivial
-pivotal structure gives `dim g = -1`.
+dimensions.  This category is pseudo-unitary (`Σ_i κ_i κ_{i*} = 2 = Σ_i FPdim_i²`, the
+smallest non-trivial instance): the target selects the positive-dimension pivotal
+structure by its positivity conjunct, while both structures (`p ≡ 1` with `dim g = -1`
+and `p g = -1` with `dim g = 1`) remain pivotal --- the dimension is not a property of
+the fusion ring and the associator alone.
 
 Contrast with `Vec_{Z/2}` (trivial cocycle, `VecZ2.system`), where `κ ≡ 1` and
 both pivotal structures give positive dimensions.

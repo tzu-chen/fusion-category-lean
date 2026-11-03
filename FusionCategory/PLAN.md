@@ -12,7 +12,7 @@ fusion categories requires weak Hopf `S⁴` and is not attempted.
 Bartlett 2009 PhD Prop 5.7 Lemma 6.2, Shimizu *Frobenius–Schur*.
 
 **Source of truth (set by the second review).**  `docs/research-proposal.tex`
-(proposal v1.2) is the controlling document for this programme: work packages,
+(proposal v1.2.1) is the controlling document for this programme: work packages,
 theorem contracts, gates, and scope.  This file is the implementation-level
 record; where the two conflict, **the proposal governs**.  The first delegation
 batch is fixed there ("The first delegation batch, and the source of truth"):
@@ -384,10 +384,15 @@ Three things came out of it, all kernel-checked:
   of `b`" step *is* the sum identity that `Prop821.mult_iff_twist` isolated:
   the fork between "derive `J`" and "assume multiplicativity" is not a fork,
   it is one theorem.
-* **Do not add `J² = 1`.** It is false for honest pseudo-unitary data:
-  `Vec^ω_{(Z/3)²}` with `ω = ζ^{a₁b₂c₁}` has honest twist `δ(κ)` squaring to a
-  primitive cube root of unity, and the category is unitary, so adding
-  `J² = 1` would exclude a category that ENO 8.23 applies to.
+* **Do not add `J² = 1`.** It is false for honest pseudo-unitary data — with the
+  corrected witness (delegation batch, B3c): `Vec^ω_{(Z/3)²}` with
+  `ω = ζ^{a₁b₂c₁}` is a **coboundary** (kernel-checked,
+  `Witnesses/Z3sqTwist.lean: om_is_coboundary`, with the explicit trivialising `μ`),
+  so its `J² ≠ 1` is a gauge statement. The genuinely twisted family
+  `ω = carry · carry · ζ^{a₁b₂c₁}` (`Witnesses/Z3sqTwisted.lean`,
+  `no_trivialising_cochain`) has honest twist `δ(κ)` squaring to a
+  primitive cube root of unity on 36 of the 81 channels, and the category is
+  unitary, so adding `J² = 1` would exclude a category that ENO 8.23 applies to.
 
 The duality normalisation is a second, independent defect. ENO's
 `d_i = Tr(a_i)` is `a_i · coev_i · ev_{i*}`, not `a_i · κ_i` with
@@ -898,9 +903,16 @@ From repo root `fusion-category-lean/`:
 (cd FusionCategory && lake exe cache get)  # first time
 (cd FusionCategory && lake build)         # whole package
 sh FusionCategory/tools/audit-gate.sh      # Gate 4: enforcing axiom audit
-# per-file elaboration, once the oleans exist (no lake needed):
-#   LEAN_PATH="FusionCategory/.lake/build/lib/lean:$LEAN_PATH" \
-#     lean FusionCategory/FusionCategory/PFDim.lean
+# per-file FROM-SOURCE build (route (b) of the batch's B1), the actual loop:
+#   priv=$PWD/.scratch/fromscratch; mkdir -p "$priv"
+#   for M in Basic System Pivotal Cover Grading DoubleDual PFDim PseudoUnitary \
+#            Coboundary Prop821 ENOSqrt; do
+#     LEAN_PATH="$priv:$LEAN_PATH" lean -o "$priv/FusionCategory/$M.olean" \
+#       FusionCategory/FusionCategory/$M.lean
+#   done
+# (the full 26-module spine, computed from the import graph, is
+#  FusionCategory/tools/fromscratch-build.sh's job; see also
+#  FusionCategory/tools/clean-build.sh, the batch's B1 deliverable)
 ```
 
 All files must pass `lake build` with linter warnings only, same as

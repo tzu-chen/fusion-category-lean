@@ -13,3 +13,7 @@ Thumbs.db
 # Agent scratch
 .scratch/
 FusionCategory/tools/selftest/stub-bin/
+.clean-build/
+FusionCategory/tools/audit-list.tsv
+FusionCategory/tools/audit-list.by-module.tsv
+FusionCategory/tools/audit-pariah.tsv
