@@ -250,6 +250,15 @@ Three further results from the same swarm, worth keeping:
   category should carry it, and it is the one axiom of Mac Lane's list that is
   missing.
 
+One claim from the swarm to *not* adopt: that `X** ≅ X` in any rigid monoidal
+category, so a skeleton can always be chosen with `(−)** = id` on labels and
+the F-free pentagon is therefore general.  The proof offered was "`X*` is both
+a left and a right dual of `X`", which is precisely what a rigid category does
+not give — identifying the left and right duals of an object is the content of
+a pivotal structure, and `id ≅ (−)**` is exactly what need not exist.  So the
+caveat above stands: the F-free form is the right statement for a skeleton in
+which `i** = i`, which is the case for every model used here.
+
 **Not derived:** the independent diagram evaluation of `J` itself (above); the
 case `(−)** ≠ id` on labels; and the analytic input for `ENO823`.
 
