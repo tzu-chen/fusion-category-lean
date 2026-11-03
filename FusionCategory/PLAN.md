@@ -382,6 +382,35 @@ about `κ` and `FPdim` only, *not* about `J`.  This retires the "derive the
 `J`-diagram" programme as the route to ENO 8.23 (it stays necessary to make the
 signature honest, since `p_mon` mentions `J`).
 
+**The exact statement, checked against the source.**  ENO §8.4 says:
+
+> Let us say that a fusion category `C` is *pseudo-unitary* if `dim(C) = FPdim(C)`.
+> This property ... fails, for example, for the Yang-Lee category.
+> **Proposition 8.23.** Any pseudo-unitary fusion category `C` admits a *unique*
+> pivotal (in fact, spherical) structure, with respect to which the categorical
+> dimensions of all simple objects are *positive*, and coincide with their
+> Frobenius–Perron dimensions.
+
+Three things were missing from `ENO823`: the hypothesis is one scalar equation
+`dim C = FPdim C` (not positivity of a chosen dimension function), and both
+positivity and uniqueness belong to the *conclusion*.  In the skeleton the
+categorical global dimension is form-independent: `dim P i · dim P (i*) = κ_i κ_{i*}`
+for every pivotal `P` (`dim_mul_dim_dual`), so
+
+    IsPseudoUnitary S hFP  :=  Σ_i κ_i κ_{i*} = Σ_i FPdim_i²
+
+has no `P` in it, exactly as in the source, and Yang-Lee fails it
+(`YangLee.not_pseudoUnitary`) — the remark ENO make.  `ENO823Exact` then states
+the conclusion with positivity and `∃!`, and `pivotal_ext` supplies uniqueness
+(a pivotal structure is determined by its dimension function) so only existence
+is left; `eno823_of_exact` recovers the bare `ENO823`.
+
+What is *not* formalised is ENO's proof: Proposition 8.21 (`|V|² ≤ FPdim(V)²`,
+via domination of the `T`-matrix by the fusion matrix) turns the sum equality
+into a termwise one, and then twisting by the tensor automorphisms `σ = d²/|d|²`
+and `τ = d/|d|` produces the pivotal structure with positive dimensions.  That is
+the analytic heart and the next target.
+
 **The hypothesis, restored, and the theorem that follows from it.**  Since
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:
 

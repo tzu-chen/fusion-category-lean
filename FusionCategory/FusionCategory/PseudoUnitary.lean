@@ -218,12 +218,12 @@ variable {S : FusionSystem n k}
 noncomputable def globalCategoricalDim (d : CategoricalDimData S) : k :=
   ∑ i : Fin n, d.dim i * d.dim (S.ring.dual i)
 
-/-- Pseudo-unitary hypothesis: categorical global dimension coincides
-with FP global dimension (via `algebraMap ℝ k`).
-
-For `k = ℂ` this is `D = FPdim(C)` as real numbers embedded in `ℂ`.
--/
-def IsPseudoUnitary [Algebra ℝ k] (d : CategoricalDimData (S := S))
+/-- The old rendering of pseudo-unitarity, as an equation between a
+`CategoricalDimData` detached from `S` and the FP-dimension.  Superseded: the
+version ENO actually use is `IsPseudoUnitary S hFP` below, whose left-hand side
+is `Σ_i κ_i κ_{i*}` — the categorical global dimension, which every pivotal
+structure computes.  Kept only so that nothing which mentioned it breaks. -/
+def IsPseudoUnitaryCategoricalDim [Algebra ℝ k] (d : CategoricalDimData (S := S))
     (h : S.ring.FPData) : Prop :=
   globalCategoricalDim d = algebraMap ℝ k h.globalDim
 
@@ -326,8 +326,8 @@ theorem kappa_unit (hn : 0 < n) : S.kappa ⟨0, hn⟩ = 1 := by
 /-- **Pseudo-unitarity of a pivotal structure**, in the skeletal form: its
 dimension function is positive and multiplicative.
 
-This is the real hypothesis of ENO 8.23, and it supersedes the `IsPseudoUnitary`
-above, which is a `Prop` about a `CategoricalDimData` detached from `S`: the
+This supersedes `IsPseudoUnitaryCategoricalDim` and, as a hypothesis, is
+stronger than ENO's own definition (see `IsPseudoUnitary` below), which is a `Prop` about a `CategoricalDimData` detached from `S`: the
 point of pseudo-unitarity is not an equation between global dimensions but the
 positivity of a *dimension function*, and that is what a pivotal structure
 carries. -/
@@ -364,5 +364,89 @@ theorem eno823_of_pseudoUnitary (hn : 0 < n) (hFP : S.ring.FPData)
     simpa using h
 
 end PseudoUnitaryTarget
+
+section ENOExact
+
+/-!
+## ENO 8.23 exactly: the hypothesis is `dim C = FPdim C`, the conclusion has
+   positivity and uniqueness in it
+
+The source (Etingof–Nikshych–Ostrik, *On fusion categories*, Annals 162 (2005),
+§8.4) says:
+
+> **Definition.** Let us say that a fusion category `C` is *pseudo-unitary* if
+> `dim(C) = FPdim(C)`.  This property is automatically satisfied for unitary
+> categories ... but it fails, for example, for the Yang-Lee category.
+>
+> **Proposition 8.23.** Any pseudo-unitary fusion category `C` admits a *unique*
+> pivotal (in fact, spherical) structure, with respect to which the categorical
+> dimensions of all simple objects are *positive*, and coincide with their
+> Frobenius–Perron dimensions.
+
+Three things are therefore missing from the bare `ENO823` below: the hypothesis
+is one scalar equation, and positivity and uniqueness belong to the *conclusion*.
+
+In the skeleton the categorical global dimension has a form that no pivotal
+structure can change: for any `P`, `dim P i * dim P (i*) = κ_i κ_{i*}`
+(`dim_mul_dim_dual`), because `p i * p (i*) = 1`.  So pseudo-unitarity is
+
+    IsPseudoUnitary S hFP   :=   Σ_i κ_i κ_{i*} = Σ_i FPdim_i² ,
+
+a single equation on `κ` and `FPdim`, with no `P` in it — exactly the source's
+`dim(C) = FPdim(C)`.  Yang-Lee fails it (`YangLee.not_pseudoUnitary`), which is
+the remark ENO make.  What is *not* formalised is their proof: Proposition 8.21
+(`|V|² ≤ FPdim(V)²` for every simple, via domination of the `T`-matrix by the
+fusion matrix) turns the sum equality into a termwise one, and then the twisting
+argument by the tensor automorphisms `σ = d²/|d|²` and `τ = d/|d|` produces the
+pivotal structure with positive dimensions.  That is the remaining gap, and it
+is the analytic heart of the proposition.
+-/
+
+variable {n : ℕ} {S : FusionSystem n ℝ}
+
+/-- The categorical global dimension is `Σ_i κ_i κ_{i*}`, independently of the
+pivotal structure. -/
+theorem dim_mul_dim_dual (hn : 0 < n) (P : PivotalStructure S) (i : Fin n) :
+    dim P i * dim P (S.ring.dual i) = S.kappa i * S.kappa (S.ring.dual i) := by
+  rw [PivotalStructure.dim_eq, PivotalStructure.dim_eq, P.pVal_dual hn i]
+  field_simp [P.pVal_ne_zero i]
+
+/-- **Pseudo-unitarity** (ENO §8.4): `dim(C) = FPdim(C)`.  No pivotal structure
+appears in the statement. -/
+noncomputable def IsPseudoUnitary (S : FusionSystem n ℝ) (hFP : S.ring.FPData) : Prop :=
+  (∑ i : Fin n, S.kappa i * S.kappa (S.ring.dual i)) = hFP.globalDim
+
+/-- A pivotal structure is determined by its dimension function, so the
+uniqueness clause of ENO 8.23 is automatic once existence is known. -/
+theorem pivotal_ext (P P' : PivotalStructure S) (h : ∀ i, dim P i = dim P' i) :
+    P = P' := by
+  obtain ⟨p, pu, pm⟩ := P
+  obtain ⟨p', pu', pm'⟩ := P'
+  have hp : p = p' := by
+    funext i
+    apply Units.ext
+    have hd := h i
+    rw [PivotalStructure.dim_eq, PivotalStructure.dim_eq] at hd
+    exact mul_right_cancel₀ (S.kappa_ne_zero i) hd
+  subst hp
+  rfl
+
+/-- **ENO Proposition 8.23, as stated in the source**: a pseudo-unitary fusion
+system admits a *unique* pivotal structure, spherical, with positive dimensions,
+and those dimensions are the FP-dimensions. -/
+noncomputable def ENO823Exact (S : FusionSystem n ℝ) (hFP : S.ring.FPData) : Prop :=
+  IsPseudoUnitary S hFP →
+    ∃! P : PivotalStructure S,
+      P.IsSpherical ∧ (∀ i : Fin n, 0 < dim P i) ∧
+        (∀ i : Fin n, dim P i = hFP.fpdim i)
+
+/-- The exact form implies the bare form, so `YangLee.not_eno823` is compatible
+with the corrected statement: it refutes the hypothesis-free version only. -/
+theorem eno823_of_exact (hFP : S.ring.FPData) (h : ENO823Exact S hFP)
+    (hPU : IsPseudoUnitary S hFP) : ENO823 S hFP := by
+  obtain ⟨P, ⟨hsp, _, hdim⟩, _⟩ := h hPU
+  exact ⟨P, hsp, fun i => by simpa using hdim i⟩
+
+end ENOExact
 
 end FusionCategory

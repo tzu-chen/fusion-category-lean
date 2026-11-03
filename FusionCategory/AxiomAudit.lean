@@ -76,6 +76,13 @@ open FusionCategory.Examples
 #print axioms YangLee.twisted_norm_one_one_zero
 #print axioms YangLee.not_eno823
 
+-- ENO 8.23 with its source statement: pseudo-unitary means dim C = FPdim C,
+-- the conclusion carries positivity and uniqueness
+#print axioms dim_mul_dim_dual
+#print axioms pivotal_ext
+#print axioms eno823_of_exact
+#print axioms YangLee.not_pseudoUnitary
+
 -- ENO 8.23 with its hypothesis restored: pseudo-unitarity (positivity plus
 -- multiplicativity of a pivotal dimension) and PF uniqueness give the conclusion
 #print axioms kappa_unit

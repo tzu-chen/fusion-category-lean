@@ -387,6 +387,33 @@ theorem not_eno823 : ¬ ENO823 system FibonacciFPData := by
   have hs0 : (0 : ℝ) ≤ Real.sqrt 5 := Real.sqrt_nonneg 5
   nlinarith [heq, hsq, hs0]
 
+/-- **Yang-Lee is not pseudo-unitary** — ENO §8.4 make exactly this remark
+("this property ... fails, for example, for the Yang-Lee category").  Its
+categorical global dimension is `1 + 1/φ²` (both dimensions are `±1/φ`), while
+`FPdim = 1 + φ²`. -/
+theorem not_pseudoUnitary : ¬ IsPseudoUnitary (S := system) FibonacciFPData := by
+  have hs : Real.sqrt 5 * Real.sqrt 5 = 5 := Real.mul_self_sqrt (by norm_num)
+  have hL : (∑ i : Fin 2, system.kappa i * system.kappa (system.ring.dual i))
+      = 1 + (1 - Real.sqrt 5) ^ 2 / 4 := by
+    have h0 : system.ring.dual 0 = (0 : Fin 2) := rfl
+    have h1 : system.ring.dual 1 = (1 : Fin 2) := rfl
+    rw [Fin.sum_univ_two, h0, h1, kappa_zero, kappa_one]
+    ring
+  have hR : FibonacciFPData.globalDim = 1 + ((1 + Real.sqrt 5) / 2) ^ 2 := by
+    unfold FusionRing.FPData.globalDim
+    rw [Fin.sum_univ_two]
+    simp [FibonacciFPData, fibFPdim]
+  have h2 : ((1 + Real.sqrt 5) / 2) ^ 2 = (1 + Real.sqrt 5) ^ 2 / 4 := by ring
+  rw [h2] at hR
+  intro h
+  unfold IsPseudoUnitary at h
+  rw [hL] at h
+  have h3 : (1 - Real.sqrt 5) ^ 2 / 4 = (1 + Real.sqrt 5) ^ 2 / 4 := by
+    have ht := h.trans hR
+    linarith [ht]
+  have h4 : (1 - Real.sqrt 5) ^ 2 = (1 + Real.sqrt 5) ^ 2 := by linarith [h3]
+  nlinarith [h4, hs]
+
 end YangLee
 
 end FusionCategory
