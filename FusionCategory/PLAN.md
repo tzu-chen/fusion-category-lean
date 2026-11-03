@@ -204,7 +204,11 @@ What is established, in order of strength:
   `p ≡ 1` is pivotal with `dim = κ`.  This is *checked*, not proved: nobody
   produced an independent evaluation of the `J`-diagram from raw category data,
   so the formula is a reconstruction whose consequences are verified, not a
-  derivation from first principles;
+  derivation from first principles.  **The census cannot distinguish `J ≡ 1`
+  from `J = δ(κ)`**: every pointed sample is cyclic (where `κ` is a character,
+  so the two agree) and for Fibonacci and Ising `κ = FPdim`, which likewise
+  makes the two right sides agree.  `(Z/2)²` separates them; see the correction
+  under "Three further results" below.
 * the gauge law `J ↦ J·(λ_a λ_b λ_{c*})/(λ_c λ_{a*} λ_{b*})`.  The invariant is
   `ν_i = κ_{i*}/κ_i`, not `κ` itself: under the vertex gauge
   `κ_i ↦ κ_i·v^{i i*}_0 v^{i* i}_0`, and `ν` is unchanged.  A channel gauge
@@ -232,11 +236,41 @@ representable.
 
 Three further results from the same swarm, worth keeping:
 
-* **the pointed case is proved, not checked.**  In a pointed category the
-  tensor product and both dualities are canonical identifications of
-  one-dimensional spaces, so the comparison `ν_{a,b} : (a⊗b)* → b* ⊗ a*` is
-  `1` and hence `J ≡ 1` identically — for every 3-cocycle and whatever `κ` is,
-  including the asymmetric `κ` of `Vec^ω_{Z/3}`.
+* **the pointed case is settled, and `J ≡ 1` is WRONG there.**  An earlier
+  version of this bullet claimed that in a pointed category both dualities are
+  canonical identifications of one-dimensional spaces, so the comparison
+  `ν_{a,b} : (a⊗b)* → b* ⊗ a*` is `1` and hence `J ≡ 1` identically.  The
+  conclusion is refuted (swarm `smvzybdp8`, m3, checked independently).  The
+  correct value is
+
+      J^c_{ab} = δ(κ)^c_{ab} = κ_a κ_b / κ_c,
+
+  forced by multiplicativity of the categorical dimension: `dim = p·κ` with
+  `p` pivotal gives `dim_a dim_b = Σ_c N^c_{ab} dim_c`, i.e. the *sum* identity
+  **(M)** `Σ_c N^c_{ab} J^c_{ab} κ_c = κ_a κ_b`, which pins `J` per channel
+  exactly when there is one channel.  `δ(κ)` satisfies the four `J`-axioms
+  (`J^0_{ab} = J^{1}_{ii*} = 1` since `κ_g κ_{g*} = 1`), and `p_g = 1/κ_g` is
+  then pivotal with `dim ≡ 1 = FPdim` and spherical.
+
+  `δ(κ) = 1` iff `κ` is a character.  That holds for every cyclic group in the
+  standard gauge — `Z/2,3,4,5,6` — which is why the census below saw `J ≡ 1`
+  everywhere; the whole tested set was cyclic or built from Fibonacci and
+  Ising, whose `κ = FPdim` makes `δ(κ) = FPdim_c κ_aκ_b/(κ_c FPdim_a FPdim_b)`
+  the right side of (K) with `J = 1`.  It fails on `(Z/2)²`: with
+  `ω = (-1)^{a₁b₂c₁}` one has `κ = (1,1,1,-1)`, not a character, `δ(κ) ≠ 1`,
+  and the per-channel form of (K) is false for `J ≡ 1` while the sum form (M)
+  survives.  Earlier versions of this plan asserted the per-channel identity
+  as the general target; only (M) is general, and for non-pointed `C` the two
+  genuinely differ (Ising: `J = 1`, `κ = FPdim`, `δ(κ) = 2` on `σ⊗σ ∋ 1`).
+  The check is `docs/pointed_twist_check.py`, which recomputes every scalar
+  above from the snake axioms (`python3 FusionCategory/docs/pointed_twist_check.py`).
+* **what this does to the target.**  `ENO823` in `PseudoUnitary.lean` is stated
+  for an arbitrary `FusionSystem`, and `J` there is data constrained only by
+  the four laws, so a system with `J ≡ 1` on the `(Z/2)²` datum is
+  representable and `ENO823` is *false* for it (no character `p` has
+  `dim = FPdim = 1`; checked exhaustively).  The theorem therefore cannot be
+  proved from the signature: `J` must be *defined* from `ev`, `coev` and `F`
+  (and the definition must satisfy (M)), or (K)/(M) must be a hypothesis.
 * **`ψ` and `θ` are not gauge-invariant objects.**  Rescaling the channel
   projections leaves every `F`-entry and every `ev`/`coev` unchanged but sends
   `θ(a,b;c) ↦ t^c_{ab} t^{c*}_{a*b*} θ(a,b;c)`, so only *ratios* such as `J`
