@@ -89,6 +89,12 @@ open FusionCategory.Examples
 #print axioms eq_abs_of_pseudoUnitary
 #print axioms eq_abs_of_sum_sq
 
+-- Settling J is proving (M): multiplicativity of dim = the sum identity on the twist
+#print axioms sum_dim_eq
+#print axioms dim_mul_dim
+#print axioms mult_iff_twist
+#print axioms twist_sum_of_perChannel
+
 -- ENO 8.23 with its source statement: pseudo-unitary means dim C = FPdim C,
 -- the conclusion carries positivity and uniqueness
 #print axioms dim_mul_dim_dual

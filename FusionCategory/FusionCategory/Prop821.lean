@@ -377,4 +377,98 @@ theorem eq_abs_of_pseudoUnitary {n : ℕ} {S : FusionSystem n ℝ}
   eq_abs_of_sum_sq (fun i => le_of_lt (hFP.pos i))
     (abs_dim_le_fpdim_of_pseudoUnitary hFP hn P hU) hsum
 
+/-!
+## What "settling `J`" is, exactly: multiplicativity is the sum identity (M) on the twist
+
+`FusionSystem` carries `J` as data under four laws, and those laws do not pin it
+(`Vec^ω_{(Z/2)²}` with `J ≡ 1` satisfies them and has non-multiplicative
+dimension).  The extra condition is *multiplicativity of the dimension*, and the
+two lemmas below show it is literally the sum identity
+
+    (M)   Σ_c N a b c · J a b c · κ_c = κ_a · κ_b
+
+on the twist.  So "settling `J`" = "proving (M)", and (K), the per-channel form,
+implies (M) immediately.  Defining `J` to be the coboundary `δ(κ)` would make (M)
+true by construction, and is therefore not a settlement: it would make
+`eno823_of_pseudoUnitary` apply to every data set, which `YangLee.not_eno823`
+refutes.
+-/
+
+section SettleJ
+
+variable {n : ℕ} {S : FusionSystem n ℝ}
+
+/-- The multiplicativity sum, expanded through `p_mon`: each channel contributes
+`J a b c · p a · p b · κ_c`. -/
+theorem sum_dim_eq (P : PivotalStructure S) (a b : Fin n) :
+    (∑ c : Fin n, (S.ring.N a b c : ℝ) * dim P c)
+      = P.pVal a * P.pVal b *
+        (∑ c : Fin n, (S.ring.N a b c : ℝ) * S.J a b c * S.kappa c) := by
+  rw [Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro c _
+  rcases Nat.eq_zero_or_pos (S.ring.N a b c) with h0 | hpos
+  · rw [h0]; simp
+  · rw [PivotalStructure.dim_eq]
+    rw [show P.pVal c = S.J a b c * P.pVal a * P.pVal b from P.p_mon a b c hpos]
+    ring
+
+/-- The right-hand side of multiplicativity, in the same normalisation. -/
+theorem dim_mul_dim (P : PivotalStructure S) (a b : Fin n) :
+    dim P a * dim P b = P.pVal a * P.pVal b * (S.kappa a * S.kappa b) := by
+  rw [PivotalStructure.dim_eq, PivotalStructure.dim_eq]; ring
+
+/-- **Settling `J` is proving (M).**  For a pivotal structure, multiplicativity of
+the dimension is equivalent to the sum identity
+`Σ_c N a b c · J a b c · κ_c = κ_a κ_b` on the double-dual twist. -/
+theorem mult_iff_twist (P : PivotalStructure S) :
+    (∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : ℝ) * dim P c)
+        = dim P a * dim P b) ↔
+      (∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : ℝ) * S.J a b c * S.kappa c)
+        = S.kappa a * S.kappa b) := by
+  have hne : ∀ a b : Fin n, P.pVal a * P.pVal b ≠ 0 :=
+    fun a b => mul_ne_zero (P.pVal_ne_zero a) (P.pVal_ne_zero b)
+  constructor
+  · intro h a b
+    have h' := h a b
+    rw [sum_dim_eq P a b, dim_mul_dim P a b] at h'
+    exact mul_left_cancel₀ (hne a b) h'
+  · intro h a b
+    rw [sum_dim_eq P a b, dim_mul_dim P a b, h a b]
+
+/-- The per-channel form (K) implies the sum form (M), hence multiplicativity:
+sum (K) against the FP-dimensions and use that these are a character. -/
+theorem twist_sum_of_perChannel (hFP : S.ring.FPData) (hn : 0 < n)
+    (hK : ∀ a b : Fin n, ∀ c : Fin n, 0 < S.ring.N a b c →
+      S.J a b c = hFP.fpdim c * S.kappa a * S.kappa b /
+        (S.kappa c * hFP.fpdim a * hFP.fpdim b)) :
+    ∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : ℝ) * S.J a b c * S.kappa c)
+      = S.kappa a * S.kappa b := by
+  intro a b
+  have hfa : hFP.fpdim a ≠ 0 := ne_of_gt (hFP.pos a)
+  have hfb : hFP.fpdim b ≠ 0 := ne_of_gt (hFP.pos b)
+  calc (∑ c : Fin n, (S.ring.N a b c : ℝ) * S.J a b c * S.kappa c)
+      = ∑ c : Fin n, (S.ring.N a b c : ℝ) *
+          (hFP.fpdim c * S.kappa a * S.kappa b / (hFP.fpdim a * hFP.fpdim b)) := by
+        apply Finset.sum_congr rfl
+        intro c _
+        rcases Nat.eq_zero_or_pos (S.ring.N a b c) with h0 | hpos
+        · rw [h0]; simp
+        · rw [hK a b c hpos]
+          have hk := S.kappa_ne_zero c
+          field_simp
+    _ = (S.kappa a * S.kappa b / (hFP.fpdim a * hFP.fpdim b)) *
+          (∑ c : Fin n, (S.ring.N a b c : ℝ) * hFP.fpdim c) := by
+        rw [Finset.mul_sum]
+        apply Finset.sum_congr rfl
+        intro c _
+        ring
+    _ = (S.kappa a * S.kappa b / (hFP.fpdim a * hFP.fpdim b)) *
+          (hFP.fpdim a * hFP.fpdim b) := by
+        rw [fpdim_char hFP hn a b]
+    _ = S.kappa a * S.kappa b := by
+        field_simp
+
+end SettleJ
+
 end FusionCategory

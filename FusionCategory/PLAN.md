@@ -456,13 +456,38 @@ Consequently:
   further input;
 * `eq_abs_of_pseudoUnitary` — ENO's `|V|² = FPdim(V)²` from the total equality.
 
-So step 1 is closed *modulo multiplicativity of the dimension*, which is the
-`mult` field of `IsPseudoUnitaryPivotal` — the same input 8.23 needs anyway.  In
-this signature `mult` is not free (it is (M), and `Vec^ω_{(Z/2)²}` with `J ≡ 1`
-fails it), so the honest statement of what remains for step 1 is: derive
-multiplicativity of `dim P` from the pivotal data, i.e. settle `J`.  That is the
-precise sense in which step 1 and the `J`-problem are the same problem, and the
-reason the earlier hope that the `T`-matrix would bypass it is wrong.
+**Settling `J`, and why it cannot be done by defining it.**  `Prop821.lean` now
+records the exact shape of the problem:
+
+* `sum_dim_eq`, `dim_mul_dim`, `mult_iff_twist` — for a pivotal structure,
+  multiplicativity of the dimension (`Σ_c N a b c d_c = d_a d_b`) is *equivalent*
+  to the sum identity **(M)** `Σ_c N a b c · J a b c · κ_c = κ_a κ_b` on the
+  twist.  So "settle `J`" = "prove (M)";
+* `twist_sum_of_perChannel` — (K), the per-channel form, implies (M): sum (K)
+  against the FP-dimensions, which by `fpdim_char` is a character.
+
+So the honest `J` is characterised by (M), and (M) is not a definition: setting
+`J := κ_aκ_b/κ_c` (or the FPdim-normalised coboundary) makes (M) true by
+construction, and would then make `eno823_of_pseudoUnitary` apply to *every*
+datum — which `YangLee.not_eno823` refutes.  A settlement has to derive `J` from
+`(F, ev, coev)` as the monoidal structure of `(−)**`, i.e. the chainmail
+`J = ψ_{b*,a*;c*}/ψ_{a,b;c}` with `ψ` the unique evaluation-intertwining
+comparison, and then prove (M) for it.  What is known:
+
+* pointed data: `J = δ(κ) = κ_aκ_b/κ_{a+b}`, proved (swarm `smvzybdp8`, m3) and
+  verified independently — this is the one class where the settlement is done;
+* every non-pointed example in the repo (Fibonacci, Ising, the Tambara-Yamagami
+  family) has `κ = FPdim`, so `δ(κ) = 1` and `J ≡ 1`: they cannot distinguish
+  the honest twist from the coboundary, and the direct `φ`-evaluation of
+  `docs/honest_twist_check.py` confirms `J = δ(κ)` there too;
+* general multiplicity-free data: the closed form of `ψ` is open.  The reason it
+  is hard, stated precisely: through a channel the comparison `ψ` involves the
+  associator at the *non-simple* object `a⊗b`, so evaluating it needs the
+  F-blocks composed across the channel decomposition, and the index bookkeeping
+  is where both `Ω` and m1's formula went wrong.
+
+So the settlement is a real computation, not bookkeeping, and it is the last
+piece of step 1.
 
 **The hypothesis, restored, and the theorem that follows from it.**  Since
 `ENO823` is false without pseudo-unitarity, `PseudoUnitary.lean` now carries it:
