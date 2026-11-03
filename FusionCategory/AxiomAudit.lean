@@ -57,6 +57,15 @@ open FusionCategory.Examples
 #print axioms exists_spherical_of_coboundary
 #print axioms eno823_of_twist_coboundary
 
+-- The same reduction with no pointedness hypothesis, in the kappa-normalised
+-- twist: ENO 8.23 becomes the single per-channel identity for `twistNorm`
+#print axioms twistNorm_eq_J
+#print axioms dim_eq_twistNorm
+#print axioms exists_pivotal_of_twistNorm
+#print axioms exists_spherical_of_twistNorm
+#print axioms eno823_of_twistNorm
+#print axioms twistNorm_eq_fpdim_ratio_of_dim_eq
+
 -- The second witness: non-trivial associator, two pivotal structures
 #print axioms VecZ2Twisted.kappa_g
 #print axioms VecZ2Twisted.system

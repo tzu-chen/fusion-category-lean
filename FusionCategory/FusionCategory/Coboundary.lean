@@ -163,4 +163,169 @@ theorem eno823_of_twist_coboundary (S : FusionSystem n k) (hFP : S.ring.FPData)
 
 end Eno
 
+/-!
+## The `kappa`-normalised twist: the reduction with no pointed hypothesis
+
+Everything above goes through the hypothesis `KappaMultiplicative`, which holds
+only for pointed `C`.  The general statement uses the twist in the duality
+normalisation,
+
+  `twistNorm a b c = J a b c * kappa c / (kappa a * kappa b)`,
+
+which coincides with `J` exactly when `kappa` is multiplicative
+(`twistNorm_eq_J`).  With it the reduction is unconditional:
+
+* for **every** pivotal structure, `dim P c = twistNorm a b c * dim P a * dim P b`
+  (`dim_eq_twistNorm`) — so a pivotal structure's dimension is always a
+  coboundary of the normalised twist;
+* conversely a nonzero `d` with `d 1 = 1` and `d c = twistNorm a b c * d a * d b`
+  *is* the dimension of a pivotal structure (`exists_pivotal_of_twistNorm`), and
+  it is spherical when `d` is invariant under `*` (`exists_spherical_of_twistNorm`).
+
+So ENO 8.23 is *equivalent* to the single per-channel identity
+
+  `FPdim c = twistNorm a b c * FPdim a * FPdim b`   (on every fusion channel),
+
+with no hypothesis on `kappa` at all: `eno823_of_twistNorm` is the backward
+direction and `twistNorm_eq_fpdim_ratio_of_dim_eq` the forward one.  Equivalently,
+solving for `J`,
+
+  `J a b c = FPdim c * kappa a * kappa b / (kappa c * FPdim a * FPdim b)`.
+
+That identity is the whole remaining content of ENO 8.23 in this signature, and
+it is *not* a consequence of the axioms of `FusionSystem`: `J` is data there,
+constrained only by the unit, dual and coherence laws, so a system may carry a
+coherent `J` for which no pivotal structure exists.  Pseudo-unitarity — a
+condition on Hom spaces and Hermitian forms, which the multiplicity-free
+skeleton does not see — is what has to produce it.
+-/
+
+section TwistNorm
+
+variable {S : FusionSystem n k}
+
+/-- The double-dual twist in the duality normalisation of `kappa`: the scalar a
+pivotal structure has to make a coboundary, with no pointedness hypothesis. -/
+def twistNorm (S : FusionSystem n k) (a b c : Fin n) : k :=
+  S.J a b c * S.kappa c / (S.kappa a * S.kappa b)
+
+/-- In the pointed situation the normalised twist is the twist. -/
+theorem twistNorm_eq_J (hκ : KappaMultiplicative S) {a b c : Fin n}
+    (hN : 0 < S.ring.N a b c) : twistNorm S a b c = S.J a b c := by
+  unfold twistNorm
+  rw [hκ a b c hN]
+  exact mul_div_cancel_right₀ _ (mul_ne_zero (S.kappa_ne_zero a) (S.kappa_ne_zero b))
+
+/-- **A pivotal structure's dimension is a coboundary of the normalised twist**,
+for any `kappa` whatsoever. -/
+theorem dim_eq_twistNorm (P : PivotalStructure S) (a b c : Fin n)
+    (hN : 0 < S.ring.N a b c) :
+    dim P c = twistNorm S a b c * dim P a * dim P b := by
+  have hp : P.pVal c = S.J a b c * P.pVal a * P.pVal b := P.p_mon a b c hN
+  have ha := S.kappa_ne_zero a
+  have hb := S.kappa_ne_zero b
+  have hc := S.kappa_ne_zero c
+  rw [dim_eq, dim_eq, dim_eq, hp]
+  unfold twistNorm
+  field_simp
+
+/-- **Conversely**, a nonzero normalised dimension function is a pivotal
+structure's dimension. -/
+theorem exists_pivotal_of_twistNorm (d : Fin n → k) (hd : ∀ i, d i ≠ 0)
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      d c = twistNorm S a b c * d a * d b)
+    (hn : 0 < n) (hd0 : d ⟨0, hn⟩ = 1) (hκ0 : S.kappa ⟨0, hn⟩ = 1) :
+    ∃ P : PivotalStructure S, ∀ i : Fin n, dim P i = d i := by
+  have hne : ∀ i, d i / S.kappa i ≠ 0 :=
+    fun i => div_ne_zero (hd i) (S.kappa_ne_zero i)
+  let p : Fin n → kˣ := fun i => Units.mk0 (d i / S.kappa i) (hne i)
+  have hval : ∀ i, (p i : k) = d i / S.kappa i := fun _ => rfl
+  refine ⟨⟨p, ?_, ?_⟩, ?_⟩
+  · intro hn'
+    apply Units.ext
+    have h0 : (⟨0, hn'⟩ : Fin n) = ⟨0, hn⟩ := by simp
+    show (p ⟨0, hn'⟩ : k) = ((1 : kˣ) : k)
+    rw [hval, h0, hd0, hκ0]
+    norm_num
+  · intro a b c hN
+    have hJ' : d c = S.J a b c * S.kappa c / (S.kappa a * S.kappa b) * d a * d b := by
+      simpa only [twistNorm] using hJ a b c hN
+    rw [hval, hval, hval, hJ']
+    have ha := S.kappa_ne_zero a
+    have hb := S.kappa_ne_zero b
+    have hc := S.kappa_ne_zero c
+    field_simp
+  · intro i
+    show (p i : k) * S.kappa i = d i
+    rw [hval, div_mul_cancel₀ _ (S.kappa_ne_zero i)]
+
+/-- The spherical case: `d` invariant under `*`. -/
+theorem exists_spherical_of_twistNorm (d : Fin n → k) (hd : ∀ i, d i ≠ 0)
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      d c = twistNorm S a b c * d a * d b)
+    (hn : 0 < n) (hd0 : d ⟨0, hn⟩ = 1) (hκ0 : S.kappa ⟨0, hn⟩ = 1)
+    (hdual : ∀ i, d (S.ring.dual i) = d i) :
+    ∃ P : PivotalStructure S, P.IsSpherical ∧ ∀ i : Fin n, dim P i = d i := by
+  obtain ⟨P, hP⟩ := exists_pivotal_of_twistNorm (S := S) d hd hJ hn hd0 hκ0
+  exact ⟨P, fun i => by rw [hP (S.ring.dual i), hP i, hdual i], hP⟩
+
+section EnoNorm
+
+variable [Algebra ℝ k]
+
+/-- **ENO 8.23, with no pointedness hypothesis.**  If the `kappa`-normalised
+twist is the coboundary of the FP-dimensions, a spherical pivotal structure
+with `dim = FPdim` exists.  Compare `eno823_of_twist_coboundary`, which needs
+`KappaMultiplicative`. -/
+theorem eno823_of_twistNorm (S : FusionSystem n k) (hFP : S.ring.FPData)
+    (hn : 0 < n) (hκ0 : S.kappa ⟨0, hn⟩ = 1)
+    (hmap : ∀ r : ℝ, algebraMap ℝ k r = 0 → r = 0)
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      twistNorm S a b c = algebraMap ℝ k (hFP.fpdim c) /
+        (algebraMap ℝ k (hFP.fpdim a) * algebraMap ℝ k (hFP.fpdim b))) :
+    ENO823 S hFP := by
+  have hd : ∀ i, algebraMap ℝ k (hFP.fpdim i) ≠ 0 := by
+    intro i h
+    exact (ne_of_gt (hFP.pos i)) (hmap _ h)
+  have hd0 : algebraMap ℝ k (hFP.fpdim ⟨0, hn⟩) = 1 := by
+    rw [hFP.unit_one hn, map_one]
+  have hdual : ∀ i, algebraMap ℝ k (hFP.fpdim (S.ring.dual i))
+      = algebraMap ℝ k (hFP.fpdim i) := by
+    intro i; rw [hFP.dual_eq i]
+  have hJ' : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      algebraMap ℝ k (hFP.fpdim c) =
+        twistNorm S a b c * algebraMap ℝ k (hFP.fpdim a) *
+          algebraMap ℝ k (hFP.fpdim b) := by
+    intro a b c hN
+    have ha := hd a
+    have hb := hd b
+    rw [hJ a b c hN]
+    field_simp
+  exact exists_spherical_of_twistNorm (S := S) _ hd hJ' hn hd0 hκ0 hdual
+
+/-- **The converse half**: a pivotal structure whose dimensions are the
+FP-dimensions forces the normalised twist to be the FP-dimension coboundary.
+Together with `eno823_of_twistNorm` this makes ENO 8.23 *equivalent* to that
+single per-channel identity. -/
+theorem twistNorm_eq_fpdim_ratio_of_dim_eq (S : FusionSystem n k)
+    (hFP : S.ring.FPData) (P : PivotalStructure S)
+    (hmap : ∀ r : ℝ, algebraMap ℝ k r = 0 → r = 0)
+    (hdim : ∀ i : Fin n, dim P i = algebraMap ℝ k (hFP.fpdim i))
+    (a b c : Fin n) (hN : 0 < S.ring.N a b c) :
+    twistNorm S a b c = algebraMap ℝ k (hFP.fpdim c) /
+      (algebraMap ℝ k (hFP.fpdim a) * algebraMap ℝ k (hFP.fpdim b)) := by
+  have hd : ∀ i, algebraMap ℝ k (hFP.fpdim i) ≠ 0 := by
+    intro i h
+    exact (ne_of_gt (hFP.pos i)) (hmap _ h)
+  have h := dim_eq_twistNorm (S := S) P a b c hN
+  rw [hdim c, hdim a, hdim b] at h
+  rw [h]
+  have ha := hd a
+  have hb := hd b
+  field_simp
+
+end EnoNorm
+
+end TwistNorm
+
 end FusionCategory

@@ -285,6 +285,33 @@ That can only be proved once `J` is derived from `ev`, `coev` and `F` in
 general, which is why the `F`-twisted case of `DoubleDual.lean` is the next
 piece.  The `F`-twisted census for Fibonacci and Ising is the concrete test.
 
+**The pointed hypothesis is now gone.**  `KappaMultiplicative` restricted the
+reduction to pointed `C`; the general statement uses the twist in the duality
+normalisation, `twistNorm a b c = J a b c * kappa c / (kappa a * kappa b)`,
+which is `J` exactly when `kappa` is multiplicative.  In `Coboundary.lean`:
+
+* `dim_eq_twistNorm` — for **every** pivotal structure,
+  `dim P c = twistNorm a b c * dim P a * dim P b`, with no hypothesis on
+  `kappa`; so a pivotal dimension is always a coboundary of `twistNorm`;
+* `exists_pivotal_of_twistNorm`, `exists_spherical_of_twistNorm` — conversely a
+  nonzero `d` with `d 1 = 1` and that equation *is* the dimension of a pivotal
+  structure, spherical when `d` is `*`-invariant;
+* `eno823_of_twistNorm` and its converse `twistNorm_eq_fpdim_ratio_of_dim_eq`.
+
+Consequently, in this signature `ENO823` is **equivalent** to the single
+per-channel identity
+
+    FPdim c = twistNorm a b c * FPdim a * FPdim b,   i.e.
+    J a b c = FPdim c * kappa a * kappa b / (kappa c * FPdim a * FPdim b),
+
+and that identity is the whole of what remains.  It is not a consequence of the
+axioms of `FusionSystem`: `J` is data there, constrained only by its unit, dual
+and coherence laws, so a system may carry a coherent `J` admitting no pivotal
+structure at all.  Pseudo-unitarity — a condition on Hom spaces and Hermitian
+forms, invisible to a multiplicity-free skeleton where every Hom space is
+one-dimensional — is what has to supply it.  `ENO823` still carries no
+hypothesis expressing that, which is the substantive gap, not the algebra above.
+
 **Upstream dependencies (pinned):**
 
 * `leanprover/lean4:v4.33.1` with `mathlib` `0df444a3` — already pinned by `haagerup-odd/`
