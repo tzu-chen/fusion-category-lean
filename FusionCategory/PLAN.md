@@ -230,8 +230,28 @@ used has `a** = a`, so nothing is lost for the examples, but the general
 statement is the displayed one and a `FusionSystem` with `i** ≠ i` is not
 representable.
 
-**Not derived:** the independent diagram evaluation (above); the case
-`(−)** ≠ id` on labels; and the analytic input for `ENO823`.
+Three further results from the same swarm, worth keeping:
+
+* **the pointed case is proved, not checked.**  In a pointed category the
+  tensor product and both dualities are canonical identifications of
+  one-dimensional spaces, so the comparison `ν_{a,b} : (a⊗b)* → b* ⊗ a*` is
+  `1` and hence `J ≡ 1` identically — for every 3-cocycle and whatever `κ` is,
+  including the asymmetric `κ` of `Vec^ω_{Z/3}`.
+* **`ψ` and `θ` are not gauge-invariant objects.**  Rescaling the channel
+  projections leaves every `F`-entry and every `ev`/`coev` unchanged but sends
+  `θ(a,b;c) ↦ t^c_{ab} t^{c*}_{a*b*} θ(a,b;c)`, so only *ratios* such as `J`
+  are meaningful.  A from-scratch diagram evaluator can therefore test the
+  snake normalisation (it does: `κ_τ = φ` for Fibonacci in
+  Temperley–Lieb(φ), with no `F`-data, against the naive `φ²`) but not the
+  individual `Ω` values.
+* **`FusionSystem` does not carry the triangle axiom** for a unit in the middle
+  (`F^{a 1 c}_d(a,c) = δ`).  Neither example needs it — their middle-unit
+  entries are `1` — but a signature that claims to be a skeletal monoidal
+  category should carry it, and it is the one axiom of Mac Lane's list that is
+  missing.
+
+**Not derived:** the independent diagram evaluation of `J` itself (above); the
+case `(−)** ≠ id` on labels; and the analytic input for `ENO823`.
 
 ## ENO 8.23: the sharp form
 
