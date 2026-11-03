@@ -1,0 +1,1884 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage[colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,urlcolor=blue!45!black]{hyperref}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{accent}{RGB}{20,52,96}
+\definecolor{soft}{RGB}{238,242,247}
+
+\titleformat{\section}{\normalfont\Large\bfseries\color{accent}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{accent}}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Machine-checked dimension theory for fusion categories}
+\fancyhead[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{question}[theorem]{Question}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\FPdim}{\mathrm{FPdim}}
+\newcommand{\Vect}{\mathrm{Vec}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\dual}[1]{#1^{*}}
+\newcommand{\dd}[1]{#1^{**}}
+\newcommand{\field}{\Bbbk}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Cx}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+
+\setlength{\emergencystretch}{3em}
+
+\setlist[itemize]{topsep=2pt,itemsep=1pt,parsep=0pt}
+\setlist[enumerate]{topsep=2pt,itemsep=2pt,parsep=0pt}
+
+\title{\vspace{-1.2cm}\textbf{Machine-Checked Dimension Theory\\ for Fusion Categories}\\[0.35cm]
+\large A research proposal: pivotal and spherical structures, the double-dual twist,\\ and a verified proof of Etingof--Nikshych--Ostrik Proposition~8.23}
+\author{Tzu-Chen Huang}
+\date{November 2026 \quad\textbar\quad proposal v1.0 \quad\textbar\quad repository state \texttt{d3d320e}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+This proposal sets out a research programme whose central target is the first machine-checked
+proof of Etingof--Nikshych--Ostrik Proposition~8.23: \emph{every pseudo-unitary fusion
+category admits a unique spherical structure whose dimensions are the Frobenius--Perron
+dimensions}. The theorem is the standard bridge from an analytic hypothesis (one scalar
+equation on the global dimension) to the algebraic structure that all of dimension theory
+presupposes, and it is used as a black box throughout the classification literature. No
+formal proof of it exists, and the categorical infrastructure on which it rests is only now
+arriving in Mathlib.
+
+The programme builds on substantial preliminary work, reported in \S\ref{sec:prelim}: a
+skeletal formalisation of multiplicity-free rigid fusion data with a proved inhabitant; a
+corrected duality normalisation that inhabits Fibonacci and Ising over $\R$; a reduction of
+the target to a single per-channel identity on the double-dual twist; a formalised proof of
+ENO Proposition~8.21; and a reconstruction of ENO's own route through the square root
+$a$ of the quadruple-dual isomorphism. Two of these results are negative and change the
+shape of the target: ENO~8.23 is \emph{false} without its pseudo-unitarity hypothesis
+(a kernel-checked two-simple counterexample, the Yang--Lee category), and the number and
+identity of pivotal structures is not a function of the fusion ring
+(a kernel-checked twisted $\Vect^{\omega}_{\Z/2}$ model). The proposal turns these findings
+into a three-aim programme: a faithful and inhabitable formal signature together with its
+bridge to Mathlib's emerging pivotal and spherical category theory; a derivation of the
+double-dual twist from the duality data and a proof of the multiplicativity identity that
+ENO's argument identifies with the trace identity; and a formalisation of ENO's analytic
+core, yielding Proposition~8.23 with positivity and uniqueness exactly as stated.
+Deliverables include an axiom-clean Lean~4 library, a verified negative-result note, upstream
+Mathlib contributions, and a documented methodology for auditing formal statements against
+their sources.
+\end{abstract}
+
+\vspace{0.2cm}
+
+\begin{center}
+\begin{minipage}{0.94\textwidth}
+\colorbox{soft}{%
+\begin{minipage}{0.92\textwidth}
+\vspace{0.15cm}
+\small
+\textbf{At a glance.}\par\vspace{3pt}
+\begin{tabularx}{\textwidth}{@{}lL@{}}
+\textbf{Object} & Pivotal and spherical structures on fusion categories, and ENO Prop.~8.23.\\
+\textbf{Method} & Skeletal finite data in Lean~4 (pinned to Mathlib \texttt{0df444a3}); exact arithmetic in
+$\Z[\sqrt d]$; kernel-checked counterexamples; axiom audit; bridge to Mathlib's categorical layer.\\
+\textbf{Already done} & $\sim$5{,}200 lines, 23 modules, 3{,}032-job green build, 73 audited
+declarations at \texttt{[propext, Classical.choice, Quot.sound]}, no \texttt{sorry}.\\
+\textbf{Still open} & Derivation of the twist $J$ and the identity (M); the positivity step; the
+general (non-self-dual, non-multiplicity-free) signature; the categorical bridge.\\
+\textbf{Horizon} & 24 months, 7 work packages, 12 numbered deliverables.\\
+\end{tabularx}
+\vspace{0.15cm}
+\end{minipage}}
+\end{minipage}
+\end{center}
+
+\newpage
+
+{\footnotesize\tableofcontents}
+
+\newpage
+
+\section{Introduction}
+
+\subsection{Dimension theory sits between decidable combinatorics and open structure}
+
+A fusion category over a field $\field$ is a $\field$-linear, semisimple, rigid monoidal category with
+finitely many simple objects and $\mathrm{End}(\one) = \field$. Its Grothendieck ring $K_0(\C)$ is
+finite, decidable data: a finite set $I$ of simples, integers $N_{ij}^k = \dim \mathrm{Hom}(X_k, X_i
+\otimes X_j)$, a duality involution $i \mapsto i^*$. Almost everything one wants to compute about
+$\C$ --- dimensions, the global dimension, Frobenius--Schur indicators, the $T$-matrix of a
+modular category, the state sum of a three-manifold --- depends on more than this ring, but less
+than the full category.
+
+The intermediate datum is a \emph{pivotal structure}: a monoidal isomorphism
+$\gamma \colon \Id \to (-)^{**}$. It yields a dimension $\dim_\gamma(X) = \mathrm{tr}(\gamma_X)$
+for every object, and a \emph{spherical} structure --- one with $\dim_\gamma(X) =
+\dim_\gamma(\dual{X})$ --- is what makes the trace cyclic and therefore produces invariants of
+oriented manifolds rather than of framed ones.
+
+Two facts locate the research problem precisely.
+
+\begin{enumerate}[label=(\alph*)]
+\item \emph{The dimension function is not a function of the fusion ring.} This is not a
+philosophical remark: the present project contains a kernel-checked witness
+(\S\ref{sec:prelim}, \code{VecZ2Twisted}). The category $\Vect^\omega_{\Z/2}$ with non-trivial
+cocycle carries two pivotal structures whose dimensions on the non-trivial simple are $+1$ and
+$-1$ respectively. Any formalisation that treats ``the dimension'' as determined by the fusion
+rules is therefore wrong, and the first version of this project's pivotal axiom was wrong in
+exactly that way.
+\item \emph{Whether a pivotal structure exists is open in general.} Etingof--Nikshych--Ostrik
+conjectured that every fusion category is pivotal (ENO, Conjecture~2.8); the spherical
+strengthening is stronger still. What is known is a sufficient condition of a different
+character: pseudo-unitarity.
+\end{enumerate}
+
+\subsection{The theorem that bridges the two}
+
+ENO Proposition~8.23 states that a pseudo-unitary fusion category --- one whose categorical
+global dimension equals its Frobenius--Perron global dimension --- admits a \emph{unique}
+pivotal structure, which is spherical, and with respect to which the categorical dimensions of
+all simple objects are positive and equal to their Frobenius--Perron dimensions.
+
+The proposition is used as a black box across the classification programme: in Ostrik's
+analysis of pivotal fusion categories of rank~3 and the resulting inequality, in the
+Haagerup--Izumi existence problem, in the passage from unitary anyon data to modular data, and
+in every place where one writes down a spherical category from a fusion ring plus positivity.
+It is, in a precise sense, the lemma that makes the rest of the subject work.
+
+\subsection{Why formalise, and why this is not transcription}
+
+A referee reading a two-page proof in a 2005 Annals paper cannot check, line by line, that the
+gauge chosen for the associator is the one in which the evaluation and coevaluation have the
+normalisation the argument assumes. A proof assistant can. The empirical case for this
+proposal is that when the present project first wrote down the statement, four defects
+surfaced, every one of them invisible to a reader checking that the formulas \emph{looked}
+right:
+
+\begin{enumerate}[label=\textbf{D\arabic*.},leftmargin=2.2em]
+\item \textbf{The signature had no inhabitants.} The two unit axioms of the skeletal fusion
+datum were mutually inconsistent for $n \ge 2$: evaluated at $(0,b,0,d,b,0)$ they forced
+$1 = 0$. Every theorem quantified over the structure was therefore vacuous, including a
+``proof'' of the target theorem.
+\item \textbf{The pentagon was not the pentagon.} The axiom called \code{pentagon} had eight
+free labels where the $F$-matrix pentagon requires ten, and it fails on
+$\Vect^{\omega}_{\Z/2}$ for \emph{every} cocycle $\omega$, the trivial one included. A green
+build certified a false axiom.
+\item \textbf{The pivotal axiom fixed the twist to one.} \code{p_fusion} assumed
+$J \equiv 1$, where $J$ is the monoidal structure of $(-)^{**}$. With that assumption every
+fusion-rule table is pivotal via $p \equiv 1$, and the target theorem became provable with no
+hypothesis at all --- the formal statement had drifted so far from the source that it asserted
+something false.
+\item \textbf{The second snake used the wrong inverse.} It wrote the right snake with a
+reciprocal of an associator \emph{entry} where the $(0,0)$-entry of the \emph{matrix inverse} of
+the associator block is required. The two agree for pointed categories and differ for
+Fibonacci, so the axiom excluded the two principal examples.
+\end{enumerate}
+
+Each defect was found by making the statement inhabitable and checking it against the examples,
+not by re-reading it. This is the methodological thesis of the proposal: in this subject the
+value of formalisation lies less in the final certificate than in the audit that produces it,
+and the audit is transferable.
+
+\subsection{What has already been established}\label{sec:whatdone}
+
+The preliminary results of \S\ref{sec:prelim} are not a plan; they are a library. In summary:
+
+\begin{itemize}
+\item a skeletal signature for multiplicity-free rigid fusion data, with a proved inhabitant
+($\Vect_{\Z/2}$) and the pentagon checked on all $512$ label tuples;
+\item a corrected duality normalisation, with the inverse associator carried as data, that
+inhabits Fibonacci and Ising over $\R$ --- every field proved, including both snakes --- and
+yields the spherical pivotal structure with $\dim = \FPdim$ for both;
+\item a proof that a pivotal dimension is always a coboundary of the normalised double-dual
+twist, and that ENO~8.23 is \emph{equivalent} to one per-channel identity on that twist;
+\item a formalised ENO Proposition~8.21: the spectral bound $|d_i| \le \FPdim_i$ for any
+dimension function satisfying the eigenvector equation, together with the equality case;
+\item a kernel-checked refutation of the target as stated without hypotheses (Yang--Lee), and a
+second witness that pivotal structures are not determined by the fusion ring;
+\item a reconstruction of ENO's own proof route --- the square root $a$ of the quadruple-dual
+isomorphism, its monoidality defect $b$, and the trace identity --- together with a proof that
+ENO's trace identity \emph{is} the multiplicativity identity that the twist reduction isolates.
+\end{itemize}
+
+The library builds (3{,}032 jobs, warnings only), contains no \texttt{sorry}, and its axiom
+audit over 73 declarations reports \texttt{[propext, Classical.choice, Quot.sound]} throughout.
+
+\subsection{What is not yet established}
+
+The gap is now sharp, and it is not the algebra. It is the passage from a Hermitian structure on
+a pseudo-unitary category to positivity and multiplicativity of a chosen dimension function ---
+ENO's analytic argument: Proposition~8.21 turns the \emph{sum} equality
+$\sum_i |d_i|^2 = \sum_i \FPdim_i^2$ into a termwise equality $|d_i| = \FPdim_i$, and two
+tensor automorphisms ($\sigma = d^2/|d|^2$ and $\tau = d/|d|$) then produce the pivotal
+structure with positive dimensions. Alongside it, and logically prior to it, sits a defect of
+the signature rather than of the mathematics: the twist $J$ is carried as data constrained by
+four laws, not derived from $(\mathrm{ev}, \mathrm{coev}, F)$. Until it is derived, the
+statement ``$p$ is pivotal'' mentions an object the mathematics does not fix.
+
+\subsection{Research questions}
+
+\begin{description}[leftmargin=1.6em,style=nextline]
+\item[Q1 (Signature).] What is the weakest finite-data signature that is (i) inhabited by the
+standard examples, (ii) strong enough to express pivotality and sphericity faithfully, and
+(iii) provably equivalent to the abstract categorical notion?
+\item[Q2 (Twist).] Is the double-dual twist $J$ determined by $(F, \mathrm{ev}, \mathrm{coev})$?
+If so, what is its closed form, and does it satisfy the multiplicativity identity (M)?
+\item[Q3 (Analytic core).] Can ENO's proof of Proposition~8.23 be carried out inside the
+skeleton, taking as input only the pseudo-unitarity equation $\dim \C = \FPdim \C$?
+\item[Q4 (Frontier).] What is the largest statement provable \emph{without} pseudo-unitarity ---
+that is, what exactly is the content of ENO Conjecture~2.8 in a pivotal-free formalism, and
+which of its consequences survive as theorems about torsion in the universal grading group?
+\item[Q5 (Method).] Which failure modes of formalising monoidal category theory are
+systematic, and can they be detected mechanically rather than by luck?
+\end{description}
+
+\subsection{Structure of the proposal}
+
+\S\ref{sec:background} fixes notation and states the target precisely. \S\ref{sec:prior}
+surveys prior work, mathematical and formal. \S\ref{sec:prelim} reports the preliminary
+results in enough detail to be checked. \S\ref{sec:programme} sets out the seven work packages
+and their milestones. \S\ref{sec:techniques} describes the techniques, including the ones that
+failed. \S\ref{sec:risk}--\S\ref{sec:deliverables} give risks, timeline and deliverables.
+\S\ref{sec:significance} argues for significance. Three appendices record the module
+inventory, the audit protocol, and the Lean statements of the main targets.
+
+\section{Background}\label{sec:background}
+
+\subsection{Fusion categories and fusion rings}
+
+\begin{definition}
+A \emph{fusion category} over a field $\field$ is a $\field$-linear abelian, semisimple, rigid monoidal
+category $\C$ with finitely many isomorphism classes of simple objects, such that
+$\mathrm{End}_\C(\one) \simeq \field$ and the tensor product is bilinear and exact in each variable.
+We write $I$ for the set of isomorphism classes of simples, $X_i$ for a representative, $0 \in I$
+for the class of $\one$, and $i \mapsto i^*$ for the duality involution determined by
+$\mathrm{Hom}(X_i \otimes X_j, \one) \neq 0 \iff j = i^*$.
+\end{definition}
+
+The Grothendieck ring $K_0(\C)$ has $\Z$-basis $(X_i)$ and structure constants
+\[
+X_i X_j = \sum_{k \in I} N_{ij}^{k} X_k, \qquad N_{ij}^k = \dim_\field \mathrm{Hom}(X_k, X_i \otimes X_j) \in \N .
+\]
+In this proposal a \emph{fusion ring} is the resulting abstract datum
+$R = (N, (-)^*, 0)$: the multiplicities, the duality involution, and the unit. The axioms used
+are those of a based ring: $N_{ij}^0 = \delta_{j,i^*}$; associativity
+$\sum_k N_{ij}^k N_{kl}^m = \sum_k N_{jl}^k N_{ik}^m$; and compatibility of the involution with
+the product. Commutativity is \emph{not} assumed.
+
+\begin{definition}
+A fusion ring is \emph{multiplicity-free} if $N_{ij}^k \in \{0,1\}$ for all $i,j,k$. It is
+\emph{pointed} if every simple object is invertible, i.e.\ $N_{ij}^k \in \{0,1\}$ and
+$\sum_k N_{ij}^k = 1$ for all $i,j$.
+\end{definition}
+
+Multiplicity-freeness is not a convenience in this project: with $N > 1$ the associator is a
+matrix between multi-dimensional Hom spaces, and a single scalar $F^{abc}_d(e,f)$ cannot hold
+it. The restriction is discussed in \S\ref{sec:tech-mult}.
+
+\subsection{The Frobenius--Perron dimension}
+
+\begin{theorem}[Frobenius--Perron, for fusion rings]\label{thm:pf}
+Let $R$ be a fusion ring with $n$ classes. There is a unique function $f \colon I \to \R_{>0}$
+with $f_0 = 1$ and
+\begin{equation}\label{eq:fpchar}
+f_i f_j = \sum_{k} N_{ij}^{k} f_k \qquad \text{for all } i,j \in I .
+\end{equation}
+Moreover $f_{i^*} = f_i$, each $f_i$ is an algebraic integer, and if the fusion graph is
+connected then $f$ is the Perron--Frobenius eigenvector of every fusion matrix.
+\end{theorem}
+
+The number $f_i$ is the \emph{Frobenius--Perron dimension} $\FPdim(X_i)$, and
+$\FPdim(\C)^2 = \sum_i f_i^2$ is the Frobenius--Perron global dimension. Note that
+\eqref{eq:fpchar} is the \emph{character} form: $f$ is a ring homomorphism $K_0(\C) \to \R$.
+
+In the present library Theorem~\ref{thm:pf} is not proved: the existence and uniqueness of $f$
+is packaged as a structure \code{FPData}, supplied by hand for each example. Discharging it from
+Mathlib's Perron--Frobenius development is a deliverable (\S\ref{sec:programme}, WP0), not a
+research risk: the relevant material exists upstream as a chain of pull requests
+(\S\ref{sec:prior}).
+
+\subsection{Duality, pivotal structures, and the double-dual twist}\label{sec:pivotaldef}
+
+Rigidity supplies, for each object $X$, an evaluation $\mathrm{ev}_X \colon \dual{X} \otimes X
+\to \one$ and a coevaluation $\mathrm{coev}_X \colon \one \to X \otimes \dual{X}$ satisfying the
+two snake equations. In a skeleton, both are scalars, and the composite
+\[
+\kappa_i \;=\; \mathrm{ev}_i \cdot \mathrm{coev}_i \;\in\; \field^\times
+\]
+is the loop scalar of $X_i$. It is \emph{not} the dimension: the dimension depends on a choice
+of identification of $X$ with its double dual.
+
+\begin{definition}
+A \emph{pivotal structure} on $\C$ is a monoidal natural isomorphism
+$\gamma \colon \Id_\C \to (-)^{**}$. Its \emph{dimension} is
+$\dim_\gamma(X) = \mathrm{tr}(\gamma_X \colon X \to X^{**})$, computed as the composite of
+$\gamma_X$ with the evaluation of the right dual. The structure is \emph{spherical} if
+$\dim_\gamma(X) = \dim_\gamma(\dual{X})$ for every $X$.
+\end{definition}
+
+Two remarks are essential and both cost the project a rewrite.
+
+\begin{remark}[The twist]\label{rem:twist}
+The functor $(-)^{**}$ is monoidal, and its monoidal structure is \emph{not} the identity. Write
+$J_{ij}^{k}$ for the scalar of $X_i^{**} \otimes X_j^{**} \to (X_i \otimes X_j)^{**}$ on the
+channel $k$. Then a pivotal structure on a skeleton is exactly a family
+$(p_i)_{i \in I} \subset \field^\times$ with
+\begin{equation}\label{eq:pivotal}
+p_0 = 1, \qquad p_k = J_{ij}^{k}\, p_i\, p_j \quad \text{whenever } N_{ij}^k > 0,
+\end{equation}
+and the resulting dimension is
+\begin{equation}\label{eq:dim}
+\dim_i \;=\; p_i \, \kappa_i .
+\end{equation}
+Sphericity becomes
+\begin{equation}\label{eq:sph}
+\dim_{i^*} = \dim_i \ \ \forall i
+\qquad\Longleftrightarrow\qquad
+\kappa_{i^*} = p_i^{2}\, \kappa_i \ \ \forall i .
+\end{equation}
+\end{remark}
+
+\begin{remark}[The trap]\label{rem:trap}
+It is tempting to assume that a skeleton can always be chosen with $(-)^{**} = \mathrm{id}$ on
+labels, so that \eqref{eq:pivotal} reads $p_k = p_i p_j$. That assumption is \emph{precisely}
+pivotality: identifying the left and the right dual of an object is the content of a pivotal
+structure, and it is what need not exist. The project adopted this claim once, on the strength
+of a plausible argument that $X^*$ is both a left and a right dual of $X$; the argument is
+wrong, and the claim is retracted in \texttt{PLAN.md}. A signature that builds the assumption
+in cannot express the general case.
+\end{remark}
+
+\subsection{Pseudo-unitarity and the target}
+
+\begin{definition}[ENO \S8.4]
+A fusion category $\C$ is \emph{pseudo-unitary} if $\dim \C = \FPdim \C$, where $\dim \C$ is the
+categorical global dimension computed with respect to any pivotal structure. In the skeleton
+this is an equation without a pivotal structure in it:
+\begin{equation}\label{eq:pseudo}
+\sum_{i \in I} \kappa_i \, \kappa_{i^*} \;=\; \sum_{i \in I} f_i^{2} .
+\end{equation}
+\end{definition}
+
+The equality \eqref{eq:pseudo} is form-independent because $\dim_i \dim_{i^*} = \kappa_i
+\kappa_{i^*}$ for every pivotal structure; the library proves this as \code{dim_mul_dim_dual}.
+
+\begin{theorem}[ENO Proposition~8.23; EGNO Theorem~9.6.10]\label{thm:eno823}
+Let $\C$ be a pseudo-unitary fusion category. Then $\C$ admits a pivotal structure $\gamma$;
+$\gamma$ is spherical; $\dim_\gamma(X) > 0$ for every $X \neq 0$; $\dim_\gamma(X_i) =
+\FPdim(X_i)$ for every simple $X_i$; and $\gamma$ is the unique such structure.
+\end{theorem}
+
+The two supporting results that ENO use are:
+
+\begin{theorem}[ENO Proposition~8.21]\label{thm:eno821}
+Let $d \colon I \to \Cx$ satisfy the eigenvector equation $\sum_j N_{ij}^k d_j = d_i d_k$ for all
+$i,k$. Then $|d_i| \le \FPdim_i$ for all $i$. If moreover $\sum_i |d_i|^2 = \sum_i \FPdim_i^2$,
+then $|d_i| = \FPdim_i$ for all $i$.
+\end{theorem}
+
+\begin{theorem}[ENO Theorem~2.6, after Radford]\label{thm:quad}
+For any fusion category there is a monoidal natural isomorphism $g \colon \Id \to (-)^{****}$.
+\end{theorem}
+
+Theorem~\ref{thm:quad} is taken as a hypothesis in this project (\S\ref{sec:prelim}): proving it
+requires the weak Hopf algebra machinery of ENO \S4--5 and is explicitly out of scope.
+Conjecture~2.8 of ENO --- that every fusion category admits a pivotal structure --- is not
+attacked directly; WP4 in \S\ref{sec:programme} explains what the programme can say about it.
+
+\subsection{The skeletal point of view and what it costs}
+
+The formalisation works with finite data over a field $\field$:
+\[
+\bigl( N_{ij}^k,\ i^*, \ F^{abc}_d(e,f),\ F^{-1},\ \mathrm{ev}_i,\ \mathrm{coev}_i,\ J_{ij}^k \bigr)
+\]
+subject to the pentagon, the unit normalisations, the two inverse laws for the associator, the
+two snake equations, and the twist laws. This is the ``$F$-symbol'' presentation familiar from
+the anyon-model literature, and it has three costs, each addressed by a work package.
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{No abstract coherence.} A skeletal datum is a category only after a reconstruction
+theorem. WP5 supplies the bridge to Mathlib's categorical definitions and deletes the vendored
+patch once the upstream pull requests land.
+\item \textbf{No labels with $i^{**} \neq i$.} The type of $J$ has no slot for a label transport,
+and \code{p_mon} reads $p_k = J_{ij}^k p_i p_j$ with $k$ the channel of $i \otimes j$. Every
+model in the library has $i^{**} = i$. WP1 repairs the signature; until then the F-free
+coherence law for $J$ is the correct law only in that case.
+\item \textbf{Multiplicity-freeness.} WP1 also relaxes $N \le 1$; \S\ref{sec:tech-mult}
+explains why this is a separate development rather than a tweak.
+\end{enumerate}
+\section{Prior work}\label{sec:prior}
+
+\subsection{The mathematical sources}
+
+\paragraph{The source theorem.}
+The target is Etingof--Nikshych--Ostrik, \emph{On fusion categories}, Annals of Mathematics
+\textbf{162} (2005), 581--642 \cite{ENO}. The relevant material is \S2.2 (the quadruple dual),
+\S3 (the $T$-matrix and the bound), and \S8.4 (pseudo-unitarity and the spherical structure).
+Two numbering conventions circulate: the published Annals version states the result as
+Proposition~8.23, while the arXiv version (\texttt{math/0203060v2}) states it as
+Proposition~8.22, one lower throughout \S8.4. This proposal follows the Annals numbering and
+the library cites the number on every use; mis-numbering this proposition has already caused one
+wrong citation in the project's own plan.
+
+\paragraph{The textbook treatment.}
+EGNO, \emph{Tensor Categories} \cite{EGNO}, Chapter~9 states the theorem as Theorem~9.6.10 with
+the corollaries 9.6.11--9.6.12, and is the more readable treatment. It is also the source of the
+convention that a pivotal structure is a monoidal isomorphism $\Id \to (-)^{**}$ rather than a
+choice of duals, which matters: the two formulations differ by a twist.
+
+\paragraph{An independent, coordinate-free proof.}
+Bartlett, \emph{Fusion categories via string diagrams} \cite{Bartlett1502}, gives a graphical
+development of exactly the results this project needs, and is the single most useful prior work
+for the proposed derivation of $J$:
+\begin{itemize}
+\item Theorem~3.28 and Corollary~3.30: the quadruple dual functor is monoidally isomorphic to
+the identity (ENO Theorem~2.6);
+\item Theorem~4.17: an \emph{explicit formula} for the pivotal operators
+$T^{i}_{jk}$ --- the monoidal coherence of the canonical pivotal endofunctor --- as the product
+of the \emph{apex associator monodromy} and the \emph{pivotal indicators}; this is the closed
+form the present project is missing for $J$;
+\item Theorem~5.4: pivotal structures on a (unitary) fusion category correspond exactly to
+tuples $(\gamma_i) \subset U(1)$ satisfying $\gamma_j \gamma_k = \gamma_i T^{i}_{jk}$ on every
+fusion channel, and sphericality is $\gamma_i = \pm 1$ for all $i$;
+\item Corollary~5.5: a pseudo-unitary fusion category admits a canonical spherical structure
+(the same statement as the target);
+\item \S5.3: the \emph{sphericalization} $\widetilde{\C}$ of $\C$ by the canonical $\Z/2$-action
+--- the categorical form of the cover construction of WP4 in \S\ref{sec:programme}.
+\end{itemize}
+Theorem~5.4 is the cleanest available check on any derived formula for $J$: the two conventions
+are reciprocal (the present library's $p_k = J^{k}_{ij} p_i p_j$ against Bartlett's
+$\gamma_i = \gamma_j\gamma_k / T^{i}_{jk}$), and an index-level comparison gives an independent
+confirmation that does not go through the snake axioms at all. WP2 includes this comparison as
+an acceptance test.
+
+\paragraph{Applications and the shape of the literature.}
+Ostrik \cite{Ostrik1309} analyses pivotal fusion categories of rank three and derives the
+inequality \[
+\sum_i d_i^{2} \;\ge\; \sum_i \bigl|\,\textstyle\sum_j N_{ij}^{k} d_j\bigr|^{2}/\dots
+\]
+that pins down the possible dimension functions; it is the place where ``pivotal + positive +
+spherical'' is used as a computational tool rather than as a structural hypothesis, and it is the
+template for the negative tests of WP6. The Haagerup--Izumi programme and the author's own work
+\cite{Huang2609} use the theorem at a different point, to convert coefficient identities
+(analytic) into a spherical structure (algebraic). Frobenius--Schur indicator theory
+\cite{NgSchauenburg} is the other major consumer of the same layer: indicators are traces of
+pivotal structures composed with the duality, and their integrality is a sphericity statement.
+
+\paragraph{What is \emph{not} in the literature.}
+(a) No proof of ENO Conjecture~2.8 (every fusion category is pivotal); the spherical version is
+strictly stronger and equally open. The counterexamples to naive expectations are of two kinds:
+categories with no pivotal structure at all are not known, but categories where the dimension
+depends on the pivotal structure are \emph{abundant} (the present project has a kernel-checked
+one, \S\ref{sec:prelim}). (b) No computation of the double-dual twist $J$ in closed form for
+general multiplicity-free data; Bartlett's Theorem~4.17 is the closest, and it is stated through
+graphical monodromy rather than as an $F$-matrix formula ready for formalisation.
+
+\subsection{The formalisation landscape}
+
+\paragraph{Mathlib.}
+\code{CategoryTheory.Monoidal.Rigid.Basic} provides \code{RigidCategory} (left and right rigid
+monoidal categories), with the file itself listing ``define pivotal categories'' as future work.
+There is no pivotal, spherical, or fusion category in Mathlib at the pinned revision, and no
+Perron--Frobenius theory for general irreducible non-negative matrices (only
+\code{Matrix.IsIrreducible}). The relevant upstream work is in flight:
+\begin{itemize}
+\item \textbf{PR \#42145}, \emph{the double right dual functor is monoidal} (+233/-4): defines
+\code{doubleRightDualFunctor} and its monoidal structure;
+\item \textbf{PR \#42150}, \emph{pivotal categories} (+370/-13 in 5 files): defines
+\code{PivotalCategory} as a rigid category with a monoidal natural isomorphism between the
+double dual functor and the identity; currently open and labelled
+\emph{blocked-by-other-PR} on \#42145;
+\item \textbf{PRs \#42191} (spherical) and \textbf{\#42192} (symmetric rigid is
+spherical), which build on \#42150;
+\item the Perron--Frobenius chain \textbf{\#39914--\#39922}, whose declarations
+\code{PerronFrobenius.Irreducible}, \code{pft_irreducible}, \code{collatzWielandt} and
+\code{spectralRadius} supply the spectral theory the fusion-matrix argument needs.
+\end{itemize}
+The project's convention is to vendor a byte-compatible copy under
+\code{FusionCategory/MathlibPatches/} and to delete it, importing instead, when the pull requests
+merge. At the time of writing the vendored copies are stubs: \code{PivotalCategory.lean} is 33
+lines and \code{PerronFrobenius.lean} is 22. This is honest debt, and WP0/WP5 repay it.
+
+\paragraph{Other formal and semi-formal resources.}
+Alphabeta Math's generated library page \emph{Unitary Fusion Spaces, F/R Symbols, and Anyon
+Models} \cite{Alphabeta} has multiplicity-aware fusion trees, the $F$-symbol as a recoupling
+matrix, the pentagon in fusion-tree coordinates, gauge covariance, and explicit Fibonacci and
+Ising carriers; it is pipeline-generated with provenance labels and is not a proof assistant
+development. TNLean \cite{TNLean} is a blueprint project on tensor networks whose anyon chapter
+treats quantum-double models --- a different object (microscopic lattice models rather than
+abstract fusion data). AnyonWiki \cite{AnyonWiki} supplies $F/R$/pivotal tables in a fixed gauge
+for multiplicity-free categories up to rank seven; it is \emph{data}, not code, and the present
+project's Fibonacci and Ising conventions follow it rather than being derived afresh.
+
+\paragraph{Conclusion.}
+There is no formalisation of pivotal or spherical fusion categories anywhere, and the
+categorical infrastructure is landing in Mathlib during the period of this proposal. The
+strategic consequence is fixed: keep the skeletal layer aligned with \#42150/\#42191 naming,
+stub the bridge, and delete the patch when it merges. Reimplementing rigid category theory
+would be wasted effort; the value added here is the finite-data layer, the examples, the
+counterexamples, and the theorem.
+
+\subsection{The author's prior formalisation}\label{sec:haagerup}
+
+The sibling package \code{haagerup-odd/} in the same repository is a completed formalisation of
+the main theorem of \cite{Huang2609}: \code{exists_EGEquations_odd}, the existence of the
+Evans--Gannon equations for the cyclic Haagerup--Izumi categories at every odd order.
+It comprises 115 modules and 24{,}295 lines, with 1{,}162 theorems and lemmas, no
+\texttt{sorry}, and an axiom audit reporting \texttt{[propext, Classical.choice, Quot.sound]}.
+It is pinned to the same toolchain as this project (Lean \texttt{v4.33.1}, Mathlib
+\texttt{0df444a3}).
+
+Its relevance to this proposal is threefold. First, \emph{feasibility}: the proposed library is
+roughly a fifth of that development in size, and the working method (finite data, exact
+arithmetic, per-file builds, an axiom audit in CI) is the one already proven at that scale.
+Second, \emph{conventions}: both packages present fusion data as $F$-symbols with fixed gauges,
+and the Haagerup--Izumi coefficients are the natural large-scale instance for WP6. Third,
+\emph{scope discipline}: that development stops at Chapter~9 of the source manuscript and
+excludes the categorical reconstruction, exactly as this one excludes the weak Hopf algebra
+input of ENO \S4--5.
+
+\section{Preliminary results}\label{sec:prelim}
+
+This section reports what is already proved, in enough detail to be checked, and marks each
+claim with its epistemic status:
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Status} & \textbf{Meaning} \\
+\midrule
+kernel & proved in Lean 4; in \code{AxiomAudit.lean}; axioms within budget \\
+kernel (witness) & a structure is exhibited and its fields are proved in Lean \\
+script & verified by exhaustive computation in Python (\code{docs/*.py}), not formalised \\
+conjecture & stated in \texttt{PLAN.md}, no proof \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{The formal signature}
+
+The library separates the ring from the category. \code{FusionRing n} carries
+$N \colon \mathrm{Fin}\,n \to \mathrm{Fin}\,n \to \mathrm{Fin}\,n \to \N$, the involution
+\code{dual}, the unit at $0$, associativity, and the two duality axioms. \code{FusionSystem n k}
+extends it with the categorical data:
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.46\textwidth}L@{}}
+\toprule
+\textbf{Field(s)} & \textbf{Content} \\
+\midrule
+\code{mult_free} & $N_{ij}^k \le 1$ \\
+\code{F}, \code{F_support} & the associator $F^{abc}_d(e,f)$, vanishing off the channels \\
+\code{pentagon} & the ten-label pentagon \\
+\code{F_unit_left}, \code{F_unit_right} & unit normalisations at $a = 1$ and $c = 1$ \\
+\code{Finv}, \code{Finv_support}, \code{Finv_comp}, \code{F_comp_inv} & the inverse
+associator and its two inverse laws \\
+\code{ev}, \code{coev}, \code{ev_ne_zero}, \code{coev_ne_zero} & the duality scalars \\
+\code{snake_left}, \code{snake_right} & the two snake equations \\
+\code{J}, \code{J_ne_zero}, \code{J_unit_left}, \code{J_unit_right}, \code{J_dual},
+\code{J_coherent} & the double-dual twist and its four laws \\
+\bottomrule
+\end{tabularx}
+\end{center}
+A pivotal structure is then a family $p \colon \mathrm{Fin}\,n \to \field^\times$ with $p_0 = 1$ and
+$p_k = J_{ij}^{k} p_i p_j$ on every fusion channel; the dimension is $\dim_i = p_i \kappa_i$ with
+$\kappa_i = \mathrm{ev}_i \mathrm{coev}_i$; sphericity is $\dim_{i^*} = \dim_i$.
+
+The one design decision that deserves comment is \code{Finv}. The associator at fixed
+$(a,b,c,d)$ is a square matrix whose rows are the channels of $b \otimes c$ and whose columns
+are the channels of $a \otimes b$; these are \emph{different} subsets of $\mathrm{Fin}\,n$, so
+there is no canonical way to present the inverse as a matrix indexed by $\mathrm{Fin}\,n$. The
+project therefore carries $\alpha^{-1}$ as data with its two inverse laws. This is not
+pedantry: the right snake equation needs the entry $(\alpha^{-1})^{(0,0)}$, and getting this
+wrong excluded Fibonacci and Ising from the formalism (\S\ref{sec:snake}).
+
+\subsection{Four defects, and what caught them}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lLLl@{}}
+\toprule
+& \textbf{Symptom} & \textbf{Diagnosis} & \textbf{Regression test} \\
+\midrule
+\textbf{D1} & every theorem vacuous & unit axioms inconsistent at $(0,b,0,d,b,0)$ for $n\ge2$ &
+\code{VecZ2.system} \\
+\textbf{D2} & ``pentagon'' fails on $\Vect^{\omega}_{\Z/2}$, all $\omega$ & eight free labels
+instead of ten & 512-tuple check \\
+\textbf{D3} & target provable with no hypothesis & \code{p_fusion} fixed $J \equiv 1$ &
+\code{VecZ2Twisted} witness with $\kappa_g = -1$ \\
+\textbf{D4} & Fibonacci, Ising uninhabitable & reciprocal used for matrix inverse in
+\code{snake_right} & $\mathrm{Fib}$, $\mathrm{Ising}$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+D1--D3 share a signature: a statement that \emph{looks} like its source but quantifies over an
+empty or over-constrained type. D4 is different --- a genuine mathematical error in a
+normalisation --- and it is the one that took three attempts (\S\ref{sec:snake}). The lesson
+recorded in the plan is that ``the build is green'' certifies nothing about the statement; only
+inhabitation and an independent computation do.
+
+\subsection{The duality normalisation}\label{sec:snake}
+
+\begin{theorem}[Snake normalisation; kernel]\label{thm:snake}
+Let $\kappa_i = \mathrm{ev}_i\,\mathrm{coev}_i$. In a skeletal rigid datum the two snake
+equations are equivalent to
+\[
+\kappa_i \; F^{i\,i^*\,i}_{i}(0,0) = 1
+\qquad\text{and}\qquad
+\kappa_i \; \bigl(F^{i^*\,i\,i^*}_{i^*}\bigr)^{-1}(0,0) = 1 ,
+\]
+where the second factor is the $(0,0)$-entry of the \emph{matrix inverse} of the associator
+block, not the reciprocal of the single entry $F^{i^* i i^*}_{i^*}(0,0)$.
+\end{theorem}
+
+The two readings agree exactly when the block is $1 \times 1$ --- true for every pointed
+category, which is why the earlier ``$\kappa/F$'' correction sufficed for
+$\Vect^{\omega}_{\Z/3}$ --- and differ as soon as a self-dual simple has a $2\times 2$ block.
+Fibonacci is the minimal case: with the gauge $F^{\tau\tau\tau}_{\tau} =
+\begin{psmallmatrix} 1/\varphi & 1 \\ 1/\varphi & -1/\varphi\end{psmallmatrix}$ the left snake
+gives $\kappa_\tau = \varphi$, the reciprocal reading demands $\kappa_\tau = 1/\varphi$, and the
+matrix-inverse reading gives $\varphi \cdot (1/\varphi) = 1$ because the block is an involution.
+The library proves that the wrong reading fails (\code{Fibonacci.swapped_Finv_comp_ne_one}),
+so the correction is itself regression-tested.
+
+Consequences, all kernel-checked:
+\begin{itemize}
+\item \code{FibonacciSystem : FusionSystem 2} and
+\code{IsingSystem : FusionSystem 3}, both over $\R$, with
+every field proved: pentagon, both unit laws, both inverse laws, both snakes;
+\item the pivotal structure $p \equiv 1$ is spherical for both, with
+$\dim = (1,\varphi)$ and $\dim = (1,\sqrt2, 1) = \FPdim$;
+\item $\Vect_{\Z/2}$ still inhabits the structure, so the correction did not buy the examples at
+the cost of the trivial case;
+\item the finite checks are done by \emph{exact} arithmetic in $\Z$: each entry is an integer pair
+$(p,q)$ denoting $(p + q\sqrt d)/2$ in $\Q(\sqrt d)$, and \code{decide} verifies the identities.
+There is no \code{norm_num} over the reals and no \code{native_decide}.
+\end{itemize}
+The cost is compile time: the file takes about 100 seconds, so the package build is about three
+minutes.
+
+\begin{remark}[Statement of the snake in the general case]
+The same computation in a non-skeletal category produces two extra structural maps (the
+duality comparison and the unit constraint). The skeletal form above is the image of the
+general snake under the equivalence, and the correspondence is the content of WP5's bridge; it
+is \emph{not} obvious and should not be assumed silently.
+\end{remark}
+
+\subsection{The double-dual twist, and the two identities}\label{sec:twist}
+
+\begin{theorem}[Pivotal dimension is a coboundary; kernel]\label{thm:cob}
+Let $P$ be a pivotal structure and define the normalised twist
+\[
+\tau^{c}_{ab} \;=\; J^{c}_{ab}\cdot \frac{\kappa_c}{\kappa_a \kappa_b}.
+\]
+Then for every fusion channel,
+\[
+\dim_P(c) \;=\; \tau^{c}_{ab}\;\dim_P(a)\,\dim_P(b).
+\]
+Consequently $\dim_P$ is multiplicative on the fusion ring if and only if
+\begin{equation}\label{eq:M}
+\sum_{c} N_{ab}^{c}\, J_{ab}^{c}\, \kappa_c \;=\; \kappa_a \kappa_b
+\qquad \text{for all } a,b \qquad\qquad \textbf{(M)}
+\end{equation}
+and ENO~8.23 is equivalent to the per-channel identity
+\begin{equation}\label{eq:K}
+J_{ab}^{c} \;=\; \frac{f_c\,\kappa_a\kappa_b}{\kappa_c\, f_a f_b}
+\qquad\text{on every channel with } N_{ab}^{c} > 0. \qquad\qquad \textbf{(K)}
+\end{equation}
+\end{theorem}
+
+The equivalence is two theorems in the library, not one: \code{eno823_of_twistNorm} proves
+(K) $\Rightarrow$ ENO~8.23, and \code{twistNorm_eq_fpdim_ratio_of_dim_eq} proves the
+converse. Together with \code{mult_iff_twist} ((M) $\Leftrightarrow$ multiplicativity of
+$\dim_P$) they make the target a statement about $(N, J, \kappa)$ alone.
+
+Two consequences deserve emphasis.
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{(K) is not invariant under the vertex gauge.} Rescaling
+$\mathrm{coev}_i \mapsto \lambda_i \mathrm{coev}_i$, $\mathrm{ev}_i \mapsto
+\mathrm{ev}_i/\lambda_i$ preserves the snakes and fixes $\kappa$, but multiplies the defect
+$\Delta^{c}_{ab} = J^{c}_{ab}\kappa_c f_a f_b/(f_c \kappa_a \kappa_b)$ by $t_a t_b/t_c$ with
+$t_i = \lambda_i/\lambda_{i^*}$. So (K), hence the target, survives only the duality
+normalisation $\lambda_{i^*} = \lambda_i$. The repair is to add $\mathrm{ev}_{i^*} =
+\mathrm{ev}_i$ as an axiom, or to define $\dim_i = p_i\,\mathrm{coev}_i\,\mathrm{ev}_{i^*}$.
+This is a defect of the signature, not of the mathematics, and WP1 fixes it.
+\item \textbf{On the coevaluation channel (K) is $J$-free.} On $(i,i^*;1)$ the axiom
+$J^{1}_{ii^*} = 1$ applies, so (K) reads
+\begin{equation}\label{eq:C}
+\kappa_i\,\kappa_{i^*} = f_i^{2} \quad \text{for all } i, \qquad\qquad \textbf{(C)}
+\end{equation}
+which is exactly sphericity of $p = f/\kappa$. Hence (K) $\Rightarrow$ (C) is a two-line
+theorem, while (C) $\Rightarrow$ (K) is ENO~8.23. The residual mathematical content is therefore
+\emph{pseudo-unitarity} $\Rightarrow$ (C): a statement about $\kappa$ and $f$ only, with no $J$
+in it.
+\end{enumerate}
+
+\subsection{Refutations}\label{sec:refute}
+
+\begin{theorem}[Yang--Lee; kernel]\label{thm:yanglee}
+There is a complete skeletal rigid datum \code{YangLee.system} over $\R$ ---
+Fibonacci's fusion ring, associator $F^{\tau\tau\tau}_{\tau} =
+\begin{psmallmatrix} -\varphi & 1 \\ -\varphi & \varphi\end{psmallmatrix}$, $\mathrm{ev} \equiv 1$,
+$\mathrm{coev}_\tau = -1/\varphi$, whence $\kappa = (1, -1/\varphi)$ --- satisfying the pentagon
+on all $2^9$ label tuples, both unit laws, both inverse laws and both snakes, such that
+\[
+\neg\,\code{ENO823}\ \code{YangLee.system}\ \code{FibonacciFPData}.
+\]
+Indeed $\kappa_\tau\kappa_{\tau^*} = 1/\varphi^2 \neq \varphi^2 = f_\tau^2$, and on the channel
+$(\tau,\tau;1)$ the axiom $J^{1}_{\tau\tau} = 1$ forces $1 = \varphi^4$ for any pivotal
+structure with $\dim = \FPdim$.
+\end{theorem}
+
+Three things follow, and they shape the whole programme.
+\begin{enumerate}[label=(\alph*)]
+\item ENO~8.23 is \textbf{false} as an implication from the axioms of a rigid fusion datum. The
+missing hypothesis is pseudo-unitarity, and no condition on $J$ can replace it: the
+contradiction uses only $J^{1}_{\tau\tau} = 1$, which is an axiom.
+\item The counterexample is \emph{two-simple}. There is no hope that a rank threshold excludes
+it, and any formalisation that omits positivity will silently prove a false theorem --- which is
+what the first version of this project did.
+\item Yang--Lee is not pseudo-unitary, which is exactly ENO's own remark. The formal statement
+\code{YangLee.not_pseudoUnitary} records the numerical failure
+$\sum_i \kappa_i\kappa_{i^*} = 1 + \varphi^{-2} \neq 1 + \varphi^{2}$.
+\end{enumerate}
+
+\begin{theorem}[Pivotal structures are not ring-theoretic; kernel (witness)]\label{thm:vec}
+$\Vect^{\omega}_{\Z/2}$ with the non-trivial cocycle ($F = -1$ on the $g \otimes g \otimes g \to g$
+block, duality normalisation $\kappa_g = -1$) is a \code{FusionSystem 2} over $\R$, carrying two pivotal
+structures: $p \equiv 1$, with $\dim g = -1$, and $p_g = -1$, with $\dim g = 1$, which is
+spherical. The conclusion of ENO~8.23 holds for the second and fails for the first.
+\end{theorem}
+
+Theorem~\ref{thm:vec} is the counterexample to ``the dimension is a function of the fusion
+ring''. It also shows why pseudo-unitarity is the right hypothesis rather than a technical
+convenience: it selects, among the pivotal structures, the one with positive dimensions.
+
+\begin{remark}[A third witness, at script level]
+For $\Vect^{\omega}_{(\Z/2)^2}$ with $\omega = (-1)^{a_1 b_2 c_1}$ one has
+$\kappa = (1,1,1,-1)$, which is not a character of $(\Z/2)^2$. With $J \equiv 1$, (M) fails;
+with $J = \delta(\kappa) = \kappa_a\kappa_b/\kappa_c$ it holds. This computation is in
+\code{docs/pointed_twist_check.py} and is \emph{not} yet kernel-checked. It is the reason the
+signature must not add $J^{2} = 1$ as an axiom: for $\Vect^{\omega}_{(\Z/3)^2}$ with
+$\omega = \zeta^{a_1 b_2 c_1}$ the honest twist squares to a primitive cube root of unity, and
+that category is unitary, so such an axiom would exclude a category to which the theorem
+applies.
+\end{remark}
+
+\subsection{ENO Proposition 8.21}\label{sec:821}
+
+\begin{theorem}[ENO 8.21; kernel, modulo \code{DimEigen}]\label{thm:821}
+Let $R$ be a fusion ring with \code{FPData} and let $d \colon I \to \R$ satisfy
+$\sum_j N_{ij}^{k} d_j = d_i d_k$ for all $i,k$. Then $|d_i| \le f_i$ for all $i$. If moreover
+$\sum_i |d_i|^{2} = \sum_i f_i^{2}$ then $|d_i| = f_i$ for all $i$.
+\end{theorem}
+
+The proof formalised is ENO's: the weighted norm $\|x\| = \sum_j f_j |x_j|$ is submultiplicative
+on the eigenvector equation, and \code{fpdim_char} --- the fact that $f$ is a \emph{character},
+$f_i f_j = \sum_k N_{ij}^{k} f_k$ --- bounds it by $f_i$. Two index conventions occur
+($N_{ij}^{k}$ against $N_{i}^{jk}$), and the library proves the cyclic symmetry
+$N_{ij}^{k} = N_{jk^*}^{i}$ needed to pass between them (\code{cyclic}, \code{cyclic1},
+\code{cyclic2}); the repo's axioms do not otherwise connect the second and third slots.
+
+The equality case is \code{eq_abs_of_sum_sq}, and \code{abs_dim_le_fpdim_of_pseudoUnitary}
+discharges \code{DimEigen} from multiplicativity, so ENO's $|V|^{2} = \FPdim(V)^{2}$ is available
+for any pivotal structure whose dimension is multiplicative.
+
+\begin{remark}[What 8.21 does not give]
+It is tempting to think that the $T$-matrix route bypasses multiplicativity. It does not. ENO's
+Remark~3.1 says that in the pivotal case the signs $\varepsilon_i$ and $b^{ik}_j$ are $1$, so
+$T^{ik}_j = N^{ik}_j$ and the eigenvector equation $T_i d = d_i\, d$ \emph{is} multiplicativity
+of the dimension. The library proves this identification (\code{tMatrix_mulVec},
+\code{abs_tMatrix}: the domination $|(T_i)_{kj}| \le N^{ik}_j$ is an equality). The non-trivial
+$b$-symbols exist only when no pivotal structure is fixed, and their role is to prove
+$\dim \C \neq 0$ without one.
+\end{remark}
+
+\subsection{ENO's own route: the square root \texorpdfstring{$a$}{a} and the \texorpdfstring{$b$}{b}-cochain}\label{sec:ab}
+
+ENO's proof does not start from a pivotal structure --- it produces one --- so a signature that
+begins with $p$ cannot express it. The library therefore also carries ENO's input.
+
+\begin{definition}[kernel, \code{SqrtData}]
+A \emph{square root of $g$} is an additive isomorphism $a \colon \Id \to (-)^{**}$ with
+$a^{2} = g$ monoidal, where $g \colon \Id \to (-)^{****}$ is ENO Theorem~2.6. In a skeleton,
+monoidality of $a^{2}$ has to be stated against $J^{2}$, because on labels $(-)^{**}$ is the
+identity: the tensorator of $(-)^{****} = (-)^{**} \circ (-)^{**}$ is $J^{2}$, not $J$.
+\end{definition}
+
+Given such an $a$, ENO set
+\[
+b^{ij}_{c} \;=\; J^{ij}_{c}\,\frac{a_i a_j}{a_c},
+\qquad
+T^{ij}_{c} \;=\; N^{ij}_{c}\, b^{ij}_{c},
+\qquad
+d_i \;=\; \mathrm{Tr}(a_i) \;=\; a_i\,\mathrm{coev}_i\,\mathrm{ev}_{i^*} .
+\]
+
+\begin{theorem}[kernel]\label{thm:ab}
+With these definitions:
+\begin{enumerate}[label=(\roman*)]
+\item $(b^{ij}_{c})^{2} = 1$ on every channel, and it follows from $a^{2} = g$ monoidal, not
+from $J^{2} = 1$ (\code{b_sq});
+\item the trace identity $d_i d_j = \sum_c T^{ij}_{c} d_c$ is \emph{equivalent} to
+\[
+\kappa'_i \kappa'_j = \sum_c N^{ij}_{c}\, J^{ij}_{c}\, \kappa'_c ,
+\qquad \kappa'_i = \mathrm{coev}_i\,\mathrm{ev}_{i^*} ,
+\]
+which is (M) with the duality normalisation $\kappa'$ (\code{trace_iff});
+\item $d_i = a_i \kappa'_i$, and $d_i = a_i \kappa_i$ only when $\mathrm{ev}_{i^*} = \mathrm{ev}_i$
+(\code{d_eq_kappa}).
+\end{enumerate}
+\end{theorem}
+
+The content of Theorem~\ref{thm:ab} is an identification, not a discovery: ENO's ``by the
+definition of $b$'' step is (M). But the identification is what dissolves an apparent fork in
+this project's plan. ``Derive $J$'' and ``assume multiplicativity'' are not two research
+programmes; they are two faces of one theorem, and the condition $J$ has to satisfy is (M)
+itself.
+
+\begin{remark}[What must not be assumed]
+\code{Cover.lean}'s \code{S4Data.g_fusion} reads $g_c = g_i g_j$ on channels. That is the
+$J = 1$ special case and is wrong in general; it must be restated against $J^{2}$. Likewise
+$J^{2} = 1$ and $b^{2} = 1$ must not be added as axioms (\S\ref{sec:refute}).
+\end{remark}
+
+\subsection{The instances, and the audit}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Datum} & \textbf{Ring} & $\field$ & $\kappa$ & \textbf{Role} \\
+\midrule
+\code{VecZ2.system} & $\Z/2$ & $\R$ & $(1,1)$ & inhabitant; pentagon on 512 tuples \\
+\code{VecZ2Twisted.system} & $\Z/2$, $\omega \neq 1$ & $\R$ & $(1,-1)$ & two pivotal structures \\
+\code{FibonacciSystem} & Fib & $\R$ & $(1,\varphi)$ & $\dim = \FPdim$, spherical \\
+\code{IsingSystem} & Ising & $\R$ & $(1,\sqrt2,1)$ & $\dim = \FPdim$, spherical \\
+\code{k2210} & $K(1,0,1)$ & $\R$ & --- & \code{FPData} certificate; $\FPdim = (1,2,1)$, $D^2 = 6$ \\
+\code{YangLee.system} & Fib & $\R$ & $(1,-1/\varphi)$ & refutes ENO823 without hypotheses \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\code{AxiomAudit.lean} runs \texttt{\#print axioms} on 73 declarations covering every result
+quoted above and reports \texttt{[propext, Classical.choice, Quot.sound]} throughout. The package
+builds in 3{,}032 jobs with warnings only. There is no \texttt{sorry} in the library (the single
+occurrence of the string is in a comment recording the axiom budget).
+
+\code{ENO823} itself is a \code{def}, not a \code{theorem}: it records the open target. The
+conditional theorem \code{eno823_of_pseudoUnitary} takes positivity and multiplicativity of a
+chosen pivotal dimension as hypotheses (\code{IsPseudoUnitaryPivotal}) together with
+\code{PFUnique}, and concludes the theorem. Both hypotheses are necessary: positivity fails on
+Yang--Lee, and multiplicativity fails on $\Vect^{\omega}_{(\Z/2)^2}$ with $J \equiv 1$.
+
+\subsection{The exact gap}
+
+Stated as a list, the gap between the present library and the target is:
+
+\begin{enumerate}[label=(\Alph*)]
+\item \textbf{The twist is data, not derived.} $J$ is constrained by four laws and no closed
+form is known for general multiplicity-free data. Consequences: \code{p_mon} mentions an
+undetermined object, and (M) does not follow from the four twist laws as such --- a datum may
+carry an arbitrary coherent $J$, and on $\Vect^{\omega}_{(\Z/2)^2}$ with $J \equiv 1$ it fails ---
+so (M) has to come from the derivation of $J$, not from the axioms.
+\item \textbf{The analytic step is absent.} Positivity of a dimension function on a
+pseudo-unitary category, and the two twists $\sigma = d^{2}/|d|^{2}$, $\tau = d/|d|$ that ENO use
+to normalise it, are not formalised.
+\item \textbf{The signature is narrower than the mathematics.} No triangle axiom; no labels with
+$i^{**} \ne i$; multiplicity-freeness assumed; $\mathrm{ev}_{i^*} = \mathrm{ev}_i$ not assumed
+(so (K) is gauge-fragile).
+\item \textbf{The cover and grading layer is scaffolding.} \code{coverGlobalDim_double} is a
+reindexing identity on $\sum d^{2}$; \code{coverCanonicalPivotal} returns the input scalar with
+no \code{PivotalStructure}; the three former axioms of \code{Grading.lean} are gone and their
+content is a theorem plus two \code{def}s recording open targets.
+\item \textbf{No bridge to Mathlib.} \code{MathlibPatches/} is a stub, and \code{FPData} is
+supplied by hand.
+\end{enumerate}
+
+These five items are the work packages of \S\ref{sec:programme}.
+\section{Research programme}\label{sec:programme}
+
+\subsection{Three aims, and the logical geography of the target}
+
+The programme has three aims, corresponding to Q1--Q3, and one exploratory strand for Q4.
+
+\begin{description}[leftmargin=2.2em,style=nextline]
+\item[A1 (Signature).] A formal signature for fusion data that is inhabited, faithful, and
+provably equivalent to the abstract notion: triangle axiom, general double-dual permutation,
+multiplicities, gauge-invariant duality normalisation, and a bridge to Mathlib's
+\code{PivotalCategory}.
+\item[A2 (Twist).] The double-dual twist $J$ derived from $(F, \mathrm{ev}, \mathrm{coev})$,
+with its four laws and its general pentagon proved, so that ``$p$ is pivotal'' becomes a
+well-posed predicate rather than a constraint on undetermined data.
+\item[A3 (Theorem).] A formal proof of ENO~8.23 in the exact form of Theorem~\ref{thm:eno823}:
+existence, sphericity, positivity, equality with $\FPdim$, and uniqueness.
+\item[A4 (Frontier, exploratory).] The pivotal cover, the universal grading group, and the
+2-torsion obstruction: what can be said toward ENO Conjecture~2.8.
+\end{description}
+
+The logical relations between the statements are worth recording once, because the project's
+own plan confused them for several weeks. Figure~\ref{fig:logic} is the map.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=2pt, align=center, font=\small, inner sep=3.5pt},
+  lab/.style={font=\scriptsize, inner sep=1.5pt, fill=white},
+  ar/.style={-{Stealth[length=2mm]}, thin},
+  dar/.style={-{Stealth[length=2mm]}, thin, dashed}]
+\node[box, text width=2.0cm] (J) at (0,0) {derived $J$\\ (WP2)};
+\node[box, text width=2.6cm] (piv) at (3.3,0) {pivotal structures\\ well-posed};
+\node[box, text width=3.9cm] (K) at (8.2,0) {\textbf{(K)} per channel\\ $J^{c}_{ab} = f_c\kappa_a\kappa_b/(\kappa_c f_af_b)$};
+\node[box, text width=3.9cm] (C) at (8.2,-1.75) {\textbf{(C)} sphericity\\ $\kappa_i\kappa_{i^*} = f_i^{2}$};
+\node[box, text width=3.1cm] (M) at (4.1,-1.75) {\textbf{(M)} summed\\ $\sum_c N^{c}_{ab}J^{c}_{ab}\kappa_c = \kappa_a\kappa_b$};
+\node[box, text width=1.9cm] (E) at (0.7,-3.55) {ENO 8.23};
+\draw[ar] (J) -- (piv);
+\draw[ar] (piv) -- (K);
+\draw[ar, <->] (K) -- node[lab, right] {$\Longleftrightarrow$} (C);
+\draw[ar] (K.south west) -- (M.north east);
+\node[lab] at (6.15,-0.62) {sum over $c$};
+\draw[ar] (E) -- (M);
+\node[lab] at (2.35,-2.42) {necessary};
+\draw[dar] (C.south) to[out=-100, in=-20, looseness=1.15] node[lab, below] {the theorem} (E.east);
+\end{tikzpicture}
+\caption{The logical geography. (K), (C) and ENO~8.23 are mutually equivalent:
+(K)$\Rightarrow$(C) is a two-line computation on the coevaluation channel, (C)$\Rightarrow$(K)
+is the theorem, and (K) is the coboundary form of the target. (M) is strictly weaker ---
+Yang--Lee satisfies it and fails the target --- so ENO~8.23 $\Rightarrow$ (M) is the only
+implication available between them. The derivation of $J$ is logically prior: it makes the other
+boxes statements about determined objects. Dashed: the direction that carries the analytic
+content.}
+\label{fig:logic}
+\end{figure}
+
+Three readings of the figure matter for planning. First, \textbf{(M) is not the target}: it is
+multiplicativity of whichever dimension function is at hand, it holds for Yang--Lee, and it is
+strictly weaker than (K). Second, \textbf{(K) and (C) are the target}, and the content of the
+theorem is the passage from pseudo-unitarity to (C) --- an equation in $\kappa$ and $f$ alone,
+with no $J$. Third, \textbf{the derivation of $J$ does not prove anything about the target}; it
+removes an undefined object from the statement. This is why A2 and A3 are separate work
+packages and why neither can be skipped.
+
+\subsection{Work packages}
+
+\subsubsection*{WP0 --- Foundations and reproducibility (months 0--4)}
+
+\paragraph{Objective.} Replace hand-supplied inputs with proved ones, and make the build
+reproducible from a clean checkout.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=0.\arabic*]
+\item Vendor the Perron--Frobenius chain (\#39914--\#39922) and define
+$\FPdim$ as the Perron root of the fusion matrix; prove Theorem~\ref{thm:pf} (existence,
+positivity, uniqueness, character form \eqref{eq:fpchar}, integrality) and delete the
+\code{FPData} hypothesis from every theorem that can do without it. Where a theorem genuinely
+needs uniqueness, replace \code{FPData} by the weaker \code{PFUnique} already isolated in
+\code{PFDim.lean}.
+\item Clean-tree CI: a fresh clone, \code{lake exe cache get}, \code{lake build}, and
+\code{lake env lean AxiomAudit.lean} as three separate gates. At present a from-clean build of
+the committed tree has never been verified --- earlier builds used a path override --- and that
+is a reproducibility debt no deliverable should inherit.
+\item A per-file build harness with a timeout, so that a 100-second example file does not block
+work on the core.
+\item \code{BLUEPRINT.md} with the module dependency graph (Figure~\ref{fig:modules}) and a
+statement-to-source table: every theorem in the library mapped to the ENO/EGNO/Bartlett
+statement it formalises, with the numbering convention recorded.
+\end{enumerate}
+\paragraph{Deliverable.} D1, D2. \quad \textbf{Success criterion.} A machine with the toolchain
+and no network builds the library and passes the audit from a clean clone.
+
+\subsubsection*{WP1 --- Hardening the signature (months 1--10)}
+
+\paragraph{Objective.} A1: make the finite-data signature express the mathematics, not a
+special case of it.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=1.\arabic*]
+\item \textbf{Triangle axiom.} Add $F^{a\,1\,c}_{d}(a,c) = \delta_{d,\dots}$, the one axiom of
+Mac Lane's list missing from the signature, and discharge it for every instance. It is
+independent of the two unit laws already present.
+\item \textbf{The double-dual permutation.} Introduce the label permutation
+$\sigma \colon \mathrm{Fin}\,n \to \mathrm{Fin}\,n$ with $\sigma i = i^{**}$ and $\sigma^2 =
+\mathrm{id}$, restate the twist coherence in its general form
+\[
+J^{e}_{ab}\, J^{d}_{ec}\, F^{abc}_{d}(e,f)
+\;=\;
+J^{f}_{bc}\, J^{d}_{af}\, F^{\sigma a\,\sigma b\,\sigma c}_{\sigma d}(\sigma e, \sigma f),
+\]
+and prove that the F-free form currently used is its $\sigma = \mathrm{id}$ degeneration.
+A word of caution that must go into the blueprint: \emph{a model with $\sigma \neq \mathrm{id}$
+is a non-pivotal fusion category}, hence a counterexample to ENO Conjecture~2.8. The general
+branch therefore cannot be tested by an example; it can only be tested by the degeneration and
+by the reconstruction theorem of WP5. This is a rare case in formalisation where the general
+statement has no inhabitant that we would be willing to exhibit.
+\item \textbf{Gauge-invariant duality normalisation.} Either add $\mathrm{ev}_{i^*} =
+\mathrm{ev}_i$ as an axiom, or redefine $\dim_i = p_i\,\mathrm{coev}_i\,\mathrm{ev}_{i^*}$ as
+ENO do. The two choices have different consequences: the first makes (K) gauge-invariant and
+kills a family of false negatives; the second matches the source but changes every instance
+proof. The proposal is to do the first, and to prove the equivalence of the two normalisations
+in the self-dual case.
+\item \textbf{Multiplicities.} Replace the scalar $F^{abc}_{d}(e,f)$ by a family of matrices
+indexed by channel bases, $\bigl(F^{abc}_{d}\bigr)_{(e,\alpha),(f,\beta)}$, with the pentagon
+stated on matrix products. This is a separate development (\S\ref{sec:tech-mult}); it must not
+be attempted by patching the multiplicity-free file, because every instance proof depends on
+\code{decide} over \code{Fin n} and would silently keep the scalar reading.
+\end{enumerate}
+\paragraph{Deliverables.} D3, D9. \quad \textbf{Success criterion.} All six existing instances
+re-verified under the hardened signature, with the same axiom budget, and the three new axioms
+proved rather than assumed.
+
+\subsubsection*{WP2 --- Deriving the double-dual twist (months 2--14)}
+
+\paragraph{Objective.} A2: $J$ as a function of $(F, \mathrm{ev}, \mathrm{coev})$.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=2.\arabic*]
+\item \textbf{The comparison map.} For each pair $(a,b)$ define the cuspidal comparison
+$\psi_{a,b} \colon \dual{(a \otimes b)} \to \dual b \otimes \dual a$ as the unique map
+intertwining the evaluations, and prove it is an isomorphism. This is a finite computation
+in the skeleton: two $F$-moves and one transported coevaluation.
+\item \textbf{The ratio formula.} Prove
+\[
+J^{c}_{ab} \;=\; \frac{\psi_{a,b}|_{c}}{\psi_{b^*,a^*}|_{c^*}},
+\]
+and, in the normalisation $\mathrm{ev}_{i^*} = \mathrm{ev}_i$, the closed form
+\[
+\Omega(a,b;c) = F^{b^*a^*c}_{0}(c^*,b)\cdot (M_b)^{-1}(0,c),
+\qquad M_b(E,c') = F^{a^*ab}_{b}(E,c'),
+\]
+and then
+\[
+J^{c}_{ab} = \Omega(b^*,a^*;c^*)/\Omega(a,b;c),
+\]
+where $M_b$ is restricted to its support (unrestricted it is rectangular --- for Ising at
+$(a,b) = (\sigma,\psi)$ it is $2 \times 1$ --- and the formula returns $0/0$), and $(M_b)^{-1}$
+is a genuine matrix inverse.
+\item \textbf{The four laws.} Prove $J^{0}_{ab} = J^{i}_{i^*0} = 1$, non-vanishing, and the
+general pentagon of Task 1.2. This is the step that turns ``$J$ is data'' into ``$J$ is
+computed'', and it is independent of pseudo-unitarity: it holds for Yang--Lee too.
+\item \textbf{Independent confirmation.} Compare with Bartlett's Theorem~4.17 (\S\ref{sec:prior})
+index by index, and with the sixteen-data-set census already in \code{docs/}. A mismatch in
+either is a defect in the derivation, not in the check.
+\end{enumerate}
+\paragraph{Deliverables.} D4. \quad \textbf{Success criterion.} The library contains no
+hypothesis on $J$ beyond the four laws, and those four laws are theorems about the derived
+object. \textbf{Explicit non-goal:} WP2 does not prove (K). Deriving $J$ turns (M) into a
+statement about a determined object; since the dimension of a pivotal category is multiplicative,
+(M) should then be a theorem, and proving it is a further acceptance test of the derivation.
+But the target is the strictly stronger per-channel identity (K), which fails for Yang--Lee, and
+that is WP3's content.
+
+\subsubsection*{WP3 --- The analytic core: from pseudo-unitarity to positivity (months 4--20)}
+
+\paragraph{Objective.} A3: ENO~8.23.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=3.\arabic*]
+\item \textbf{Construct $a$.} ENO choose $a_V \colon V \to V^{**}$ with $a_V^{2} = g_V$, and the
+content is the coherence: the monoidality defect $b$ of $a$ must satisfy $(b^{ij}_c)^{2} = 1$.
+Prove existence of such an $a$ from the monoidal isomorphism $g$ (Theorem~\ref{thm:quad}), which
+is the hypothesis the project takes. \code{SqrtData} currently \emph{assumes} $a$; this task
+constructs it.
+\item \textbf{The bound.} From the trace identity $d_i d_j = \sum_c T^{ij}_c d_c$ with
+$T^{ij}_c = N^{ij}_c b^{ij}_c$ and $|b| = 1$, derive $|d_i| \le f_i$ by ENO's weighted norm. The
+library has the weighted-norm argument (\code{abs_le_fpdim_of_eigenvector}) and the
+domination; what is missing is the passage from the $T$-matrix to the $N$-matrix, which is the
+triangle inequality $\bigl|\sum_j T^{ik}_j d_j\bigr| \le \sum_j N^{ik}_j |d_j|$.
+\item \textbf{The sum identity.} Prove $\sum_i |d_i|^{2} = \dim \C$ for $d_i = a_i \kappa'_i$,
+which under pseudo-unitarity gives $\sum_i |d_i|^{2} = \sum_i f_i^{2}$; the equality case of
+Theorem~\ref{thm:821} then yields $|d_i| = f_i$.
+\item \textbf{The two twists.} Show that $\sigma_i = d_i^{2}/|d_i|^{2}$ and $\tau_i =
+d_i/|d_i|$ are tensor autoequivalences of the skeletal datum (they act by signs on simples and
+preserve $F$, $\mathrm{ev}$, $\mathrm{coev}$), and that twisting $a$ by them produces $a'$ with
+$d' = f > 0$. Then \code{toPivotal} produces the pivotal structure with $\dim = \FPdim$.
+\item \textbf{Uniqueness and positivity.} Assemble \code{eno823_exact}: existence, positivity,
+equality with $\FPdim$, and ($\exists!$) uniqueness, using \code{pivotal_ext} and
+\code{PFUnique}. The conditional form \code{eno823_of_pseudoUnitary} already exists and is the
+checkpoint this task must reach unconditionally.
+\end{enumerate}
+\paragraph{Deliverables.} D5, D6. \quad \textbf{Success criterion.} \code{ENO823Exact} proved
+with no hypothesis other than \code{PFUnique} (or none, once WP0 discharges it), and
+\code{YangLee.not_pseudoUnitary} as the sharpness witness.
+
+\subsubsection*{WP4 --- Cover, grading, and the frontier (months 8--18)}
+
+\paragraph{Objective.} A4: the part of the theory that does not need pseudo-unitarity, stated
+precisely enough to say what is missing for ENO Conjecture~2.8.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=4.\arabic*]
+\item \textbf{The cover.} For $g \colon \Id \to (-)^{****}$ monoidal, define
+\[
+\widetilde{\C} = \bigl\{ (X, f) \;\bigm|\; f \colon X \to X^{**},\ f^{**} f = g_X \bigr\}
+\]
+with the induced tensor structure; prove it is a fusion category, $\Z/2$-graded over $\C$, that
+the forgetful functor preserves $|\cdot|^{2}$, that it carries a canonical pivotal structure
+$p_{(X,f)} = f$, and that $\dim \widetilde{\C} = 2 \dim \C$, $\FPdim \widetilde{\C} = 2
+\FPdim \C$. This is ENO Remark~3.1 and Bartlett \S5.3; the present file
+(\code{Cover.lean}) proves only a reindexing identity on $\sum d^{2}$ and returns the scalar
+$f$ without a \code{PivotalStructure} --- it is scaffolding, and the blueprint must say so.
+\item \textbf{The torsor.} Prove that pivotal structures form a torsor under
+$\mathrm{Hom}(U_{\C}, \field^\times)$, where $U_{\C}$ is the universal grading group, and identify
+the class of $g$ in it.
+\item \textbf{The splitting criterion.} Prove
+\[
+\mathrm{Nonempty}\,(\mathrm{PivotalStructure}\ \C) \iff \exists\, h,\ h^{2} = [g],
+\]
+and deduce that $\C$ is pivotal whenever $U_{\C}$ has no 2-torsion. This is the known partial
+result toward Conjecture~2.8 and it is entirely algebraic.
+\item \textbf{What the formalisation adds here.} The obstruction class $[g]$ is usually handled
+informally; a formal statement of the criterion would make precise which fusion rings are
+excluded by 2-torsion and which Frobenius--Schur indicator patterns are compatible with
+sphericity. No new mathematics is promised in this package --- the value is precision.
+\end{enumerate}
+\paragraph{Deliverables.} D7. \quad \textbf{Success criterion.} The cover is a
+\code{FusionSystem} with a \code{PivotalStructure}, and the torsor statement is proved, not
+assumed.
+
+\subsubsection*{WP5 --- The categorical bridge and upstream (months 10--24)}
+
+\paragraph{Objective.} A1, second half: a skeletal datum \emph{is} a fusion category, and the
+pivotal structure is Mathlib's.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=5.\arabic*]
+\item \textbf{The category of a datum.} Objects: formal finite direct sums of simples.
+Morphisms: matrices of scalars indexed by channels. Prove it is $\field$-linear, abelian,
+semisimple, monoidal, rigid, with $\mathrm{End}(\one) = \field$ --- the reconstruction theorem. This
+is the largest single piece of engineering in the programme and the one most exposed to Mathlib
+churn.
+\item \textbf{The pivotal equivalence.} Prove
+$\mathrm{PivotalStructure}\ S \simeq
+\mathrm{PivotalCategory}\ (\mathrm{CategoryOf}\ S)$ as a bijection of data, i.e.\ that Mathlib's
+monoidal natural isomorphism $\mathrm{Id} \to (-)^{**}$ restricts to the scalars $p_i$ and that
+\code{p_mon} is its coherence.
+\item \textbf{Delete the patch.} When \#42145/\#42150/\#42191 merge, replace the vendored
+\code{PivotalCategory.lean} by an import; keep the file name as a re-export for one release and
+then remove it. If \#42191 stalls, contribute the spherical layer upstream
+ourselves, since the definition is short and the present library has the examples to test it.
+\item \textbf{Contribute back.} The Perron--Frobenius material and the spherical layer are the
+two pieces of independent value; both should go upstream with the examples as tests.
+\end{enumerate}
+\paragraph{Deliverables.} D8, D10. \quad \textbf{Success criterion.} \code{MathlibPatches/}
+contains no mathematics, only imports.
+
+\subsubsection*{WP6 --- Instances, witnesses, and the regression suite (continuous)}
+
+\paragraph{Objective.} Every theorem in the library has an inhabitant, and every defect in
+Table~1 has a regression test.
+
+\paragraph{Tasks.}
+\begin{enumerate}[label=6.\arabic*]
+\item Extend the instance set: $\Vect^{\omega}_{\Z/n}$ for $n = 2,\dots,6$; Tambara--Yamagami
+for $\Z/2$; the rank-three ring $K(1,0,1)$ already present; $H_3$ (non-integer
+$\FPdim$) as a test that nothing assumes integrality.
+\item Formalise the two script-level witnesses of \S\ref{sec:refute}: $\Vect^{\omega}_{(\Z/2)^2}$
+with $J \equiv 1$ (the failure of (M)) and $\Vect^{\omega}_{(\Z/3)^2}$ (the failure of
+$J^{2} = 1$). The first is the kernel-checked answer to ``why can't (M) be an axiom?''.
+\item A multi-multiplicity datum: the rank-two based ring $X^{2} = \one + 2X$, purely
+algebraically, to exercise the matrix-valued associator of WP1 Task 1.4.
+\item A census harness: run the derived $J$ against the Python reference computations for every
+data set, and fail the build on disagreement. Disagreement between Lean and the Python scripts
+has already caught two transcription errors, one in each direction.
+\end{enumerate}
+\paragraph{Deliverables.} D9, D11. \quad \textbf{Success criterion.} Sixteen data sets, at most
+two of them script-only, and the census harness green.
+
+\subsubsection*{WP7 --- Dissemination (continuous)}
+
+Three papers, a blueprint, and an artifact: see \S\ref{sec:deliverables}. The dissemination
+order is deliberate --- the negative results first, because they are short, self-contained, and
+they protect the reader of the main paper from the statement without hypotheses.
+
+\subsection{Milestones}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{0.27\textwidth}Ll@{}}
+\toprule
+\textbf{Milestone} & \textbf{Month} & \textbf{Content} & \textbf{Deliverable} \\
+\midrule
+M1 & 4 & \code{FPData} discharged; clean-tree CI; blueprint & D1, D2 \\
+M2 & 8 & Signature v2 (triangle, $\sigma$-twist, gauge fix); six instances re-verified & D3 \\
+M3 & 12 & $J$ derived; four laws and general pentagon proved; Bartlett comparison & D4 \\
+M4 & 16 & $T$-matrix domination; bound $|d_i| \le f_i$ from $a$; sum identity & D5 \\
+M5 & 20 & Positivity and $\sigma/\tau$ twists; \code{ENO823Exact} proved & D6 \\
+M6 & 22 & Cover and torsor; bridge to \code{PivotalCategory}; patch deleted & D7, D8 \\
+M7 & 24 & Release v1.0; three papers submitted; artifact archived & D10--D12 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Techniques}\label{sec:techniques}
+
+\subsection{Finite data and exact arithmetic}
+
+Everything categorical is reduced to finite algebra over a field, and everything numeric is done
+exactly. Two devices carry the instances.
+
+\paragraph{Integer pairs in $\Z[\sqrt d]$.} Real numbers never appear in a proof obligation.
+Each entry of $F$, $\mathrm{ev}$, $\mathrm{coev}$, $J$ in the Fibonacci, Ising and Yang--Lee
+examples is an integer pair $(p,q)$ denoting $(p + q\sqrt d)/2$ in $\Q(\sqrt d)$; the field
+operations are defined on pairs, and \code{decide} checks the pentagon, the unit laws, the
+inverse laws and the snakes on all label tuples. For Ising, $d = 2$ and the scalar $1/\sqrt2$
+enters as a normalisation, so the identities are checked twice --- once for the rational part
+and once for the $\sqrt2$ part. This is why the examples are trustworthy despite being
+numerical, and it is why they compile in 100 seconds rather than hours.
+
+\paragraph{Field checks are hand-written.} Closing real-number arithmetic is not automatic:
+\code{one_lt_pow} and its primed variant were unusable in the Yang--Lee file, and the
+$\varphi^{4}$ contradiction had to be assembled by hand from \code{nlinarith} with an explicit
+$\sqrt5 \cdot \sqrt5 = 5$. A mis-stated closed form for $((1+\sqrt5)/2)^{2}$ cost a build cycle.
+The practical rule adopted is: get the closed form right on paper, then prove it once, then
+reuse.
+
+\subsection{Inhabitant-first statement design}\label{sec:tech-inhabitant}
+
+The four defects of \S\ref{sec:prelim} share one cause: a statement was written to look like its
+source and then trusted. The remedy, now institutionalised in this project, is that \emph{no
+statement is committed until an inhabitant exists}, and no axiom is believed until an example
+satisfies it and a non-example does not. Concretely:
+
+\begin{enumerate}[label=(\roman*)]
+\item every structure gets a witness in the same commit as its definition
+(\code{VecZ2.system} with the definition of \code{FusionSystem});
+\item every axiom gets a regression test that fails if the axiom is strengthened
+(\code{swapped_Finv_comp_ne_one} for the snake; \code{VecZ2Twisted} for the twist);
+\item every theorem whose statement mentions a hypothesis gets a witness that the hypothesis is
+needed (Yang--Lee for positivity; $\Vect^{\omega}_{(\Z/2)^2}$ for multiplicativity).
+\end{enumerate}
+
+The cost is real --- the witness files are about half the library --- and it is the single
+highest-value investment in the programme, because the defects it catches are exactly the ones
+that survive refereeing.
+
+\subsection{Falsification before proof}\label{sec:tech-falsify}
+
+For each proposed statement $S$, the programme first looks for a counterexample, in this order:
+(i) on paper, on the smallest rank; (ii) in Python, on the full data set, with the associators
+composed as matrices rather than manipulated symbolically; (iii) in Lean, by attempting the
+statement on the counterexample candidate before attempting the theorem.
+
+This order is not a heuristic. Two of the project's four defects were found this way, and a
+third --- the `$J \equiv 1$` claim for pointed categories --- was refuted by an exhaustive
+computation in \code{docs/pointed_twist_check.py} after it had been stated in the plan. The
+Python step matters because matrix composition over channel bases is where index conventions
+break, and because a script that recomputes every scalar from the snake axioms is an independent
+implementation, not a restatement.
+
+\subsection{Multiplicities: why this is a separate development}\label{sec:tech-mult}
+
+With $N^{k}_{ij} > 1$ the Hom space $\mathrm{Hom}(X_k, X_i \otimes X_j)$ has dimension $N^{k}_{ij}$
+and the associator at fixed $(a,b,c,d)$ is a matrix whose entries are themselves matrices; the
+pentagon becomes a matrix identity with channel bases on both sides, and ``the'' $F$-symbol is a
+choice of bases. Three consequences:
+
+\begin{enumerate}[label=(\roman*)]
+\item the scalar signature cannot be extended by adding a parameter --- the type of \code{F}
+changes, and every instance proof that ends in \code{decide} over \code{Fin n} must be rewritten;
+\item gauge freedom is larger (a $\mathrm{GL}_{N}$-valued change of channel bases), so the twist
+$J$ becomes a matrix between channel spaces and the ratio formula of WP2 needs a determinant or a
+trace to become scalar;
+\item the correct target in the general case is the \emph{categorical} statement (WP5), with the
+skeletal statement as a corollary in the multiplicity-free case.
+\end{enumerate}
+
+The proposal therefore treats the multiplicity-free theorem as the deliverable and the general
+case as a stretch goal, pursued through the categorical bridge rather than through a bigger
+scalar signature. This is a scope decision, stated here so that it can be argued with.
+
+\subsection{Diagram evaluation and independent reference computations}
+
+The one place where the project has repeatedly gone wrong is the evaluation of a diagram with
+more than two $F$-moves. The technique that works is to evaluate the same diagram twice by
+different routes:
+
+\begin{itemize}
+\item an \emph{evaluation-side} assembly (compose evaluations, transport coevaluations);
+\item a \emph{coevaluation-side} assembly;
+\item the $\Omega$-coefficient form of WP2 Task 2.2;
+\item the direct $\varphi$-evaluation from its defining property
+$\mathrm{ev} \circ (\varphi \otimes \mathrm{id}) = \mathrm{ev}$, with full associator
+bookkeeping (\code{docs/honest_twist_check.py}).
+\end{itemize}
+Agreement of four independent assemblies on sixteen data sets is the current standard of evidence
+for a formula, and it is what caught the defective transcription of $\Omega$ recorded in the
+plan. It is \emph{not} a proof, and the proposal does not treat it as one: the kernel proof of
+WP2 Task 2.3 is what settles the formula, and the scripts are demoted to regression tests.
+
+A second, independent technique is the Temperley--Lieb check: in $\mathrm{TL}(\varphi)$ one can
+compute the loop scalar of Fibonacci with no $F$-data at all, and it gives $\kappa_\tau =
+\varphi$ against the naive $\varphi^{2}$. It certifies the snake normalisation and nothing else,
+which is exactly the scope claimed for it.
+
+\subsection{Parallel adversarial exploration}
+
+The project uses a workbench in which several agents attack one problem in independent
+directions, register their direction on a shared board, and submit reports that a coordinating
+agent accepts only after re-deriving or kernel-checking the claim. Two things are worth
+recording, because both bear on the proposed programme.
+
+\paragraph{What it bought.} The pointed-case value of the twist, $J = \delta(\kappa) =
+\kappa_a\kappa_b/\kappa_c$, was settled in this mode by three independent assemblies; the
+identification of the trace identity with (M) emerged from it; and four independent evaluations
+of the $J$-diagram agreed, which is what isolated the defective $\Omega$ transcription.
+
+\paragraph{What it got wrong.} The same mode produced claims that did not survive checking: that
+$X^{**} \cong X$ canonically in any rigid monoidal category (false --- this is precisely
+pivotality, and adopting it would have made the signature vacuous, as it had already done once);
+a scalar formula for $\psi$ that returns $1$ on channels where the honest twist is $-1$; and the
+assertion $J \equiv 1$ for pointed categories, which is false and was replaced by
+$\delta(\kappa)$. Each was caught by the acceptance rule, not by the generating agents.
+
+\paragraph{Consequence for the programme.} The technique is used for exploration and for
+independent assembly, never as evidence. Every claim in \S\ref{sec:prelim} marked ``kernel'' has
+been re-proved or re-checked by the coordinating agent; claims marked ``script'' are labelled as
+such; and no report is merged on the strength of its own text. The proposal's WP3 and WP4
+explicitly budget for this: parallel exploration of the positivity step and of the cover, with
+kernel acceptance.
+
+\subsection{Statement fidelity as a method}\label{sec:fidelity}
+
+The four defects are instances of four general failure modes, and naming them is part of the
+proposed contribution.
+
+\begin{enumerate}[label=\textbf{F\arabic*.},leftmargin=2.4em]
+\item \textbf{Vacuity.} The hypothesis is inconsistent, so the theorem is true and empty. Detected
+by inhabitation, not by proof.
+\item \textbf{Drift.} The formal statement is a different, usually stronger, statement (a
+one-line axiom where the source has a coherence condition). Detected by proving the source's
+examples fail, or by checking that the statement is not provable without its hypothesis.
+\item \textbf{Unrepresentability.} The signature cannot express the general case (no label
+transport for $i^{**} \ne i$; no multiplicity). Detected by trying to state the general theorem,
+not by proving the special one.
+\item \textbf{Normalisation.} The statement is right but the gauge is wrong: a reciprocal where a
+matrix inverse is required, a sign convention that excludes the examples. Detected by the
+examples, and only by the examples.
+\end{enumerate}
+
+The audit protocol that follows is mechanical and is written up in Appendix~\ref{app:audit}. It
+has three gates: \emph{inhabitation} (does the structure have a witness?), \emph{sharpness} (is
+the hypothesis used, i.e.\ does dropping it admit a counterexample?), and \emph{correspondence}
+(is the statement the source's, with its numbering and its quantifiers?). The third gate is the
+one a proof assistant cannot automate, and the one that caught D3.
+
+\subsection{Engineering discipline}
+
+\begin{itemize}
+\item \textbf{Pinned toolchain.} Lean \texttt{v4.33.1}, Mathlib \texttt{0df444a3}, in both
+packages; no bump without updating both lockfiles.
+\item \textbf{No \texttt{sorry}, no \texttt{axiom}}, axiom budget
+\texttt{[propext, Classical.choice, Quot.sound]} enforced by \code{AxiomAudit.lean}, which is a
+build gate and not a report.
+\item \textbf{Per-file builds} with generous timeouts (an \code{import Mathlib} costs 20--60
+seconds; the example files cost minutes), \code{weakLeanArgs = ["-j2","-s8192"]} to stay inside
+CI memory limits.
+\item \textbf{No module-private declarations}: the project avoids the bare \code{module} header,
+which makes declarations private and breaks downstream imports in a way that is hard to diagnose.
+\item \textbf{Commit messages as a proof log}, including retractions. The repository's history
+carries three commits whose subject is a correction of the previous commit's mathematics; that
+is a feature, and the plan keeps the record rather than rewriting it.
+\end{itemize}
+\section{Risks and mitigations}\label{sec:risk}
+
+The programme is unusual in that its risk is concentrated in one step (WP3) and its
+deliverables are mostly independent of whether that step succeeds. The table makes the
+dependencies explicit.
+
+{\small
+\begin{longtable}{{@{}>{\raggedright\arraybackslash}p{0.05\textwidth}>{\raggedright\arraybackslash}p{0.31\textwidth}>{\raggedright\arraybackslash}p{0.50\textwidth}>{\raggedright\arraybackslash}p{0.08\textwidth}@{}}}
+\toprule
+& \textbf{Risk} & \textbf{Mitigation / fallback} & \textbf{Level} \\
+\midrule
+\endfirsthead
+\toprule
+& \textbf{Risk} & \textbf{Mitigation / fallback} & \textbf{Level} \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+
+R1 & The positivity step of WP3 needs analysis that the skeleton cannot supply, and (K) is not
+reachable. & The conditional theorem \code{eno823_of_pseudoUnitary} already exists; the exact
+statement route isolates the gap as one scalar equation; if it stalls, D5 and D6 are published as
+``ENO 8.23 modulo positivity'', which is still a new formal result. & med/high \\
+R2 & The signature change (general $\sigma$-twist, triangle, gauge fix) breaks the instance
+proofs. & Two-layer signature: the general one with $\sigma$, the strict one as its
+$\sigma = \mathrm{id}$ instance, with a transport lemma; instances proved once against the strict
+layer. & low \\
+R3 & Multiplicity $>1$ expands to a second library. & Declared stretch goal; pursued through the
+categorical bridge (WP5) instead of a scalar signature. & low \\
+R4 & Mathlib churn: \#42150/\#42191 merge with different names, or stall. & Vendor, keep
+byte-compatible, switch by replacing one import; no unmerged API in the core. Contribute the
+spherical layer if it stalls. & low \\
+R5 & Elaboration cost: \code{decide} over $3^{n}$ label tuples grows fast; example files already
+cost 100\,s. & Exact arithmetic in $\Z[\sqrt d]$; per-file builds; abstraction barriers so the
+core does not import the examples; \texttt{native\_decide} forbidden. & low \\
+R6 & Parallel exploration produces confident false claims (it has: three). & Acceptance
+protocol: kernel re-proof or independent recomputation before merge; regression test per claim;
+claims labelled kernel/script/conjecture in the blueprint. & low \\
+R7 & The PF chain (\#39914--\#39922) is not mergeable in the project's window, so \code{FPData}
+stays a hypothesis. & Keep \code{FPData} as an explicit hypothesis with a per-example
+certificate; the theorem statements are already phrased to take it as an argument. & low \\
+R8 & Single-investigator scope over 24 months. & Priority order D1--D6 (core theorem) before
+D7--D12 (additive); WP4 and WP5 are parallelisable and separable. & med \\
+\end{longtable}
+}
+
+\paragraph{The stop condition.} If by month 16 the $T$-matrix domination of WP3 Task 3.2 has not
+been formalised, the programme pivots to WP5-first: build the categorical bridge, state ENO~8.23
+for $\mathrm{PivotalCategory}$, and leave the analytic step as a named hypothesis with the
+Yang--Lee sharpness theorem. That outcome is publishable and useful; the proposal does not treat
+it as failure, but it must be decided at month 16 rather than at month 23.
+
+\section{Timeline}\label{sec:timeline}
+
+Twenty-four months, eight quarters. Bars mark active work; the load is deliberately uneven, with
+WP2 and WP3 overlapping by design (the derivation of $J$ is what makes WP3's statements
+well-posed, and WP3's bound is what tests WP2's formula).
+
+\begin{center}
+\small
+\begin{tabular}{@{}l*{8}{c}@{}}
+\toprule
+\textbf{Work package} & \textbf{Q1} & \textbf{Q2} & \textbf{Q3} & \textbf{Q4} &
+\textbf{Q5} & \textbf{Q6} & \textbf{Q7} & \textbf{Q8} \\
+\midrule
+WP0 Foundations & $\blacksquare$ & $\blacksquare$ & & & & & & \\
+WP1 Signature & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & & \\
+WP2 Derived twist & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & \\
+WP3 Analytic core & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & \\
+WP4 Cover \& grading & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & \\
+WP5 Bridge \& upstream & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
+WP6 Instances \& tests & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
+WP7 Dissemination & & & & $\blacksquare$ & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
+\midrule
+\emph{Milestones} & & & M1, M2 & M3 & M4 & M5 & M6 & M7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Expected deliverables}\label{sec:deliverables}
+
+Twelve deliverables, each with a month and an acceptance criterion. The first six constitute the
+core; the rest are additive and independently valuable.
+
+{\small
+\begin{longtable}{{@{}>{\raggedright\arraybackslash}p{0.045\textwidth}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.52\textwidth}>{\raggedright\arraybackslash}p{0.085\textwidth}@{}}}
+\toprule
+& \textbf{Deliverable} & \textbf{Acceptance criterion} & \textbf{Month} \\
+\midrule
+\endfirsthead
+\toprule
+& \textbf{Deliverable} & \textbf{Acceptance criterion} & \textbf{Month} \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+
+D1 & \textbf{Core library v1.0}: fusion rings; Perron--Frobenius dimension with \code{FPData}
+discharged; skeletal systems; pivotal and spherical layers; the twist reduction; ENO 8.21. &
+Clean build; no \texttt{sorry}; 100\% of audited declarations at
+\texttt{[propext, Classical.choice, Quot.sound]}. & 4--20 \\
+D2 & \textbf{Reproducibility kit}: pinned toolchain, CI gates, clean-tree script, per-file
+harness, archived artifact with a DOI. & A fresh clone builds and audits without manual steps. & 4 \\
+D3 & \textbf{Signature v2}: triangle axiom; general double-dual permutation $\sigma$; general
+twist pentagon; gauge-invariant duality normalisation. & All six existing instances re-verified;
+the three new axioms proved for each. & 8 \\
+D4 & \textbf{Derived twist}: the comparison $\psi$, the ratio formula, the closed form $\Omega$,
+the four laws and the general pentagon. & No hypothesis on $J$ remains; the derived $J$ agrees
+with four independent evaluations on sixteen data sets. & 12 \\
+D5 & \textbf{ENO 8.21 unconditional}: $T$-matrix domination, the bound $|d_i| \le f_i$ from the
+square root $a$, the sum identity, the equality case. & Proved with no \code{DimEigen}
+hypothesis. & 16 \\
+D6 & \textbf{ENO 8.23, exact form}: existence, sphericity, positivity, $\dim = \FPdim$,
+uniqueness. & \code{ENO823Exact} proved; \code{YangLee.not_pseudoUnitary} and
+\code{YangLee.not_eno823} as sharpness witnesses. & 20 \\
+D7 & \textbf{Cover and torsor}: the pivotal cover is a fusion category with a canonical pivotal
+structure and doubled dimension; pivotal structures form a torsor under $\mathrm{Hom}(U_\C,
+\field^\times)$; the splitting criterion. & The cover is a \code{FusionSystem} with a
+\code{PivotalStructure}; the criterion is a theorem, not a \code{def}. & 18 \\
+D8 & \textbf{Mathlib contributions}: the pivotal/spherical bridge; Perron--Frobenius dimension;
+the vendored patch deleted. & \code{MathlibPatches/} contains only imports. & 24 \\
+D9 & \textbf{Instance and regression suite}: sixteen data sets, including the two script-level
+witnesses of \S\ref{sec:refute} formalised, and a multi-multiplicity datum. & Census harness
+green; one regression test per defect D1--D4. & 18 \\
+D10 & \textbf{Papers}: (a) the formalisation of ENO 8.23; (b) a negative-results note
+(``ENO 8.23 without pseudo-unitarity is false'', with the kernel-checked Yang--Lee and
+$\Vect^{\omega}_{\Z/2}$ witnesses); (c) a methodology note on statement fidelity. & Submitted:
+(b) by month 12, (a) by month 21, (c) by month 24. & 12--24 \\
+D11 & \textbf{Blueprint and documentation}: statement-to-source table, module dependency graph,
+gauge conventions, a worked tutorial on adding an instance. & A reader can add a new instance
+without reading the core. & 12 \\
+D12 & \textbf{Open-problem dossier}: formal statements of ENO Conjecture~2.8 and its variants,
+with the known partial results (2-torsion criterion, cover) and the constraints any
+counterexample must satisfy. & Reviewed against the literature; every claim labelled
+proved/checked/conjectured. & 24 \\
+\end{longtable}
+}
+
+\paragraph{What is not a deliverable.} A proof of ENO Conjecture~2.8; the weak Hopf algebra input
+(ENO \S4--5, Theorem~\ref{thm:quad}); the general multiplicity case; and the classification of
+rank-three pivotal categories beyond the inequality used as a test. These are out of scope and
+are stated as such in the blueprint, so that a reader cannot mistake the boundary of the result.
+
+\section{Significance}\label{sec:significance}
+
+\paragraph{For the classification programme.} Proposition~8.23 is used as a black box in a large
+and growing literature; a kernel-checked proof would let downstream work cite a machine-checked
+theorem instead of a two-page argument whose normalisations are easy to get wrong. The present
+project's own history is the evidence: four defects, two of them in axioms, one of them turning
+the target into a tautology. A reader who trusts the literature's normalisations is trusting
+something that a careful formaliser, working from the source, got wrong four times.
+
+\paragraph{For the mathematics.} The formalisation has already produced statements the
+literature leaves implicit: that (K), the per-channel identity, is \emph{not} invariant under the
+vertex gauge and survives only the duality normalisation $\lambda_{i^*} = \lambda_i$; that (M),
+the summed identity, is strictly weaker than the target and is satisfied by Yang--Lee; that the
+trace identity of ENO's proof is exactly (M); and that the correct general twist pentagon carries
+the associator on both sides, with the F-free form being a self-dual-label special case. None of
+these is a new theorem of fusion categories in the sense of a new mathematical result, but each
+is a precision about hypotheses that the informal literature elides, and precision of this kind
+is what makes a black box safe to use.
+
+\paragraph{For Mathlib and the formalisation community.} The categorical layer is arriving now
+(\#42145, \#42150, \#42191, \#42192). What is missing after it lands is exactly what this
+proposal builds: the finite-data layer, the examples, the counterexamples, and one substantial
+theorem that exercises the layer. The Perron--Frobenius material and the spherical layer are
+independent upstream contributions; the sixteen verified data sets are the regression suite that
+the categorical definitions will need.
+
+\paragraph{For the author's programme.} The sibling Haagerup--Izumi development formalises the
+analytic side of a classification theorem (coefficient identities, reduction to finitely many
+algebraic equations). This proposal formalises the algebraic side of the same story
+(dimensions, pivotal structures, sphericity). Together they cover the two halves of a verified
+pipeline from fusion rules to a categorical structure, and the Haagerup--Izumi categories are the
+natural large-scale instance for WP6.
+
+\paragraph{Broader impact.} Verified anyon data --- $F$ and $R$ symbols with a checked pentagon
+and checked pivotal structure --- is the input to proposals for topological quantum computation,
+and the failure mode there is precisely an unchecked normalisation. The library does not build a
+quantum computer, but it does make the statement ``these symbols satisfy the axioms'' a
+machine-checked one, and that is the part which is currently done by hand.
+
+\paragraph{Limitations, stated plainly.} The theorem is formalised for multiplicity-free data in
+a skeleton; the general case is a stretch goal through the categorical bridge. The analytic input
+of ENO is formalised, but its weak Hopf algebra prerequisite is taken as a hypothesis. And the
+work is a formalisation: its novelty is in precision, verification, and counterexample, not in a
+new route through the mathematics.
+
+\section*{Acknowledgements}
+
+The preliminary results reported here were developed in the \code{fusion-category-lean}
+repository, whose \texttt{PLAN.md} records both the results and the retractions; the retractions
+are part of the evidence and are kept. The Haagerup--Izumi development in the sibling package is
+the work on which the feasibility argument rests.
+
+\begin{thebibliography}{99}
+
+\bibitem[ENO]{ENO}
+P.~Etingof, D.~Nikshych, V.~Ostrik,
+\emph{On fusion categories},
+Annals of Mathematics \textbf{162} (2005), 581--642; arXiv:\texttt{math/0203060}.
+
+\bibitem[EGNO]{EGNO}
+P.~Etingof, S.~Gelaki, D.~Nikshych, V.~Ostrik,
+\emph{Tensor Categories},
+Mathematical Surveys and Monographs \textbf{205}, American Mathematical Society, 2015.
+
+\bibitem[Bar15]{Bartlett1502}
+B.~Bartlett,
+\emph{Fusion categories via string diagrams},
+arXiv:\texttt{1502.02882} (2015), 34 pp.
+
+\bibitem[Ost13]{Ostrik1309}
+V.~Ostrik,
+\emph{Pivotal fusion categories of rank 3},
+arXiv:\texttt{1309.4822}.
+
+\bibitem[NS]{NgSchauenburg}
+S.-H.~Ng, P.~Schauenburg,
+\emph{Higher Frobenius--Schur indicators},
+Memoirs of the American Mathematical Society, 2006.
+
+\bibitem[Hua26]{Huang2609}
+T.-C.~Huang,
+\emph{Cyclic Haagerup--Izumi fusion categories at every odd order},
+arXiv:\texttt{2609.15986} (2026).
+
+\bibitem[ML]{Mathlib}
+The Mathlib Community,
+\emph{The Lean mathematical library},
+Proceedings of CPP 2020, ACM, 2020.
+
+\bibitem[MLPR]{MathlibPR}
+Lean Community,
+pull requests \texttt{\#42145} (double right dual functor is monoidal),
+\texttt{\#42150} (pivotal categories), \texttt{\#42191} (spherical categories),
+\texttt{\#42192} (symmetric rigid categories are spherical), and the Perron--Frobenius chain
+\texttt{\#39914}--\texttt{\#39922}, in \texttt{leanprover-community/mathlib4};
+accessed November 2026.
+
+\bibitem[AW]{AnyonWiki}
+AnyonWiki, tables of $F$, $R$ and pivotal data for multiplicity-free categories of low rank;
+accessed 2026.
+
+\bibitem[AM]{Alphabeta}
+Alphabeta Math, \emph{Unitary fusion spaces, F/R symbols, and anyon models} (generated library
+page), \texttt{alphabetamath.cc}; accessed 2026.
+
+\bibitem[TN]{TNLean}
+TNLean, a blueprint project on tensor networks (anyon chapter: quantum doubles),
+\texttt{sirui-lu.com/TNLean}; accessed 2026.
+
+\end{thebibliography}
+\appendix
+
+\section{Module inventory and dependency graph}\label{app:modules}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  >=Stealth,
+  box/.style={draw, rounded corners=1.5pt, font=\scriptsize\ttfamily, inner sep=2.6pt},
+  ar/.style={-{Stealth[length=1.6mm]}, very thin, gray!70!black}]
+% columns
+\node[box] (basic) at (0,0) {Basic};
+\node[box] (pf)    at (0,-1.5) {PFDim};
+\node[box] (sys)   at (2.3,0) {System};
+\node[box] (piv)   at (4.5,0) {Pivotal};
+\node[box] (cov)   at (6.8,1.0) {Cover};
+\node[box] (grad)  at (6.8,0.2) {Grading};
+\node[box] (dd)    at (6.8,-0.6) {DoubleDual};
+\node[box] (sqrt)  at (6.8,-1.4) {ENOSqrt};
+\node[box] (psu)   at (6.8,-2.5) {PseudoUnitary};
+\node[box] (cob)   at (9.0,-2.5) {Coboundary};
+\node[box] (p821)  at (9.0,-1.5) {Prop821};
+\node[box] (ex)    at (11.3,-2.0) {Examples};
+\draw[ar] (basic) -- (sys);
+\draw[ar] (basic) -- (pf);
+\draw[ar] (sys) -- (piv);
+\draw[ar] (piv) -- (cov);
+\draw[ar] (piv) -- (grad);
+\draw[ar] (piv) -- (dd);
+\draw[ar] (piv) -- (sqrt);
+\draw[ar] (piv) |- (psu);
+\draw[ar] (cov) -- (psu);
+\draw[ar] (pf) |- (psu);
+\draw[ar] (psu) -- (cob);
+\draw[ar] (psu) -- (p821);
+\draw[ar] (piv) |- (p821);
+\draw[ar] (cob) -- (ex);
+\draw[ar] (p821) -- (ex);
+\draw[ar] (sqrt) -- (ex);
+\end{tikzpicture}
+\caption{The import spine of the library (transitive imports suppressed; \code{Sanity},
+\code{Step4Checks} and the individual \code{Examples/} files are leaves off this spine).
+\code{Examples/} is the umbrella over Fibonacci, Ising, Ostrik, $\Vect^{\omega}_{\Z/2}$,
+Fibonacci--Ising and the step-4 checks; Yang--Lee and the pseudo-unitary instances are imported
+separately by the audit.}
+\label{fig:modules}
+\end{figure}
+
+{\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.05\textwidth}>{\raggedright\arraybackslash}p{0.05\textwidth}>{\raggedright\arraybackslash}p{0.60\textwidth}@{}}
+\toprule
+\textbf{Module} & \textbf{Lines} & \textbf{Decls} & \textbf{Content and status} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Module} & \textbf{Lines} & \textbf{Decls} & \textbf{Content and status} \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+
+\code{Basic} & 229 & 26 & fusion ring, fusion/FP matrices, \code{IsPFEigenvector}, \code{FPData},
+global dimension. Complete; \code{FPData} is a hypothesis. \\
+\code{System} & 451 & 19 & \code{FusionSystem}: $F$, \code{Finv}, snakes, $J$; $\Vect_{\Z/2}$
+inhabitant with the 512-tuple pentagon. Complete. \\
+\code{Pivotal} & 191 & 21 & \code{PivotalStructure}, \code{dim}, \code{IsSpherical},
+\code{isSpherical_iff}, \code{pVal_dual}. Complete. \\
+\code{PFDim} & 49 & 5 & \code{PFUnique}, $\varphi$ and its uniqueness. Complete (conditional on
+\code{FPData}). \\
+\code{Cover} & 128 & 8 & \code{S4Data}, \code{CoverObj}, forgetful functor,
+\code{coverGlobalDim_double}. Scaffolding: no \code{PivotalStructure} on the cover yet. \\
+\code{Grading} & 153 & 8 & universal grading, \code{pVal_dual}, two \code{def}s recording
+open targets. Formerly three axioms; now axiom-free. \\
+\code{DoubleDual} & 155 & 9 & the older derived twist in the strict self-dual normalisation.
+Lags the $\psi$-derivation; to be rewritten against \code{Finv}. \\
+\code{Coboundary} & 331 & 15 & \code{twistNorm}, \code{dim_eq_twistNorm},
+\code{eno823_of_twistNorm} and its converse; the pointed \code{KappaMultiplicative} layer
+retained for reference. Complete. \\
+\code{Prop821} & 474 & 21 & cyclic symmetry, \code{fpdim_char}, the weighted-norm bound, the
+equality case, \code{tMatrix}, \code{mult_iff_twist}. Complete modulo \code{DimEigen}. \\
+\code{PseudoUnitary} & 452 & 37 & \code{ENO823}, \code{ENO823Exact}, \code{IsPseudoUnitary},
+\code{IsPseudoUnitaryPivotal}, \code{eno823_of_pseudoUnitary}, \code{pivotal_ext}. Complete as
+a conditional reduction. \\
+\code{ENOSqrt} & 232 & 13 & \code{SqrtData}, $b$, \code{Tmat}, $d$, \code{b_sq},
+\code{trace_iff}, \code{toPivotal}. Complete; existence of $a$ is assumed. \\
+\code{Sanity}, \code{Step4Checks} & 136, 147 & 8 & numerical and consistency checks. Complete;
+imported by the umbrella. \\
+\code{Examples/FibonacciIsing} & 951 & 115 & Fibonacci and Ising over $\R$: every field proved,
+spherical, $\dim = \FPdim$. Complete; $\sim$100\,s. \\
+\code{Examples/YangLee} & 419 & 39 & the refutation of the un-hypothesised target. Complete. \\
+\code{Examples/VecZ2Twisted} & 86 & 11 & two pivotal structures, $\dim g = \pm 1$. Complete. \\
+\code{Examples/Ostrik} & 154 & 21 & the rank-three ring $K(1,0,1)$ and its \code{FPData}. Complete. \\
+\code{Examples/}$\cdots$ & 638 & 38 & Fibonacci, Ising, pseudo-unitary instances, $Z/3$ note. \\
+\code{MathlibPatches} & 55 & 0 & stubs for \#42150 and the PF chain. Stub: WP0/WP5. \\
+\midrule
+\textbf{Total} & \textbf{5{,}231} & \textbf{414} & 23 files; build 3{,}032 jobs; audit 73 declarations. \\
+\end{longtable}
+}
+
+\section{The audit protocol}\label{app:audit}
+
+The protocol is a sequence of gates applied to every declaration before it is merged. Its purpose
+is to catch the failure modes F1--F4 of \S\ref{sec:fidelity}, none of which is caught by a
+successful build.
+
+\paragraph{Gate 1 --- Inhabitation.} Every structure introduced gets a witness in the same
+commit, and the witness is a case from the literature or a standard construction, not a
+degenerate one. For \code{FusionSystem} the witness is $\Vect_{\Z/2}$; for
+\code{PivotalStructure} it is $p \equiv 1$ on a datum with $J \equiv 1$ and a datum without. A
+structure with no witness is not merged.
+
+\paragraph{Gate 2 --- Sharpness.} Every hypothesis is either used essentially or is recorded as
+unused. A hypothesis $H$ is \emph{used essentially} if dropping it makes the statement false on a
+witness. The two witnesses carried for this purpose are Yang--Lee (dropping pseudo-unitarity) and
+$\Vect^{\omega}_{(\Z/2)^2}$ (dropping multiplicativity). Where no counterexample is known, the
+declaration says so.
+
+\paragraph{Gate 3 --- Correspondence.} Each theorem is entered in the statement-to-source table
+with (i) the source, (ii) the source's numbering in the edition used, (iii) the quantifiers and
+the carrier, (iv) any hypothesis of the source that is absent and why. The ENO numbering trap
+(8.23 in the Annals, 8.22 on the arXiv) is recorded there. This is the gate a proof assistant
+cannot automate, and the only one that catches drift.
+
+\paragraph{Gate 4 --- Axiom audit.} \code{AxiomAudit.lean} prints the axioms of every exported
+theorem. The build gate is:
+\begin{verbatim}
+cd FusionCategory
+lake build
+lake env lean AxiomAudit.lean > /tmp/audit.txt 2>&1
+grep -v "propext, Classical.choice, Quot.sound" /tmp/audit.txt
+\end{verbatim}
+A non-zero exit from the final \code{grep} usually means \emph{no matches} --- i.e.\ success ---
+and must not be reported as a failure of Lean. Two failure modes are worth recording: a
+\texttt{\#print axioms} applied to an \code{axiom} declaration itself errors, and a name whose
+module is not imported returns \texttt{Unknown constant}; both have been mistaken for real
+findings in this project.
+
+\paragraph{Gate 5 --- Build hygiene.} No \texttt{sorry}, no \texttt{axiom}, no bare
+\code{module} header, warnings permitted. The full build must pass from a clean tree (WP0 Task
+0.2), not merely incrementally.
+
+\paragraph{Gate 6 --- Regression.} Each defect of Table~1 has a named test that fails if the
+defect returns: \code{VecZ2.system} (D1), the 512-tuple pentagon (D2),
+\code{VecZ2Twisted.system} (D3), \code{swapped_Finv_comp_ne_one} (D4).
+
+\section{The main statements}\label{app:statements}
+
+For reference, the target statements in mathematical form, with their Lean names.
+
+\paragraph{Pseudo-unitarity.} \code{IsPseudoUnitary S h} is the scalar equation
+\[
+\sum_{i} \kappa_i\,\kappa_{i^*} \;=\; \sum_i f_i^{2},
+\]
+with no pivotal structure in it.
+
+\paragraph{The bare target.} \code{ENO823 S h} is
+\[
+\exists\, P : \mathrm{PivotalStructure}\ S,\quad
+P.\mathrm{IsSpherical} \ \wedge\ \forall i,\ \dim_P(i) = f_i .
+\]
+
+\paragraph{The exact target.} \code{ENO823Exact S h} states: for every pseudo-unitary $S$ there
+is a unique pivotal structure $P$ with
+\[
+P.\mathrm{IsSpherical}, \qquad \forall i,\ \dim_P i > 0, \qquad \forall i,\ \dim_P i = f_i .
+\]
+
+\paragraph{The conditional form already proved.} \code{IsPseudoUnitaryPivotal P} is the
+conjunction
+\[
+\bigl(\forall i,\ \dim_P i > 0\bigr) \;\wedge\;
+\Bigl(\forall i,k,\ \sum_j N_{ij}^{k}\dim_P j = \dim_P i \cdot \dim_P k\Bigr),
+\]
+and \code{eno823_of_pseudoUnitary} proves that these two conditions on one pivotal dimension,
+together with \code{PFUnique}, give \code{ENO823}.
+
+\paragraph{ENO's input.} \code{SqrtData} carries $a \colon \mathrm{Fin}\,n \to \field^\times$
+with $a_i^2 = g_i$ and the monoidality of $a^2$ stated against $J^{2}$; then $b$, \code{Tmat} and
+$d$ are
+\[
+b^{ij}_{c} = J^{ij}_{c}\frac{a_i a_j}{a_c},\qquad
+T^{ij}_{c} = N^{ij}_{c} b^{ij}_{c},\qquad
+d_i = a_i\,\mathrm{coev}_i\,\mathrm{ev}_{i^*},
+\]
+and \code{trace_iff} states that $d_i d_j = \sum_c T^{ij}_c d_c$ for all $i,j$ is equivalent to
+(M) in the duality normalisation $\kappa'_i = \mathrm{coev}_i\,\mathrm{ev}_{i^*}$.
+
+\paragraph{The derived twist.} The object WP2 must construct is
+\[
+J^{c}_{ab} \;=\; \frac{\psi_{a,b}|_{c}}{\psi_{b^*,a^*}|_{c^*}},
+\qquad
+\psi_{a,b} \colon \dual{(a\otimes b)} \to \dual b \otimes \dual a ,
+\]
+with $\psi$ the unique evaluation-intertwining isomorphism; the closed form in terms of $F$ and
+the restricted inverse block $M_b^{-1}$ is WP2 Task~2.2.
+
+\paragraph{An ASCII rendering of the headline declaration.} The Unicode binders are spelled out;
+this is a rendering for readability, not the source.
+\begin{verbatim}
+-- the target, in the form the library will carry it
+structure ENO823Exact (S : FusionSystem n k) (hFP : S.ring.FPData) : Prop where
+  pivotal    : IsPseudoUnitary S hFP ->
+                 exists P : PivotalStructure S, P.IsSpherical
+  positivity : forall (P : PivotalStructure S), P.IsSpherical ->
+                 (forall i, dim P i = hFP.fpdim i) -> forall i, 0 < dim P i
+  unique     : forall P Q : PivotalStructure S,
+                 (forall i, dim P i = hFP.fpdim i) ->
+                 (forall i, dim Q i = hFP.fpdim i) -> P = Q
+\end{verbatim}
+
+\end{document}
