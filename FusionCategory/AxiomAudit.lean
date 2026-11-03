@@ -7,6 +7,7 @@ import FusionCategory.Examples.Ising
 import FusionCategory.Examples.Ostrik
 import FusionCategory.Examples.PseudoUnitaryInstances
 import FusionCategory.Examples.VecZ2Twisted
+import FusionCategory.Examples.FibonacciIsing
 
 /-!
 # Axiom audit — ENO 8.23
@@ -61,6 +62,15 @@ open FusionCategory.Examples
 #print axioms VecZ2Twisted.system
 #print axioms FusionCategory.Examples.VecZ2Tw.pSign_dim_one
 #print axioms FusionCategory.Examples.VecZ2Tw.pSign_spherical
+
+-- The two examples: Fibonacci and Ising over R, with their spherical pivotal
+-- structures and dim = FPdim (ENO 8.23's conclusion, verified)
+#print axioms FusionCategory.Fibonacci.system
+#print axioms FusionCategory.Ising.system
+#print axioms FusionCategory.FibonacciSystem_spherical
+#print axioms FusionCategory.IsingSystem_spherical
+#print axioms FusionCategory.FibonacciSystem_dim
+#print axioms FusionCategory.IsingSystem_dim
 
 -- Positivity and cover doubling are axiom-free
 #print axioms globalDim_pos_of_fpdim

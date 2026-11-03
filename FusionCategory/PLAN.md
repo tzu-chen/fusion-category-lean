@@ -134,6 +134,20 @@ two channel index sets of a block are different subsets of `Fin n`, so there is
 no canonical way to present the inverse block as a matrix indexed by `Fin n`.
 `Vec_{Z/2}` still inhabits the structure (with `Finv a b c d f e = F a b c d e f`).
 
+**The instances now exist.**  `Examples/FibonacciIsing.lean` builds
+`FibonacciSystem : FusionSystem 2 ℝ` and `IsingSystem : FusionSystem 3 ℝ` with
+every field proved — pentagon, both unit laws, both inverse laws, both snakes —
+together with a pivotal structure `p ≡ 1` (`J ≡ 1`), sphericity and
+`dim = FPdim` (`(1, φ)` and `(1, √2, 1)`).  The finite checks are done by
+computation in `ℤ`: each entry is an integer pair `(p,q)` denoting
+`(p + q√d)/2` in `ℚ(√d)` and `decide` verifies the identities exactly, so
+there is no `norm_num` over the reals and no `native_decide`.  Ising needs the
+gauge `F^{σψσ}_ψ = F^{ψσψ}_σ = -1` (with all `1 × 1` blocks `+1` the pentagon
+fails at `(σ,σ,σ,ψ)` and `(σ,ψ,σ,σ)`), which is one of the two solutions of the
+sign system (the other differs by the `λ_ψ = -1` gauge).  The cost is compile
+time: the file takes about 100 s, so `lake build` now takes about 3 minutes
+instead of 1.
+
 ## The coboundary reduction is a pointed-category statement
 
 `Coboundary.lean`'s `KappaMultiplicative` — `κ c = κ a * κ b` on every fusion
