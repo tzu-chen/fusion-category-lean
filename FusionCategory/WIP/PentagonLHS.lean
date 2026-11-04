@@ -42,6 +42,34 @@ theorem chan_delta_one {a b c : Fin n} (ν ν' : Fin (S.ring.N a b c)) :
   have h : Subsingleton (Fin (S.ring.N a b c)) := channel_subsingleton S a b c
   simp [Subsingleton.elim ν ν']
 
+/-- **A channel sum is its value at any witness.**  A present channel's index
+type is a subsingleton, so the sum over it has a vacuous off-case: every
+element equals the witness.  This disposes every channel binder without any
+nsmul bookkeeping — the channel is simply *killed* to its witness. -/
+theorem sum_subsingleton_witness {m : ℕ} (hm : m ≤ 1) (w : Fin m) (BODY : Fin m → k) :
+    (∑ ν : Fin m, BODY ν) = BODY w := by
+  have hsub : Subsingleton (Fin m) :=
+    ⟨fun x y => Fin.ext (by have := x.isLt; have := y.isLt; omega)⟩
+  exact Finset.sum_eq_single w (fun x _ hx => absurd (Subsingleton.elim x w) hx)
+    (fun hw => absurd (Finset.mem_univ w) hw)
+
+/-- **A channel sum, witness-free form**: over a `≤ 1` index type, the sum is
+the value at `⟨0, _⟩` when the channel is present and `0` when it is not.
+This is the disposal for channels with no fixed witness (t₂'s `σ`, the
+s-block's `λ`, t₃'s channel): applied under binders via the hinner-technique. -/
+theorem sum_channel {m : ℕ} (hm : m ≤ 1) (BODY : Fin m → k) :
+    (∑ ν : Fin m, BODY ν) = (if hN : 0 < m then BODY ⟨0, hN⟩ else 0) := by
+  by_cases hN : 0 < m
+  · rw [dif_pos hN]
+    have hsub : Subsingleton (Fin m) :=
+      ⟨fun x y => Fin.ext (by have := x.isLt; have := y.isLt; omega)⟩
+    refine Finset.sum_eq_single (⟨0, hN⟩ : Fin m)
+      (fun x _ hx => absurd (Subsingleton.elim x (⟨0, hN⟩ : Fin m)) hx)
+      (fun hw => absurd (Finset.mem_univ (⟨0, hN⟩ : Fin m)) hw)
+  · have hm0 : m = 0 := by omega
+    subst hm0
+    exact Finset.sum_eq_zero fun x _ => x.elim0
+
 /-- The identity block entry. -/
 theorem idBlk_entry (X : FusionMat n k) (i : Fin n) (x y : X.blk i) :
     (CategoryStruct.id X) i x y = (if x = y then 1 else 0) := by
@@ -148,24 +176,64 @@ theorem LHS_entry (A B C D : FusionMat n k) (d : Fin n)
     have hleg2 : ∀ (ν₂ : Fin (S.ring.N (a, h).1 (a, h).2 d)) (w₂ : A.blk (a, h).1)
         (t₂ : (tensorObj S (tensorObj S B C) D).blk (a, h).2)
         (i : (tensorObj S (tensorObj S A (tensorObj S B C)) D).blk d),
-        (tensorHom S (associatorHom S A B C) (𝟙 D) d
+        ((tensorHom S (associatorHom S A B C) (𝟙 D) d
             ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), ⟨l₀, x, x₂⟩⟩, y)⟩, z)⟩ i) *
-          ((associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩) *
-            (tensorHom S (𝟙 A) (associatorHom S B C D) d ⟨(a, h), (ν₂, w₂, t₂)⟩
-              ⟨(a, h), (ν', x, ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)⟩))
-        = (tensorHom S (associatorHom S A B C) (𝟙 D) d
+          (associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩)) *
+          (tensorHom S (𝟙 A) (associatorHom S B C D) d ⟨(a, h), (ν₂, w₂, t₂)⟩
+            ⟨(a, h), (ν', x, ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)⟩)
+        = ((tensorHom S (associatorHom S A B C) (𝟙 D) d
             ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), ⟨l₀, x, x₂⟩⟩, y)⟩, z)⟩ i) *
-          ((associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩) *
-            ((if ν₂ = ν' then 1 else 0) *
-              ((if w₂ = x then 1 else 0) *
-                (associatorHom S B C D (a, h).2 t₂
-                  ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)))) := by
+          (associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩)) *
+          ((if ν₂ = ν' then 1 else 0) *
+            ((if w₂ = x then 1 else 0) *
+              (associatorHom S B C D (a, h).2 t₂
+                ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩))) := by
       intro ν₂ w₂ t₂ i
       have hsub : Subsingleton (Fin (S.ring.N (a, h).1 (a, h).2 d)) :=
         channel_subsingleton S (a, h).1 (a, h).2 d
       rw [tensorHom_apply, if_pos (Subsingleton.elim ν₂ ν'), idBlk_entry]
     simp only [hleg2]
-    sorry
+    -- kill the ν₂ channel to its witness (q's channel ν'): vacuous off-case
+    rw [sum_subsingleton_witness (S.mult_free (a, h).1 (a, h).2 d) ν']
+    rw [if_pos rfl]
+    simp only [one_mul]
+    -- kill w₂ to x: off it, the A-delta vanishes
+    refine (Finset.sum_eq_single x ?_ ?_).trans ?_
+    · intro w₂ _ hw₂
+      refine Finset.sum_eq_zero fun t₂ _ => Finset.sum_eq_zero fun i _ => ?_
+      rw [if_neg hw₂]
+      ring
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    rw [if_pos rfl]
+    simp only [one_mul]
+    -- flatten t₂ at the concrete label h
+    simp only [flatNest S (tensorObj S B C) D h]
+    -- split the (E₂, Cw) pair and bring Cw outer
+    rw [Fintype.sum_prod_type]
+    rw [Finset.sum_comm]
+    -- kill Cw → Dw: off it, the α_{B,C,D}-entry vanishes (its match's h3)
+    refine (Finset.sum_eq_single Dw ?_ ?_).trans ?_
+    · intro Cw _ hCw
+      refine Finset.sum_eq_zero fun E₂ _ => Finset.sum_eq_zero fun σ _ =>
+        Finset.sum_eq_zero fun t₃ _ => Finset.sum_eq_zero fun z₃ _ =>
+          Finset.sum_eq_zero fun i _ => ?_
+      by_cases hM : assocMatch S B C D h
+        ⟨(E₂, Cw), (σ, (t₃, z₃))⟩
+        ⟨(b, f), (μ', (x₂, ⟨(Cc, Dw), (lq, (y, z))⟩))⟩
+      · obtain ⟨-, -, h3, -, -, -⟩ := hM
+        exact (hCw h3).elim
+      · rw [show associatorHom S B C D h ⟨(E₂, Cw), (σ, (t₃, z₃))⟩
+            ⟨(b, f), (μ', (x₂, ⟨(Cc, Dw), (lq, (y, z))⟩))⟩ =
+            assocEntry S B C D h ⟨(E₂, Cw), (σ, (t₃, z₃))⟩
+              ⟨(b, f), (μ', (x₂, ⟨(Cc, Dw), (lq, (y, z))⟩))⟩ from rfl,
+        assocEntry_eq_zero_of_not S B C D h _ _ hM]
+        ring
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    -- the σ channel: witness-free disposal (present: kill to ⟨0, _⟩; absent: 0)
+    simp only [sum_channel (S.mult_free _ Dw h)]
+    rw [Matrix.mul_apply]
   · rw [if_neg hleaf]
     sorry
 
