@@ -142,9 +142,29 @@ theorem LHS_entry (A B C D : FusionMat n k) (d : Fin n)
       rw [tensorHom_apply_ne S (𝟙 A) (associatorHom S B C D) d hb_1, mul_zero]
     · intro hh
       exact absurd (Finset.mem_univ _) hh
-    -- rewrite leg2's entry (the m2 pairs are now syntactically equal)
-    -- NOTE: tensorHom_apply fires on hand-written shapes but not on the
-    -- auto-named binder forms here; use the hinner-technique (WIP/README.md)
+    -- rewrite leg2's entry via the hinner-technique: state the entry
+    -- transformation with OUR OWN binders, prove it (the hand-written shapes
+    -- match), apply it through the sum via Finset.sum_congr chains
+    have hleg2 : ∀ (ν₂ : Fin (S.ring.N (a, h).1 (a, h).2 d)) (w₂ : A.blk (a, h).1)
+        (t₂ : (tensorObj S (tensorObj S B C) D).blk (a, h).2)
+        (i : (tensorObj S (tensorObj S A (tensorObj S B C)) D).blk d),
+        (tensorHom S (associatorHom S A B C) (𝟙 D) d
+            ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), ⟨l₀, x, x₂⟩⟩, y)⟩, z)⟩ i) *
+          ((associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩) *
+            (tensorHom S (𝟙 A) (associatorHom S B C D) d ⟨(a, h), (ν₂, w₂, t₂)⟩
+              ⟨(a, h), (ν', x, ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)⟩))
+        = (tensorHom S (associatorHom S A B C) (𝟙 D) d
+            ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), ⟨l₀, x, x₂⟩⟩, y)⟩, z)⟩ i) *
+          ((associatorHom S A (tensorObj S B C) D d i ⟨(a, h), (ν₂, w₂, t₂)⟩) *
+            ((if ν₂ = ν' then 1 else 0) *
+              ((if w₂ = x then 1 else 0) *
+                (associatorHom S B C D (a, h).2 t₂
+                  ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)))) := by
+      intro ν₂ w₂ t₂ i
+      have hsub : Subsingleton (Fin (S.ring.N (a, h).1 (a, h).2 d)) :=
+        channel_subsingleton S (a, h).1 (a, h).2 d
+      rw [tensorHom_apply, if_pos (Subsingleton.elim ν₂ ν'), idBlk_entry]
+    simp only [hleg2]
     sorry
   · rw [if_neg hleaf]
     sorry
