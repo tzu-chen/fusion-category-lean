@@ -233,7 +233,18 @@ theorem LHS_entry (A B C D : FusionMat n k) (d : Fin n)
       exact absurd (Finset.mem_univ _) hh
     -- the σ channel: witness-free disposal (present: kill to ⟨0, _⟩; absent: 0)
     simp only [sum_channel (S.mult_free _ Dw h)]
-    rw [Matrix.mul_apply]
+    -- flatten t₃ (the free-label (B⊗C)-block) — the one risky flattening
+    simp only [flatNest S B C]
+    -- THE REMAINING CASCADE (the one-big-hinner): state
+    --   have hinner : ∀ (E₂ : Fin n) (hN : 0 < S.ring.N E₂ Dw h),
+    --     (∑ r ∑ l ∑ x₂' ∑ y₁' ∑ z₃ ∑ i, [current body]) = [the three-F product]
+    -- containing all the inner kills (r → (b, Cc) via the leg2-match's h1/h2;
+    -- l disposed via sum_channel; x₂' → x₂, y₁' → y via h4/h5; z₃ → z via h6;
+    -- then the m1-side: flatten i, kill its pair to (e, Dw), flatten s at the
+    -- concrete e, kill the s-pair to (a, E₂), dispose λ, kill w₁ → x, kill
+    -- t₁ to ⟨(b, Cc), ⟨λ-witness, (x₂, y)⟩⟩, kill z₁ → z; then evaluate the
+    -- three entries to F-symbols and assemble).
+    sorry
   · rw [if_neg hleaf]
     sorry
 
