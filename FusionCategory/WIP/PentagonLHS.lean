@@ -126,17 +126,26 @@ theorem LHS_entry (A B C D : FusionMat n k) (d : Fin n)
     obtain rfl : x₂ = yq := eq_of_heq hx₂
     obtain rfl : y = zq := eq_of_heq hy
     obtain rfl : z = zq₂ := eq_of_heq hz
-    -- the composite as a triple matrix product (≫ is right-associative)
+    -- the composite as a triple matrix product: ≫ is right-assoc, so
+    -- re-associate to (leg1 * α₂) * leg2, making the m2-index the OUTER sum
     simp only [CategoryStruct.comp]
+    rw [← Matrix.mul_assoc]
     rw [Matrix.mul_apply]
-    simp only [Matrix.mul_apply]
-    simp only [Finset.mul_sum]
-    -- flatten both middle sums
-    rw [flatBlk S (tensorObj S A (tensorObj S B C)) D d]
-    simp only [flatBlk S A (tensorObj S (tensorObj S B C) D) d]
-    simp only [flatNest S A (tensorObj S B C)]
-    simp only [flatNest S B C]
-    rw [Matrix.mul_apply]
+    simp only [Matrix.mul_apply, Finset.sum_mul]
+    -- flatten the m2 middle (outer)
+    rw [flatBlk S A (tensorObj S (tensorObj S B C) D) d]
+    -- kill the m2 pair to (a, h): off it, leg2's entry vanishes
+    refine (Finset.sum_eq_single (a, h) ?_ ?_).trans ?_
+    · intro b_1 _ hb_1
+      refine Finset.sum_eq_zero fun x_1 _ => Finset.sum_eq_zero fun x_2 _ =>
+        Finset.sum_eq_zero fun x_3 _ => Finset.sum_eq_zero fun x_4 _ => ?_
+      rw [tensorHom_apply_ne S (𝟙 A) (associatorHom S B C D) d hb_1, mul_zero]
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    -- rewrite leg2's entry (the m2 pairs are now syntactically equal)
+    -- NOTE: tensorHom_apply fires on hand-written shapes but not on the
+    -- auto-named binder forms here; use the hinner-technique (WIP/README.md)
+    sorry
   · rw [if_neg hleaf]
     sorry
 

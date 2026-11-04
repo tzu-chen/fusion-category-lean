@@ -48,26 +48,56 @@ With `p = ⟨(e, Dw), (ν, (u, z))⟩`, `u = ⟨(g, Cc), (μ, (v, y))⟩`,
   follows by matrix extensionality, and with `ReconClosureBridge` the
   reconstruction is a fusion category.
 
-## The blocker, precisely
+## The blocker, precisely — and its SOLUTION (found this session)
 
-After the `s`-flattening, the inner `(B⊗C)`-blocks (`t₁` at the label
-`s.1.2`, `t₃` at `t₂`'s label) must be flattened **at binder-dependent
-labels**.  `simp only [flatNest S B C]` with a free label times out
-(max steps); `rw` cannot reference the goal's auto-named binders
-(`rename_i` does not reach term-level sum binders).
+The blocker was: the inner `(B⊗C)`-blocks must be flattened at binder-dependent
+labels, `simp only [flatNest S B C]` with a free label times out, and `rw`
+cannot reference the goal's auto-named term binders (`rename_i` does not reach
+them).  **The solution is `U_entry`'s own `hinner`-technique**, which this
+session identified as the general answer: *state each inner transformation as
+an explicit `have : ∀ binders..., (hand-written body) = (hand-written new
+body)` with ONE'S OWN binder names, prove it by the sum_eq_single/sum_eq_zero
+machinery (where the binders are referenceable), and apply it from the
+outside via `Finset.sum_congr`.*  No tactic ever needs to touch an
+auto-named binder.
 
-**Escape routes** (either should work):
-1. `conv` + `enter` to navigate under the binders to the `t₃`-sum, then
-   `rw [flatNest S B C _]` with the label unified against the in-scope
-   binder.
-2. Kill the outer pair-sums FIRST (m1's to `(e, Dw)`, m2's to `(a, h)` —
-   both off-cases are `tensorHom_apply_ne`), making the `t₂`-flattening's
-   label the CONCRETE `h`; split the `(E₂, Cw)`-pair-sum into `∑ E₂ ∑ Cw`
-   (`Fintype.sum_prod_type`-style), kill `Cw` → `Dw`, and then only the
-   `t₃`-sum (at the free label `E₂`) and the `t₁`-sum (at `s.1.2`) remain —
-   handle `t₁` by killing its sum to `t₃` (α₂'s `h5` pins the whole element)
-   and `t₃` by `conv`.
+**The complete disposal order (m2-outer — verified green up to step 1):**
 
-Also learned: `≫` is `infixr` (right-associative) — the composite is
-`leg1 ≫ (α₂ ≫ leg2)` and `CategoryStruct.comp` unfolds to
-`M1 * (M2 * M3)`, NOT `(M1 * M2) * M3`.
+0. `simp only [CategoryStruct.comp]; rw [← Matrix.mul_assoc]` (the composite
+   is `leg1 ≫ (α₂ ≫ leg2)`; re-associate so the m2-index is the OUTER sum),
+   `rw [Matrix.mul_apply]; simp only [Matrix.mul_apply, Finset.sum_mul]`.
+1. ✅ **GREEN**: `rw [flatBlk S A (tensorObj S (tensorObj S B C) D) d]`, kill
+   the m2 pair to `(a, h)` via `(Finset.sum_eq_single (a, h) ?_ ?_).trans ?_`
+   (off-case: `tensorHom_apply_ne` for leg2, then `mul_zero`; 4-level
+   `Finset.sum_eq_zero` cascade).
+2. The ν₂ channel: its body mentions ν₂ only through the element-arguments —
+   rewrite the leg2 entry first (`tensorHom_apply` fires on hand-written
+   shapes — verified in the scratch — but NOT on the goal's auto-named
+   binder forms; use the hinner-technique), discharge the channel δ by
+   `chan_delta_one`, then `sum_fin_const_nsmul`.
+3. Kill w₂ → x (off: the A-δ via `idBlk_entry`).
+4. Flatten t₂ at the CONCRETE label `h`; swap the (E₂, Cw)-pair-sum's
+   components (`Equiv.sum_comp (Equiv.prodComm …)`), kill Cw → Dw (off:
+   α₂'s h3-fail via `assocEntry_eq_zero_of_not`).
+5. σ → nsmul; kill z₃ → z (off: α₂'s h6-fail).
+6. Flatten t₃ at the free label E₂ — **the one free-label flattening**
+   (works in isolation — verified in the scratch; do it inside a `have`
+   whose body is hand-written).  Kill t₃'s (b₂, C₂)-pair → (b, Cc) and its
+   raws → (x₂, y) (off: leg2's α-match fails); λ₃ stays free (nsmul).
+7. Flatten the m1-sum (`flatBlk`), kill its pair → (e, Dw) (off:
+   `tensorHom_apply_ne` for leg1), ν₁ → nsmul, flatten s at the CONCRETE
+   label `e`, kill the s-pair → `(a, E₂)` (E₂ in scope — an outer binder!),
+   λ → nsmul, kill w₁ → x, kill t₁ → `⟨(b, Cc), ⟨λ₃, (x₂, y)⟩⟩`
+   (**the single term with λ₃ in scope** — this is why t₃ is flattened and
+   t₁ is killed, not vice versa), kill z₁ → z.
+8. The remaining goal is `∑ E₂, (five nsmul factors) • (F₁·F₂·F₃)` with the
+   factors `(N e Dw d)`, `(N a h d)`, `(N a E₂ e)`, `(N b C E₂)`,
+   `(N E₂ Dw h)` — collapse by `pent_nsmul3` (proved), then `S.pentagon`
+   at `(a, b, Cc, Dw, g, f, h, d, e)` closes against `U_entry`'s matched
+   value.
+
+Also learned this session: `rw` and `simp` disagree on which applications
+match (three separate cases where `rw` fails and `simp only` fires, and one
+— the leg2 entry at auto-named binders — where both fail and only explicit
+hand-written shapes work); `Finset.sum_eq_single` needs the
+`(…).trans ?_`-form to elaborate against a big goal; `≫` is `infixr`.
