@@ -244,6 +244,89 @@ the `WP2.ReconFusion` restatement on the canonical scaffold (the m4 finding),
 and then the `ReconIsFusion` inhabitation itself.  m3's probe files are
 recorded under `.ultramath/smw1222bv/m3/`.
 
+## WP2 Round 3 landed (the reconstruction one proof away, swarm `smw1fs4cn`)
+
+Six accepted solutions plus two members' unsubmitted-but-green work, every
+artefact re-elaborated by the coordinator before acceptance.  Chain state
+after landing: build 8779 jobs, audit 1860 declarations (1548 theorem-kind),
+Gate 4 and the self-test green.
+
+**The round's theorems** (all on the canonical scaffold, all axiom-clean):
+
+* **`AssociatorNatural` PROVED** (`AssocNatural.lean`, m6) — the third and last
+  frozen associator Prop.  Both sides of the naturality square reduce
+  entrywise to the same scalar `f·g·h·F`, no reindex, no `Equiv`.  Engine
+  lesson recorded: the Round-2 `HEq` plan was unnecessary — the channel `if`s
+  are identities and `sum_eq_single` kills them.  **`monoidalCategoryOfPentagon`**:
+  the `MonoidalCategory` now assembles from the pentagon ALONE.
+* **BOTH SNAKES PROVED** (`SnakeCollapse.lean`, m4) — the frozen
+  `SnakeLeft`/`SnakeRight` discharged: the system's snake axioms ARE the
+  reconstruction's, exactly as the design note claimed (the left consuming
+  `F^{c c* c}_c(0,0)` via `S.snake_left`, the right the `Finv` entry via
+  `S.snake_right` at the dual label).  Plus the literature iso-forms for the
+  rigidity packaging.  Engine lesson: do NOT flatten the inner sum in the
+  outer proof; the channel subsingleton eliminates the channel kills.
+* **The simple-object layer PROVED** (`ReconSimpleSim.lean`/`ReconBiprod.lean`,
+  m2) — the twice-unsubmitted direction closed: mono-based `Simple (sim i)`,
+  the honest iso-form converse, the FINITE biproduct (Round 1's gap) with
+  `hasFiniteBiproducts`/`hasZeroObject` instances, the decomposition, and
+  `isFusionCategory_of_instances` — `IsFusionCategory` from the instances
+  plus `end_unit`, with both assembly hypotheses now theorems.
+* **The rigidity packaging and the assembly** (`ReconClosure.lean`, m5) —
+  `ClosureInputs` (the seven remaining inputs as one structure), the
+  compatibility conditions (whisker = `tensorHom`, `tensorUnit = unitObj` =
+  `sim 0`, the pairing's coev/ev ARE the block matrices), `ExactPairing`/
+  `HasRightDual`/`HasLeftDual`/`RigidCategory` from the snakes (axiom-free),
+  and `reconIsFusionCanonical (I : ClosureInputs S)`.
+* **The freeze revision** (`ReconFusionCanonical.lean` + `UnitorDedupe.lean`,
+  m7) — the canonical-scaffold reconstruction theorem (with `tensorObj_eq`
+  as an OBJECT equality, pinning the block types), the honest resolution of
+  the Round-2 finding (`ofM` is not strict monoidal; the literal freeze was
+  unreachable, not refuted), and the unitor dedupe, whose key finding
+  restructured rigidity: the frozen snakes ARE Mathlib's `ExactPairing`
+  triangles up to one unitor (`snakeLeft_iff_triangleLeft`).
+* **The `derivedJ` tensorator** (`DoubleDualTensorator.lean`, m1) — Task 2.3's
+  capstone: the double-dual endofunctor and the tensorator
+  `X** ⊗ Y** ⟶ (X⊗Y)**` as a block matrix; **the entry theorem**
+  (`tensorator_entry_sim`: the (c,c)-channel entry IS `derivedJGen` — the
+  path-independence kernel-checked); **the Ω-ratio theorem**
+  (`derivedJGen_eq_omegaCoeff`: the ψ-comparison and the associator-only
+  Ω-coefficient agree, the four `ev`-factors cancelling BY `ev_dual` — WP3
+  Task 3.2's ratio formula, with explicit nonvanishing hypotheses); the
+  pointed `δ(κ)` at morphism level; the false-`J` discrimination on
+  `Z2SqH` (channel `1⊗2 ∋ 3` gives `−1`); gauge invariance.
+* **The closure bridge** (`ReconClosureBridge.lean`, the coordinator) —
+  `reconIsFusionCanonical_of_pentagonHom`: six of the seven `ClosureInputs`
+  are theorems of the tree, so **any `PentagonShapeHom S` closes
+  `ReconIsFusionCanonical S`**.  The reconstruction is one proof from a
+  fusion category in the library's own sense.
+* **The adversarial audit** (m8, unsubmitted, verified and salvaged) — the
+  elaborated-environment census (10/24 obligations proved at its `01f41e7`
+  snapshot; the round then closed five more), two statement-level defects
+  both repaired in-round, one statement RISK correctly flagged
+  (`WP2.DerivedJ_ne_zero` needs the comparison scalar's divisor nonzero — no
+  counterexample on all six data sets, no proof; the conditional form is what
+  exists — a WP3 item), and the numerical battery
+  (`docs/wp2-battery.py` + `ReconDataBridge.lean`): **ALL CHECKS PASS** on
+  six exact-arithmetic data sets — 7068 blocks, 8740 matrix entries, the
+  frozen snakes, the unitors' dedupe, the trace Props, the pseudo-unitarity
+  identity — with no mismatch anywhere.  `PentagonLegs.lean` (the independent
+  re-derivation of the two-factor legs) agrees with m3's route.
+* **The pentagon toolkit** (m3, unsubmitted, verified and salvaged:
+  `PentagonAux/U/UEntry/NSmul.lean`) — the two-factor side's entry formula
+  `U_entry` PROVED (the composite `α_{A⊗B,C,D} ≫ α_{A,B,C⊗D}` is the two-`F`
+  product on matched leaves, else `0`), the transport machinery, and the
+  multiplicity-collapse lemmas.  The three-factor side's collapse is the
+  single open entry computation.
+
+**The one open proof**: `PentagonShapeHom S` — the three-factor side of the
+pentagon, entrywise the `S.pentagon` sum on matched leaves.  Round 1's m5
+proved the left side and reduced the whole pentagon to the frozen right-side
+entry statement (on the literal model); Round 3's toolkit has the two-factor
+side on the canonical scaffold plus `tensorHom_blockDiag_apply` (the
+general-left-factor entry tool, on the board from m6).  The engine method is
+documented and twice-battle-tested.  This is WP2's last item.
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could
