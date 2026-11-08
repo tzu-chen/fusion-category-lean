@@ -21,6 +21,7 @@ plus component contradictions — and collapse the three free channel sums
 Axiom budget: `[propext, Classical.choice, Quot.sound]`.
 -/
 import FusionCategory.PentagonNSmul
+import FusionCategory.ReconClosureBridge
 
 set_option autoImplicit false
 set_option maxHeartbeats 8000000
@@ -110,6 +111,249 @@ theorem pent_nsmul3 (d e f g h C Dw a b kk : Fin n)
 section LHS
 
 variable (S : FusionSystem n k)
+
+
+/-- `associatorHom` is entrywise `assocEntry`. -/
+theorem associatorHom_apply (X Y Z : FusionMat n k) (d : Fin n)
+    (r : (tensorObj S (tensorObj S X Y) Z).blk d)
+    (q : (tensorObj S X (tensorObj S Y Z)).blk d) :
+    associatorHom S X Y Z d r q = assocEntry S X Y Z d r q := rfl
+
+/-- Workbench: the leaf-case core computation with every binder named. -/
+theorem LHS_core {A B C D : FusionMat n k} (d : Fin n)
+    (e Dw : Fin n) (ν : Fin (S.ring.N e Dw d)) (z : D.blk Dw)
+    (g Cc : Fin n) (μ : Fin (S.ring.N g Cc e)) (y : C.blk Cc)
+    (a b : Fin n) (l₀ : Fin (S.ring.N a b g)) (x : A.blk a) (x₂ : B.blk b)
+    (h f : Fin n) (ν' : Fin (S.ring.N a h d)) (μ' : Fin (S.ring.N b f h))
+    (lq : Fin (S.ring.N Cc Dw f)) (E₂ : Fin n) (hN : 0 < S.ring.N E₂ Dw h) :
+    (∑ r : Fin n × Fin n, ∑ l : Fin (S.ring.N r.1 r.2 E₂),
+      ∑ b1 : B.blk r.1, ∑ c1 : C.blk r.2, ∑ z3 : D.blk Dw,
+      ∑ i : (tensorObj S (tensorObj S A (tensorObj S B C)) D).blk d,
+        tensorHom S (associatorHom S A B C) (𝟙 D) d
+            ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩, z)⟩ i *
+          associatorHom S A (tensorObj S B C) D d i
+            ⟨(a, h), (ν', x, ⟨(E₂, Dw), (⟨0, hN⟩, ⟨r, (l, b1, c1)⟩, z3)⟩)⟩ *
+          associatorHom S B C D h ⟨(E₂, Dw), (⟨0, hN⟩, ⟨r, (l, b1, c1)⟩, z3)⟩
+            ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩)
+      = S.F a b Cc e g E₂ * S.F a E₂ Dw d e h * S.F b Cc Dw h E₂ f := by
+  simp only [associatorHom_apply]
+  -- Kill 1: the label pair of the `B ⊗ C` block is `(b, Cc)`
+  refine (Finset.sum_eq_single (b, Cc) ?_ ?_).trans ?_
+  · intro r _ hr
+    refine Finset.sum_eq_zero fun l _ => Finset.sum_eq_zero fun b1 _ =>
+      Finset.sum_eq_zero fun c1 _ => Finset.sum_eq_zero fun z3 _ =>
+      Finset.sum_eq_zero fun i _ => ?_
+    have hM : ¬ assocMatch S B C D h ⟨(E₂, Dw), (⟨0, hN⟩, ⟨r, (l, b1, c1)⟩, z3)⟩
+        ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩ := by
+      intro hmm
+      obtain ⟨h1, h2, -, -, -, -⟩ := hmm
+      exact hr (Prod.ext h1 h2)
+    rw [assocEntry_eq_zero_of_not S B C D h _ _ hM]
+    ring
+  · intro hh
+    exact absurd (Finset.mem_univ _) hh
+  -- Kill 2: the channel of the `B ⊗ C` block (witness-free)
+  simp only [sum_channel (S.mult_free b Cc E₂)]
+  by_cases hpos : 0 < S.ring.N b Cc E₂
+  · rw [dif_pos hpos]
+    -- Kill 3: the `B`-component of the `B ⊗ C` block is `x₂`
+    refine (Finset.sum_eq_single x₂ ?_ ?_).trans ?_
+    · intro b1 _ hb1
+      refine Finset.sum_eq_zero fun c1 _ => Finset.sum_eq_zero fun z3 _ =>
+        Finset.sum_eq_zero fun i _ => ?_
+      have hM : ¬ assocMatch S B C D h
+          ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, b1, c1)⟩, z3)⟩
+          ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩ := by
+        intro hmm
+        obtain ⟨h1, -, -, h4, -, -⟩ := hmm
+        exact hb1 (h4.trans (cast_eq_of_eq_self h1 x₂))
+      rw [assocEntry_eq_zero_of_not S B C D h _ _ hM]
+      ring
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    -- Kill 4: the `C`-component of the `B ⊗ C` block is `y`
+    refine (Finset.sum_eq_single y ?_ ?_).trans ?_
+    · intro c1 _ hc1
+      refine Finset.sum_eq_zero fun z3 _ => Finset.sum_eq_zero fun i _ => ?_
+      have hM : ¬ assocMatch S B C D h
+          ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, c1)⟩, z3)⟩
+          ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩ := by
+        intro hmm
+        obtain ⟨-, h2, -, -, h5, -⟩ := hmm
+        exact hc1 (h5.trans (cast_eq_of_eq_self h2 y))
+      rw [assocEntry_eq_zero_of_not S B C D h _ _ hM]
+      ring
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    -- Kill 5: the `D`-component is `z`
+    refine (Finset.sum_eq_single z ?_ ?_).trans ?_
+    · intro z3 _ hz3
+      refine Finset.sum_eq_zero fun i _ => ?_
+      have hM : ¬ assocMatch S B C D h
+          ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩, z3)⟩
+          ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩ := by
+        intro hmm
+        obtain ⟨-, -, h3, -, -, h6⟩ := hmm
+        exact hz3 (h6.trans (cast_eq_of_eq_self h3 z))
+      rw [assocEntry_eq_zero_of_not S B C D h _ _ hM]
+      ring
+    · intro hh
+      exact absurd (Finset.mem_univ _) hh
+    -- the third `F`-entry
+    have hF3e : assocEntry S B C D h
+        ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩, z)⟩
+        ⟨(b, f), (μ', x₂, ⟨(Cc, Dw), (lq, y, z)⟩)⟩ = S.F b Cc Dw h E₂ f :=
+      assocEntry_eq_F_of S B C D h _ _ ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+    rw [hF3e, ← Finset.sum_mul]
+    have hinner : (∑ i : (tensorObj S (tensorObj S A (tensorObj S B C)) D).blk d,
+          tensorHom S (associatorHom S A B C) (𝟙 D) d
+              ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩, z)⟩ i *
+            assocEntry S A (tensorObj S B C) D d i
+              ⟨(a, h), (ν', x, ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩, z)⟩)⟩)
+        = S.F a b Cc e g E₂ * S.F a E₂ Dw d e h := by
+      rw [flatBlk S (tensorObj S A (tensorObj S B C)) D d]
+      -- kill the label pair of the inner index to `(e, Dw)`
+      refine (Finset.sum_eq_single (e, Dw) ?_ ?_).trans ?_
+      · intro u _ hu
+        refine Finset.sum_eq_zero fun ν₁ _ => Finset.sum_eq_zero fun w _ =>
+          Finset.sum_eq_zero fun t _ => ?_
+        rw [tensorHom_apply_ne S (associatorHom S A B C) (𝟙 D) d (fun hh => hu hh.symm)]
+        ring
+      · intro hh
+        exact absurd (Finset.mem_univ _) hh
+      -- the first `F`-entry's structural form
+      have hleg1 : ∀ (ν₁ : Fin (S.ring.N (e, Dw).1 (e, Dw).2 d))
+          (w : (tensorObj S A (tensorObj S B C)).blk (e, Dw).1) (t : D.blk (e, Dw).2),
+          tensorHom S (associatorHom S A B C) (𝟙 D) d
+              ⟨(e, Dw), (ν, ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩, z)⟩
+              ⟨(e, Dw), (ν₁, w, t)⟩ =
+            (if ν = ν₁ then 1 else 0) *
+              (associatorHom S A B C (e, Dw).1
+                  ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩ w *
+                (if z = t then 1 else 0)) := by
+        intro ν₁ w t
+        rw [tensorHom_id_right_apply]
+      simp only [hleg1, associatorHom_apply]
+      -- kill the channel of the inner index to `ν`
+      rw [sum_subsingleton_witness (S.mult_free e Dw d) ν]
+      rw [if_pos rfl]
+      simp only [one_mul]
+      -- flatten the `A ⊗ (B ⊗ C)` block
+      simp only [flatNest S A (tensorObj S B C) e]
+      -- kill its label pair to `(a, E₂)`
+      refine (Finset.sum_eq_single (a, E₂) ?_ ?_).trans ?_
+      · intro u _ hu
+        refine Finset.sum_eq_zero fun l _ => Finset.sum_eq_zero fun x₂' _ =>
+          Finset.sum_eq_zero fun y₁' _ => Finset.sum_eq_zero fun t _ => ?_
+        have hM : ¬ assocMatch S A (tensorObj S B C) D d
+            ⟨(e, Dw), (ν, ⟨u, (l, x₂', y₁')⟩, t)⟩
+            ⟨(a, h), (ν', x, ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩, z)⟩)⟩ := by
+          intro hmm
+          obtain ⟨h1, h2, -, -, -, -⟩ := hmm
+          exact hu (Prod.ext h1 h2)
+        rw [assocEntry_eq_zero_of_not S A (tensorObj S B C) D d _ _ hM]
+        ring
+      · intro hh
+        exact absurd (Finset.mem_univ _) hh
+      -- the channel of the `A ⊗ (B ⊗ C)` block (witness-free)
+      simp only [sum_channel (S.mult_free a E₂ e)]
+      by_cases hlam : 0 < S.ring.N a E₂ e
+      · rw [dif_pos hlam]
+        -- kill the `A`-component of the `A ⊗ (B ⊗ C)` block to `x`
+        refine (Finset.sum_eq_single x ?_ ?_).trans ?_
+        · intro x₂' _ hx₂'
+          refine Finset.sum_eq_zero fun y₁' _ => Finset.sum_eq_zero fun t _ => ?_
+          have hM : ¬ assocMatch S A B C (e, Dw).1
+              ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩
+              ⟨(a, E₂), (⟨0, hlam⟩, x₂', y₁')⟩ := by
+            intro hmm
+            obtain ⟨h1, -, -, h4, -, -⟩ := hmm
+            exact hx₂' (h4.trans (cast_eq_of_eq_self h1 x₂')).symm
+          rw [assocEntry_eq_zero_of_not S A B C (e, Dw).1 _ _ hM]
+          ring
+        · intro hh
+          exact absurd (Finset.mem_univ _) hh
+        -- flatten the `B ⊗ C` block
+        simp only [flatNest S B C E₂]
+        -- kill its label pair to `(b, Cc)`
+        refine (Finset.sum_eq_single (b, Cc) ?_ ?_).trans ?_
+        · intro r₂ _ hr₂
+          refine Finset.sum_eq_zero fun l₂ _ => Finset.sum_eq_zero fun x₃ _ =>
+            Finset.sum_eq_zero fun y₃ _ => Finset.sum_eq_zero fun t _ => ?_
+          have hM : ¬ assocMatch S A B C (e, Dw).1
+              ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩
+              ⟨(a, E₂), (⟨0, hlam⟩, x, ⟨r₂, (l₂, x₃, y₃)⟩)⟩ := by
+            intro hmm
+            obtain ⟨-, h2, h3, -, -, -⟩ := hmm
+            have hlab : (b, Cc) = r₂ := Prod.ext h2 h3
+            exact hr₂ hlab.symm
+          rw [assocEntry_eq_zero_of_not S A B C (e, Dw).1 _ _ hM]
+          ring
+        · intro hh
+          exact absurd (Finset.mem_univ _) hh
+        -- kill its channel to the witness `⟨0, hpos⟩`
+        rw [sum_subsingleton_witness (S.mult_free b Cc E₂) ⟨0, hpos⟩]
+        -- kill the `B`-component to `x₂`
+        refine (Finset.sum_eq_single x₂ ?_ ?_).trans ?_
+        · intro x₃ _ hx₃
+          refine Finset.sum_eq_zero fun y₃ _ => Finset.sum_eq_zero fun t _ => ?_
+          have hM : ¬ assocMatch S A B C (e, Dw).1
+              ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩
+              ⟨(a, E₂), (⟨0, hlam⟩, x, ⟨(b, Cc), (⟨0, hpos⟩, x₃, y₃)⟩)⟩ := by
+            intro hmm
+            obtain ⟨-, h2, -, -, h5, -⟩ := hmm
+            exact hx₃ (h5.trans (cast_eq_of_eq_self h2 x₃)).symm
+          rw [assocEntry_eq_zero_of_not S A B C (e, Dw).1 _ _ hM]
+          ring
+        · intro hh
+          exact absurd (Finset.mem_univ _) hh
+        -- kill the `C`-component to `y`
+        refine (Finset.sum_eq_single y ?_ ?_).trans ?_
+        · intro y₃ _ hy₃
+          refine Finset.sum_eq_zero fun t _ => ?_
+          have hM : ¬ assocMatch S A B C (e, Dw).1
+              ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩
+              ⟨(a, E₂), (⟨0, hlam⟩, x, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y₃)⟩)⟩ := by
+            intro hmm
+            obtain ⟨-, -, h3, -, -, h6⟩ := hmm
+            exact hy₃ (h6.trans (cast_eq_of_eq_self h3 y₃)).symm
+          rw [assocEntry_eq_zero_of_not S A B C (e, Dw).1 _ _ hM]
+          ring
+        · intro hh
+          exact absurd (Finset.mem_univ _) hh
+        -- kill the `D`-component of the inner index to `z`
+        refine (Finset.sum_eq_single z ?_ ?_).trans ?_
+        · intro t _ ht
+          rw [if_neg (fun hh => ht hh.symm)]
+          ring
+        · intro hh
+          exact absurd (Finset.mem_univ _) hh
+        rw [if_pos rfl, mul_one]
+        -- the first two `F`-entries
+        have hF1e : assocEntry S A B C e
+            ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩
+            ⟨(a, E₂), (⟨0, hlam⟩, x, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩)⟩
+            = S.F a b Cc e g E₂ :=
+          assocEntry_eq_F_of S A B C e _ _ ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+        have hF2e : assocEntry S A (tensorObj S B C) D d
+            ⟨(e, Dw), (ν, ⟨(a, E₂), (⟨0, hlam⟩, x, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩)⟩, z)⟩
+            ⟨(a, h), (ν', x, ⟨(E₂, Dw), (⟨0, hN⟩, ⟨(b, Cc), (⟨0, hpos⟩, x₂, y)⟩, z)⟩)⟩
+            = S.F a E₂ Dw d e h :=
+          assocEntry_eq_F_of S A (tensorObj S B C) D d _ _
+            ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+        rw [hF1e, hF2e]
+      · rw [dif_neg hlam]
+        have hF1 : S.F a b Cc e g E₂ = 0 := by
+          by_contra hc
+          exact hlam (F_ne_zero_supp S hc).2.2.2
+        rw [hF1, zero_mul]
+    rw [hinner]
+  · rw [dif_neg hpos]
+    have hF3 : S.F b Cc Dw h E₂ f = 0 := by
+      by_contra hc
+      exact hpos (F_ne_zero_supp S hc).1
+    rw [hF3, mul_zero]
+
 
 /-- **The three-factor (left-hand) side of the pentagon, entrywise.**  The
 composite `(α_{A,B,C} ⊗ 𝟙_D) ≫ α_{A,B⊗C,D} ≫ (𝟙_A ⊗ α_{B,C,D})` at a pair of
@@ -235,18 +479,133 @@ theorem LHS_entry (A B C D : FusionMat n k) (d : Fin n)
     simp only [sum_channel (S.mult_free _ Dw h)]
     -- flatten t₃ (the free-label (B⊗C)-block) — the one risky flattening
     simp only [flatNest S B C]
-    -- THE REMAINING CASCADE (the one-big-hinner): state
-    --   have hinner : ∀ (E₂ : Fin n) (hN : 0 < S.ring.N E₂ Dw h),
-    --     (∑ r ∑ l ∑ x₂' ∑ y₁' ∑ z₃ ∑ i, [current body]) = [the three-F product]
-    -- containing all the inner kills (r → (b, Cc) via the leg2-match's h1/h2;
-    -- l disposed via sum_channel; x₂' → x₂, y₁' → y via h4/h5; z₃ → z via h6;
-    -- then the m1-side: flatten i, kill its pair to (e, Dw), flatten s at the
-    -- concrete e, kill the s-pair to (a, E₂), dispose λ, kill w₁ → x, kill
-    -- t₁ to ⟨(b, Cc), ⟨λ-witness, (x₂, y)⟩⟩, kill z₁ → z; then evaluate the
-    -- three entries to F-symbols and assemble).
-    sorry
+    -- align the right-hand side to the same guarded shape
+    have hRHS : (∑ kk : Fin n, S.F a b Cc e g kk * S.F a kk Dw d e h * S.F b Cc Dw h kk f)
+        = ∑ kk : Fin n, (if hh : 0 < S.ring.N kk Dw h then
+            S.F a b Cc e g kk * S.F a kk Dw d e h * S.F b Cc Dw h kk f else 0) := by
+      refine Finset.sum_congr rfl fun kk _ => ?_
+      by_cases hk : 0 < S.ring.N kk Dw h
+      · rw [dif_pos hk]
+      · rw [dif_neg hk]
+        have hF3 : S.F b Cc Dw h kk f = 0 := by
+          by_contra hc
+          exact hk (F_ne_zero_supp S hc).2.1
+        rw [hF3, mul_zero]
+    rw [hRHS]
+    refine Finset.sum_congr rfl fun E₂ _ => ?_
+    by_cases hN : 0 < S.ring.N E₂ Dw h
+    · rw [dif_pos hN, dif_pos hN]
+      exact LHS_core S d e Dw ν z g Cc μ y a b l₀ x x₂ h f ν' μ' lq E₂ hN
+    · rw [dif_neg hN, dif_neg hN]
   · rw [if_neg hleaf]
-    sorry
+    obtain ⟨⟨e, Dw⟩, ⟨ν, ⟨⟨g, Cc⟩, ⟨μ, ⟨⟨a, b⟩, ⟨l₀, x, x₂⟩⟩, y⟩⟩, z⟩⟩ := p
+    obtain ⟨⟨Aq, h⟩, ⟨ν', ⟨xq, ⟨⟨Bv, f⟩, ⟨μ', ⟨yq, ⟨⟨Cv, Dv⟩, ⟨lq, zq, zq₂⟩⟩⟩⟩⟩⟩⟩⟩ := q
+    simp only [CategoryStruct.comp]
+    rw [← Matrix.mul_assoc]
+    rw [Matrix.mul_apply]
+    simp only [Matrix.mul_apply, Finset.sum_mul]
+    rw [flatBlk S A (tensorObj S (tensorObj S B C) D) d]
+    simp only [flatBlk S (tensorObj S A (tensorObj S B C)) D d, associatorHom_apply]
+    refine Finset.sum_eq_zero fun p₂ _ => Finset.sum_eq_zero fun ν₂ _ =>
+      Finset.sum_eq_zero fun w₂ _ => Finset.sum_eq_zero fun t₂ _ =>
+      Finset.sum_eq_zero fun p₁ _ => Finset.sum_eq_zero fun ν₁ _ =>
+      Finset.sum_eq_zero fun s _ => Finset.sum_eq_zero fun z₁ _ => ?_
+    by_cases hp1 : (e, Dw) = p₁
+    · subst p₁
+      by_cases hp2 : p₂ = (Aq, h)
+      · subst p₂
+        rw [tensorHom_id_right_apply, tensorHom_id_left_apply]
+        simp only [associatorHom_apply]
+        by_cases hA : assocMatch S A B C e
+            ⟨(g, Cc), (μ, ⟨(a, b), (l₀, x, x₂)⟩, y)⟩ s
+        · by_cases hB : assocMatch S A (tensorObj S B C) D d
+              ⟨(e, Dw), (ν₁, s, z₁)⟩ ⟨(Aq, h), (ν₂, w₂, t₂)⟩
+          · by_cases hC : assocMatch S B C D h t₂
+                ⟨(Bv, f), (μ', yq, ⟨(Cv, Dv), (lq, zq, zq₂)⟩)⟩
+            · obtain ⟨hA1, hA2, hA3, hA4, hA5, hA6⟩ := hA
+              obtain ⟨hB1, hB2, hB3, hB4, hB5, hB6⟩ := hB
+              obtain ⟨hC1, hC2, hC3, hC4, hC5, hC6⟩ := hC
+              -- the three F-entries are the F-symbols; the deltas must hold
+              by_cases hδ1 : ν = ν₁
+              · by_cases hδ2 : z = z₁
+                · by_cases hδ3 : ν₂ = ν'
+                  · by_cases hδ4 : w₂ = xq
+                    · -- everything matches: the four leaves agree
+                      have ha : a = Aq := hA1.trans hB1
+                      have hx : HEq x xq :=
+                        HEq.trans (HEq.trans (heq_of_eq_cast' hA1 hA4) (heq_of_eq_cast' hB1 hB4))
+                          (heq_of_eq hδ4)
+                      have hbst : s.2.2.2.1.1 = t₂.2.2.1.1.1 := by
+                        rw [hB5, cast_blk_fst S B C hB2 t₂.2.2.1]
+                      have hb : b = Bv := hA2.trans (hbst.trans hC1)
+                      have hByt : HEq s.2.2.2.2.2.1 t₂.2.2.1.2.2.1 := by
+                        rw [hB5]
+                        exact cast_blk_x S B C hB2 t₂.2.2.1
+                      have hx₂ : HEq x₂ yq :=
+                        HEq.trans (HEq.trans (heq_of_eq_cast' hA2 hA5) hByt)
+                          (heq_of_eq_cast' hC1 hC4)
+                      have hcst : s.2.2.2.1.2 = t₂.2.2.1.1.2 := by
+                        rw [hB5, cast_blk_fst S B C hB2 t₂.2.2.1]
+                      have hc : Cc = Cv := hA3.trans (hcst.trans hC2)
+                      have hCyt : HEq s.2.2.2.2.2.2 t₂.2.2.1.2.2.2 := by
+                        rw [hB5]
+                        exact cast_blk_y S B C hB2 t₂.2.2.1
+                      have hy : HEq y zq :=
+                        HEq.trans (HEq.trans (heq_of_eq_cast' hA3 hA6) hCyt)
+                          (heq_of_eq_cast' hC2 hC5)
+                      have hd : Dw = Dv := hB3.trans hC3
+                      have hz : HEq z zq₂ :=
+                        HEq.trans (HEq.trans (heq_of_eq hδ2) (heq_of_eq_cast' hB3 hB6))
+                          (heq_of_eq_cast' hC3 hC6)
+                      refine absurd ?_ hleaf
+                      simp only [qlo, qhi]
+                      exact Prod.ext (sigma_eq_mk ha hx)
+                        (Prod.ext (sigma_eq_mk hb hx₂)
+                          (Prod.ext (sigma_eq_mk hc hy) (sigma_eq_mk hd hz)))
+                    · rw [if_neg hδ4]
+                      ring
+                  · rw [if_neg hδ3]
+                    ring
+                · rw [if_neg hδ2]
+                  ring
+              · rw [if_neg hδ1]
+                ring
+            · rw [assocEntry_eq_zero_of_not S B C D h _ _ hC]
+              ring
+          · rw [assocEntry_eq_zero_of_not S A (tensorObj S B C) D d _ _ hB]
+            ring
+        · rw [assocEntry_eq_zero_of_not S A B C e _ _ hA]
+          ring
+      · rw [tensorHom_apply_ne S (𝟙 A) (associatorHom S B C D) d hp2]
+        ring
+    · rw [tensorHom_apply_ne S (associatorHom S A B C) (𝟙 D) d hp1]
+      ring
+
+
+
+/-! ## The capstone: `PentagonShapeHom S` -/
+
+/-- **The pentagon in the assembler's shape.**  Both sides are compared entrywise:
+by `LHS_entry` the three-factor side is the guarded label sum, by `U_entry` the
+two-factor side is the guarded product of two `F`-symbols, and the label pentagon
+`S.pentagon` — at `(a, b, Cc, Dw, g, f, h, d, e)` — identifies them. -/
+theorem pentagonShapeHom_holds (S : FusionSystem n k) : PentagonShapeHom S := by
+  intro W X Y Z
+  funext d p q
+  rw [LHS_entry S W X Y Z d p q, U_entry S W X Y Z d p q]
+  by_cases hleaf : qlo W X Y Z S d p = qhi W X Y Z S d q
+  · rw [if_pos hleaf, if_pos hleaf]
+    obtain ⟨⟨e, Dw⟩, ⟨ν, ⟨⟨g, Cc⟩, ⟨μ, ⟨⟨a, b⟩, ⟨l₀, x, x₂⟩⟩, y⟩⟩, z⟩⟩ := p
+    obtain ⟨⟨Aq, h⟩, ⟨ν', ⟨xq, ⟨⟨Bv, f⟩, ⟨μ', ⟨yq, ⟨⟨Cv, Dv⟩, ⟨lq, zq, zq₂⟩⟩⟩⟩⟩⟩⟩⟩ := q
+    exact S.pentagon a b Cc Dw g f h d e
+  · rw [if_neg hleaf, if_neg hleaf]
+
+
+/-- **The endgame**: with the pentagon in hand, WP2's reconstruction is a fusion
+category in the library's own sense — the last open item of WP2 closes. -/
+theorem reconIsFusionCanonical_recon (S : FusionSystem n k) (hn : 0 < n) :
+    ReconIsFusionCanonical S hn :=
+  reconIsFusionCanonical_of_pentagonHom S hn (pentagonShapeHom_holds S)
 
 end LHS
 
