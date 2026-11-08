@@ -327,6 +327,37 @@ side on the canonical scaffold plus `tensorHom_blockDiag_apply` (the
 general-left-factor entry tool, on the board from m6).  The engine method is
 documented and twice-battle-tested.  This is WP2's last item.
 
+## WP2 closed: the pentagon landed (`FusionCategory.PentagonLHS`, swarm `smw77hbfw`)
+
+The last item is done, and with it WP2.  The WIP file
+`WIP/PentagonLHS.lean` graduated to the package module
+`FusionCategory/PentagonLHS.lean` (imported by the umbrella; the audit
+manifest and `AxiomAudit.lean` regenerated; the `ci-chain` gates green).
+
+* `LHS_entry` — the three-factor side, entrywise: the composite
+  `(α_{A,B,C} ⊗ 𝟙_D) ≫ α_{A,B⊗C,D} ≫ (𝟙_A ⊗ α_{B,C,D})` at refined indices
+  is the label-level pentagon sum `∑ kk, F a b Cc e g kk * F a kk Dw d e h *
+  F b Cc Dw h kk f` on matched leaves and `0` off them.  The final cascade
+  runs in the named-binder workbench `LHS_core`; the off-leaf case chains
+  the three associator matches and four tensorHom deltas to `qlo = qhi`.
+  Engine note: no nsmul bookkeeping — every free channel is disposed
+  witness-free (`sum_channel` + `by_cases`; absent branches vanish by
+  `F_support`), since `assocMatch` compares no channels.
+* `pentagonShapeHom_holds : PentagonShapeHom S` — the capstone: entrywise
+  `LHS_entry` + `U_entry`, and `S.pentagon` at `(a, b, Cc, Dw, g, f, h, d, e)`
+  on the leaf match.
+* `reconIsFusionCanonical_recon : ReconIsFusionCanonical S hn` — the
+  `ReconClosureBridge` application: **the reconstruction from a
+  `FusionSystem` is a fusion category**, for every system (Fibonacci, Ising,
+  Yang–Lee, `Vec^ω`, …).
+
+Verification: swarm `smw77hbfw` (8 members) produced three independent
+kernel-checked solutions (m1 — landed; m6, m7 — verified post-hoc), each with
+`LHS_entry`'s statement byte-identical to the frozen one and axiom budget
+`[propext, Classical.choice, Quot.sound]`; the coordinator re-elaborated and
+diff-audited every artefact before acceptance.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

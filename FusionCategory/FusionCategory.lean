@@ -60,6 +60,7 @@ import FusionCategory.PentagonU
 import FusionCategory.PentagonUEntry
 import FusionCategory.PentagonNSmul
 import FusionCategory.PentagonLegs
+import FusionCategory.PentagonLHS
 import FusionCategory.ReconDataBridge
 import FusionCategory.Examples.Z2SqFalseJ
 import FusionCategory.Witnesses.Z3sqTwist

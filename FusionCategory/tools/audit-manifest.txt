@@ -817,6 +817,8 @@ FusionCategory.J_coherent_retained
 FusionCategory.J_match
 FusionCategory.J_match_carried
 FusionCategory.KappaMultiplicative
+FusionCategory.LHS_core
+FusionCategory.LHS_entry
 FusionCategory.MonoidalData
 FusionCategory.MonoidalData.associator
 FusionCategory.MonoidalData.associator_naturality
@@ -1632,6 +1634,7 @@ FusionCategory.assoc_inv_mul_apply
 FusionCategory.assoc_mul
 FusionCategory.assoc_mul_apply
 FusionCategory.associatorHom
+FusionCategory.associatorHom_apply
 FusionCategory.associatorHom_comp_associatorInv
 FusionCategory.associatorInv
 FusionCategory.associatorInv_comp_associatorHom
@@ -1668,6 +1671,7 @@ FusionCategory.cast_blk_x
 FusionCategory.cast_blk_y
 FusionCategory.cast_eq_of_eq_self
 FusionCategory.cast_self
+FusionCategory.chan_delta_one
 FusionCategory.channel_pos
 FusionCategory.channel_subsingleton
 FusionCategory.charOfTensorAuto
@@ -1831,6 +1835,7 @@ FusionCategory.heqProjY
 FusionCategory.heqProjZ
 FusionCategory.heq_of_eq_cast'
 FusionCategory.homFiniteDimensional
+FusionCategory.idBlk_entry
 FusionCategory.instCategory
 FusionCategory.instHomFiniteDimensional
 FusionCategory.instLinear
@@ -1907,6 +1912,8 @@ FusionCategory.pairingOfSnake
 FusionCategory.pairingOfSnake_coevaluation
 FusionCategory.pairingOfSnake_evaluation
 FusionCategory.pairingOfSnake_evaluation_dual
+FusionCategory.pent_nsmul3
+FusionCategory.pentagonShapeHom_holds
 FusionCategory.pentagonShape_iff
 FusionCategory.pentagon_P1
 FusionCategory.pentagon_P2
@@ -1952,6 +1959,7 @@ FusionCategory.qlo.eq_1
 FusionCategory.reconFusionCanonicalOf
 FusionCategory.reconIsFusionCanonical
 FusionCategory.reconIsFusionCanonical_of_pentagonHom
+FusionCategory.reconIsFusionCanonical_recon
 FusionCategory.rhs_eq_matched
 FusionCategory.rhs_eq_zero
 FusionCategory.rhs_sum_eq
@@ -1983,6 +1991,7 @@ FusionCategory.squaredReal_pos
 FusionCategory.subsingleton_matrix_unitObj_blk_ne
 FusionCategory.subsingleton_sim_blk_self
 FusionCategory.subsingleton_unitObj_blk
+FusionCategory.sum_channel
 FusionCategory.sum_dimENO_eq_sum_kappa
 FusionCategory.sum_dim_eq
 FusionCategory.sum_dim_eq_c
@@ -1993,6 +2002,7 @@ FusionCategory.sum_eigenrelation
 FusionCategory.sum_fin_const_eq
 FusionCategory.sum_fin_const_nsmul
 FusionCategory.sum_kappa_sq_eq_of_pseudoUnitaryC
+FusionCategory.sum_subsingleton_witness
 FusionCategory.swap2
 FusionCategory.swap2.eq_1
 FusionCategory.swap2_mul_swap2

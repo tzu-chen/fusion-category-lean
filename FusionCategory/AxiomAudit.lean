@@ -1078,6 +1078,19 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.tensorHom_id_left_apply
 #print axioms FusionCategory.tensorHom_id_right_apply
 
+-- FusionCategory.PentagonLHS (10 declarations)
+
+#print axioms FusionCategory.LHS_core
+#print axioms FusionCategory.LHS_entry
+#print axioms FusionCategory.associatorHom_apply
+#print axioms FusionCategory.chan_delta_one
+#print axioms FusionCategory.idBlk_entry
+#print axioms FusionCategory.pent_nsmul3
+#print axioms FusionCategory.pentagonShapeHom_holds
+#print axioms FusionCategory.reconIsFusionCanonical_recon
+#print axioms FusionCategory.sum_channel
+#print axioms FusionCategory.sum_subsingleton_witness
+
 -- FusionCategory.PentagonLegs (5 declarations)
 
 #print axioms FusionCategory.leg_assoc_tensor_entry
