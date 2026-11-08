@@ -38,6 +38,12 @@ integration landing.
 - Diff vs `90cff28`: only the two helpers added and the two `sorry` regions
   replaced; `LHS_entry`'s statement and the seven committed green levels are
   byte-identical.
+- **Corroboration.** Two further members of the same swarm (m6, m7) submitted
+  independent solutions as it finished; both were verified post-hoc the same
+  way (exit 0, all `#print axioms` = `[propext, Classical.choice, Quot.sound]`,
+  diff vs `90cff28` removing exactly the two `sorry` lines, statements
+  byte-identical). The result therefore rests on three independent
+  kernel-checked proofs of the same theorems — m1's is the landed artefact.
 
 ## The engine (for the next entry computation)
 
