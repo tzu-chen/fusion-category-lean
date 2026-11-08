@@ -1,5 +1,6 @@
 import FusionCategory.Statements
 import FusionCategory.Examples.YangLee
+import FusionCategory.DimMult
 
 /-!
 # D8 — scalar transport of skeletal fusion systems, and the `ℂ` instance battery
@@ -188,6 +189,47 @@ theorem mapSystem_qualified {m : ℕ} {k K : Type u} [Field k] [Field K] (f : k 
   have hF' : S.F a b c d e g ≠ 0 := fun hz => hF (by simp [hz])
   simpa only [mapSystem_J, map_mul] using congrArg f (h a b c d e g h1 h2 h3 h4 hF')
 
+/-! ## Transport of the multiplicativity hypothesis (M)
+
+`DimMultiplicative S` (`DimMult.lean`) is one equation per pair of labels between
+channel sums of `S.ring.N · S.J · S.kappa`, so it transports along any ring hom
+between the scalar fields: `f` is additive on the `Finset` sum, multiplicative on
+the product, and `map_natCast` moves the structure constants.  Because `k` and `K`
+are fields, `f` is injective, so the implication is an equivalence — (M) holds of
+a system exactly when it holds of any scalar copy of it.  That is what lets the
+`ℂ` copies below inherit the hypothesis from the `ℝ` (resp. `ℚ`) originals. -/
+
+/-- **The channel sum of `mapSystem` is the image of the channel sum**: this is the
+single computation behind both directions of `mapSystem_dimMult_iff`. -/
+theorem mapSystem_sum_eq (f : k →+* K) (S : FusionSystem n k) (a b : Fin n) :
+    (∑ c : Fin n, (mapSystem f S).ring.N a b c * (mapSystem f S).J a b c
+        * (mapSystem f S).kappa c)
+      = f (∑ c : Fin n, (S.ring.N a b c : k) * S.J a b c * S.kappa c) := by
+  rw [map_sum]
+  refine Finset.sum_congr rfl (fun c _ => ?_)
+  rw [mapSystem_ring, mapSystem_J, mapSystem_kappa, map_mul, map_mul, map_natCast]
+
+/-- **(M) transports along scalar extension**, `DimMultiplicative S →
+DimMultiplicative (mapSystem f S)`. -/
+theorem mapSystem_dimMult (f : k →+* K) (S : FusionSystem n k)
+    (hM : DimMultiplicative S) : DimMultiplicative (mapSystem f S) := by
+  intro a b
+  rw [mapSystem_sum_eq f S a b, mapSystem_kappa, mapSystem_kappa, ← map_mul, hM a b]
+
+/-- **(M) reflects along scalar extension** — the converse, by injectivity of `f`. -/
+theorem dimMult_of_mapSystem (f : k →+* K) (S : FusionSystem n k)
+    (hM : DimMultiplicative (mapSystem f S)) : DimMultiplicative S := by
+  intro a b
+  have h := hM a b
+  rw [mapSystem_sum_eq f S a b, mapSystem_kappa, mapSystem_kappa, ← map_mul] at h
+  exact f.injective h
+
+/-- **(M) is invariant under scalar extension**: the `ℂ`-side and `ℝ`-side
+hypotheses are the same statement. -/
+theorem mapSystem_dimMult_iff (f : k →+* K) (S : FusionSystem n k) :
+    DimMultiplicative (mapSystem f S) ↔ DimMultiplicative S :=
+  ⟨dimMult_of_mapSystem f S, mapSystem_dimMult f S⟩
+
 end Transport
 
 namespace Transport
@@ -201,6 +243,23 @@ theorem isPseudoUnitaryC_of_algebraMap {n : ℕ} {S : FusionSystem n ℝ} (hFP :
   unfold IsPseudoUnitaryC IsPseudoUnitary at *
   rw [sum_kappa_map, h]
   rfl
+
+/-- **Pseudo-unitarity transports back along `ℝ → ℂ`**: the `ℂ` equation is the
+image of the `ℝ` one under `sum_kappa_map`, and `algebraMap ℝ ℂ` is injective.
+Together with `isPseudoUnitaryC_of_algebraMap` this makes the two hypotheses of
+the analytic chain — (M) (`mapSystem_dimMult_iff`) and pseudo-unitarity — the
+same statement on a system and on its `ℂ` copy. -/
+theorem isPseudoUnitary_of_algebraMap {n : ℕ} {S : FusionSystem n ℝ} (hFP : S.ring.FPData)
+    (h : IsPseudoUnitaryC (mapSystem (algebraMap ℝ ℂ) S) hFP) : IsPseudoUnitary S hFP := by
+  unfold IsPseudoUnitaryC at h
+  unfold IsPseudoUnitary
+  rw [sum_kappa_map] at h
+  exact Complex.ofReal_injective h
+
+/-- **Pseudo-unitarity is invariant under `ℝ → ℂ`.** -/
+theorem isPseudoUnitaryC_iff {n : ℕ} {S : FusionSystem n ℝ} (hFP : S.ring.FPData) :
+    IsPseudoUnitaryC (mapSystem (algebraMap ℝ ℂ) S) hFP ↔ IsPseudoUnitary S hFP :=
+  ⟨isPseudoUnitary_of_algebraMap hFP, isPseudoUnitaryC_of_algebraMap hFP⟩
 
 /-- The same for an arbitrary characterisation of `κ` by the `FP`-dimensions: if `κ` *is*
 the FP-dimension, pseudo-unitarity is immediate (`hFP.dual_eq` kills the dual and `sq`
@@ -389,6 +448,56 @@ theorem kappa_VecZ2R (i : Fin 2) : VecZ2R.kappa i = 1 := by
   rw [Transport.mapSystem_kappa]
   simp [FusionSystem.kappa, VecZ2.system]
 
+/-! ## (M) at the tree's systems, and at their copies
+
+`DimMultiplicative` (`DimMult.lean`) is discharged here on every system the tree
+carries, and — through `Transport.mapSystem_dimMult` — on every scalar copy of
+them.  Two shapes cover the examples:
+
+The `(M)` checks themselves live next to their systems and are not repeated
+here: `FibonacciSystem_dimMultiplicative` and `IsingSystem_dimMultiplicative`
+in `Examples/FibonacciIsing.lean` (there `J ≡ 1` and `κ = FPdim`, so (M) is
+the character identity `fpdim_char`), `YangLee.dimMult`, `VecZ2.dimMult` and
+`VecZ2Twisted.dimMult` in `Examples/YangLee.lean` (Yang–Lee's `κ` is the
+*other* character of the Fibonacci ring, `κ τ = (1 - √5)/2 = -1/φ`;
+`Vec^ω_{Z/2}`'s is the sign character `(1, -1)` — (M) is blind to positivity,
+pseudo-unitarity to multiplicativity), and `Z2SqH.dimMultH` with its
+refutation `Z2SqH.not_dimMult` in `Examples/Z2SqHonest.lean`.  This section
+only transports them to the scalar copies. -/
+
+/-! ### The copies inherit (M) -/
+
+/-- **The `ℂ` Fibonacci copy satisfies (M)**, by transport from the instance
+next to the system. -/
+theorem dimMult_fibonacciC : DimMultiplicative FibonacciC :=
+  Transport.mapSystem_dimMult (algebraMap ℝ ℂ) FibonacciSystem
+    FibonacciSystem_dimMultiplicative
+
+/-- **The `ℂ` Ising copy satisfies (M)**, by transport. -/
+theorem dimMult_isingC : DimMultiplicative IsingC :=
+  Transport.mapSystem_dimMult (algebraMap ℝ ℂ) IsingSystem
+    IsingSystem_dimMultiplicative
+
+/-- **The `ℂ` Yang–Lee copy satisfies (M)**, by transport. -/
+theorem dimMult_yangLeeC : DimMultiplicative YangLeeC :=
+  Transport.mapSystem_dimMult (algebraMap ℝ ℂ) YangLee.system YangLee.dimMult
+
+/-- **The `ℝ` copy of `Vec_{Z/2}` satisfies (M)**, by `ℚ → ℝ` transport. -/
+theorem dimMult_vecZ2R : DimMultiplicative VecZ2R :=
+  Transport.mapSystem_dimMult (algebraMap ℚ ℝ) VecZ2.system VecZ2.dimMult
+
+/-! ### The capstone at the `ℝ` instances
+
+`DimMult.eno823Exact_of_dimMult_pseudoUnitary` needs three inputs — (M),
+`IsPseudoUnitary`, and one pivotal structure — and all three are in the tree
+for Fibonacci and Ising.  The exact instances live next to the systems:
+`eno823Exact_FibonacciSystem` and `eno823Exact_IsingSystem` in
+`Examples/FibonacciIsing.lean`, the first non-pointed instances of ENO 8.23's
+exact statement, by the analytic chain alone (no `PFUnique`, no per-`P`
+multiplicativity hypothesis).  Against this file's own `fibonacciFPData` /
+`isingFPData` the same conclusions follow from `fpdim_unique`, which
+identifies any two `FPData` of one ring. -/
+
 /-! ## `ENO823` at the `ℂ` copies
 
 The conclusions of the conditional theorem, instantiated at the two pseudo-unitary copies:
@@ -425,6 +534,8 @@ end FusionCategory
 #print axioms FusionCategory.Transport.mapSystem_qualified
 #print axioms FusionCategory.Transport.isPseudoUnitaryC_of_algebraMap
 #print axioms FusionCategory.Transport.isPseudoUnitary_of_kappa_eq_fpdim
+#print axioms FusionCategory.Transport.isPseudoUnitary_of_algebraMap
+#print axioms FusionCategory.Transport.isPseudoUnitaryC_iff
 #print axioms FusionCategory.Transported.fibonacciFPData_dual
 #print axioms FusionCategory.Transported.isingFPData_dual
 #print axioms FusionCategory.Transported.fibonacciFPData
@@ -444,3 +555,11 @@ end FusionCategory
 #print axioms FusionCategory.Transported.eno823_ising
 #print axioms FusionCategory.Transported.eno823_fibonacciC
 #print axioms FusionCategory.Transported.eno823_isingC
+#print axioms FusionCategory.Transport.mapSystem_sum_eq
+#print axioms FusionCategory.Transport.mapSystem_dimMult
+#print axioms FusionCategory.Transport.dimMult_of_mapSystem
+#print axioms FusionCategory.Transport.mapSystem_dimMult_iff
+#print axioms FusionCategory.Transported.dimMult_fibonacciC
+#print axioms FusionCategory.Transported.dimMult_isingC
+#print axioms FusionCategory.Transported.dimMult_yangLeeC
+#print axioms FusionCategory.Transported.dimMult_vecZ2R

@@ -1,4 +1,5 @@
 import FusionCategory.PseudoUnitary
+import FusionCategory.DimMult
 
 /-!
 # `Vec^ω_{(Z/2)²}` with the trivial twist `J ≡ 1`: the false-`J` witness, kernel-checked
@@ -1185,6 +1186,285 @@ theorem same_datum_F_list : systemH.F = system.F := rfl
 end Z2SqH
 end FusionCategory
 
+/-! # PART 3 (member m4, swarm `smw7b5fyh`, direction d4): `(M)` at the hypothesis level
+
+Part 1 built the datum `system` with the trivial twist `J ≡ 1` and refuted the
+multiplicativity law there (`M_fails`); Part 2 built `systemH`, the same datum
+with the honest twist `J = δ(κ) = κ_a κ_b / κ_c`, and proved `M_holds`.  This
+part states both results at the level of the *named hypothesis*
+`DimMultiplicative` of `FusionCategory/DimMult.lean`, and runs ENO 8.23 end to
+end through `eno823Exact_of_dimMult_pseudoUnitary`:
+
+* `dimMultH` — `DimMultiplicative systemH`: (M) for the honest twist;
+* `not_dimMult` — `¬ DimMultiplicative system`: (M) for `J ≡ 1`.  With
+  `pseudoUnitary_and_not_dimMult` this is the sharpness of the pair
+  `(IsPseudoUnitary, DimMultiplicative)`: pseudo-unitarity alone does not give
+  ENO 8.23;
+* `dimMult_iff_J_match` — on this datum (M) is *equivalent* to the per-channel
+  identity `J a b c = κ_a κ_b / κ_c` on every channel, i.e. to the `J_match`
+  condition of WP3 Task 3.3 (the channel of `a ⊗ b` is unique).  The general
+  engine behind the backward direction is
+  `sum_N_mul_J_kappa_of_eq_ratio`/`dimMult_of_J_eq_kappa_ratio`: on any system
+  whose channel sums are `1`, a twist that agrees with `δ(κ)` on the channels
+  satisfies (M).  Both are stated over an **arbitrary field** `k`, and
+  `dimMult_iff_dimEigen_kappa_of_J_eq_one` — `J ≡ 1` on the channels gives
+  `DimMultiplicative S ↔ DimEigen S S.kappa` — is the form the other examples
+  (Fibonacci, Ising, `VecZ2`, `VecZ2Twisted`, all with `J ≡ 1`) need: their (M)
+  is the character identity for `κ`, and `fpdim_char` supplies it once
+  `κ = FPdim` is known.  Nothing here is specific to `Vec^ω_{(Z/2)²}` except
+  the instances;
+* `not_dimEigen_falseJ`, `dimEigen_pivotalH` — the same content on the pivotal
+  side through `dimMult_iff_dimEigen`: *no* pivotal structure of the `J ≡ 1`
+  datum has a multiplicative dimension function, while `p = 1/κ` of the honest
+  datum does (`dim_pivotalH_is_character` is the same statement computed
+  directly, and `dimMultH_via_character` re-derives `dimMultH` from it, so the
+  bridge and the computation agree);
+* `not_trace_identity_falseJ`, `trace_identity_H` — the same on ENO's side
+  through `trace_iff_dimMult`: for *every* `SqrtData` of `system` the trace
+  identity `d_i d_j = Σ_c T^{ij}_c d_c` fails, and for every `SqrtData` of
+  `systemH` it holds.  That is WP3's acceptance test, discharged per instance;
+* `eno823ExactH_via_dimMult`, `eno823H_via_dimMult` — ENO 8.23 for `systemH`
+  from `(M) + IsPseudoUnitary + pivotalH` through the capstone of
+  `DimMult.lean`.  `ENO823ExactH` above proves the same statement directly, by
+  hand; the capstone route is the one that scales to the examples.
+
+`system` and `systemH` differ *only* in the five `J` fields: `ring`, `F`,
+`Finv`, `ev`, `coev`, the snakes and `κ` are literally the same terms
+(`same_datum_except_J`, kernel-checked below).  So `not_dimMult` versus
+`dimMultH` is exactly the content of WP3 Task 3.3's `J_match`: on one and the
+same `Vec^ω_{(Z/2)²}` datum, `IsPseudoUnitary` holds for both twists
+(`isPseudoUnitary`, `isPseudoUnitaryH`), `ENO823` is false for `J ≡ 1`
+(`not_eno823`) and true for `J = δ(κ)` (`ENO823ExactH`), and what decides it is
+(M) — a property of the carried twist alone, carried here as a hypothesis
+because the four twist laws of `FusionSystem` do not pin `J` down.
+
+Axiom budget: `[propext, Classical.choice, Quot.sound]` (`#print axioms` in the
+Part 3 audit at the bottom of the file).
+-/
+
+namespace FusionCategory
+namespace Z2SqH
+
+/-! ## The engine: a twist agreeing with `δ(κ)` on the channels satisfies (M) -/
+
+section Engine
+
+variable {n : ℕ} {k : Type u} [Field k] {S : FusionSystem n k}
+
+/-- **`δ(κ)` satisfies (M) on pointed data, twist-generically** — over any field
+`k`, so it applies to the `ℚ` and `ℂ` copies of the examples as well.  If every
+channel sum `Σ_c N^c_{ab}` is `1` (true for pointed fusion rules, e.g.
+`sum_N_eq_one` below) and `J` agrees with the coboundary `δ(κ)` on the channels,
+then the (M) sum collapses: on a channel the `κ_c` cancels, and off the channels
+`N^c_{ab} = 0`.  `deltaJ_M` is the special case `J = deltaJ S`; this form is
+what makes the equivalence with `J_match` below possible. -/
+theorem sum_N_mul_J_kappa_of_eq_ratio
+    (hunit : ∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : k)) = 1)
+    (J : Fin n → Fin n → Fin n → k)
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      J a b c = S.kappa a * S.kappa b / S.kappa c) :
+    ∀ a b : Fin n,
+      (∑ c : Fin n, (S.ring.N a b c : k) * J a b c * S.kappa c) =
+        S.kappa a * S.kappa b := by
+  intro a b
+  have hterm : ∀ c : Fin n, (S.ring.N a b c : k) * J a b c * S.kappa c
+      = (S.ring.N a b c : k) * (S.kappa a * S.kappa b) := by
+    intro c
+    by_cases h : 0 < S.ring.N a b c
+    · rw [hJ a b c h, mul_assoc, div_mul_cancel₀ _ (S.kappa_ne_zero c)]
+    · have h0 : S.ring.N a b c = 0 := by omega
+      rw [h0]
+      simp
+  rw [Finset.sum_congr rfl (fun c _ => hterm c), ← Finset.sum_mul, hunit a b, one_mul]
+
+/-- **The honest twist always satisfies (M)** on pointed data: if the carried
+twist is the coboundary `δ(κ)` on every channel then `DimMultiplicative S`.
+On pointed data `(M)` is therefore automatic — the content of (M) is entirely in
+the *non*-pointed examples (Fibonacci, Ising, Yang–Lee), where a channel sum is
+`2`.  `Z2SqH.dimMultH` is the instance, and `dimMult_iff_J_match` below is the
+converse at this datum. -/
+theorem dimMult_of_J_eq_kappa_ratio
+    (hunit : ∀ a b : Fin n, (∑ c : Fin n, (S.ring.N a b c : k)) = 1)
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c →
+      S.J a b c = S.kappa a * S.kappa b / S.kappa c) :
+    DimMultiplicative S :=
+  sum_N_mul_J_kappa_of_eq_ratio hunit S.J hJ
+
+/-- **For a trivial twist, (M) is exactly `κ` being a character of the fusion
+ring**: `DimMultiplicative S ↔ DimEigen S S.kappa`.  This is the reduction the
+examples with `J ≡ 1` need — Fibonacci, Ising and `VecZ2Twisted` all have
+`J ≡ 1`, so their (M) is the character identity for `κ`, which is
+`fpdim_char` once `κ = FPdim` is known (`kappa_val`).  The forward direction
+needs no hypothesis at all beyond the triviality of `J` on the channels; the
+backward direction is the same term-by-term collapse as above. -/
+theorem dimMult_iff_dimEigen_kappa_of_J_eq_one
+    (hJ : ∀ a b c : Fin n, 0 < S.ring.N a b c → S.J a b c = 1) :
+    DimMultiplicative S ↔ DimEigen S S.kappa := by
+  constructor
+  · intro hM a b
+    rw [← hM a b]
+    exact Finset.sum_congr rfl (fun c _ => by
+      by_cases h : 0 < S.ring.N a b c
+      · rw [hJ a b c h]; ring
+      · have h0 : S.ring.N a b c = 0 := by omega
+        rw [h0]; simp)
+  · intro hκ a b
+    rw [← hκ a b]
+    exact Finset.sum_congr rfl (fun c _ => by
+      by_cases h : 0 < S.ring.N a b c
+      · rw [hJ a b c h]; ring
+      · have h0 : S.ring.N a b c = 0 := by omega
+        rw [h0]; simp)
+
+end Engine
+
+/-! ## `(M)` on the two twists of `Vec^ω_{(Z/2)²}` -/
+
+/-- **(M) holds for the honest twist `J = δ(κ)`** — `M_holds` read at the level
+of the hypothesis `DimMultiplicative` of `DimMult.lean`. -/
+theorem dimMultH : DimMultiplicative systemH := by
+  intro a b
+  exact M_holds a b
+
+/-- The channel form of `dimMultH`, with the fields of `systemH` visible. -/
+theorem dimMultH_apply (a b : Fin 4) :
+    (∑ c : Fin 4, (systemH.ring.N a b c : ℝ) * systemH.J a b c * systemH.kappa c)
+      = systemH.kappa a * systemH.kappa b :=
+  dimMultH a b
+
+/-- **(M) fails for the trivial twist `J ≡ 1`**, at the level of
+`DimMultiplicative`: `M_fails` intersected with the definition.  Since `system`
+supplies every field of `FusionSystem`, (M) is *not* a consequence of the
+signature. -/
+theorem not_dimMult : ¬ DimMultiplicative system := by
+  intro hM
+  exact M_fails (hM 2 1)
+
+/-- **`κ = (1,1,1,-1)` is not a character of the fusion ring**: at `(2,1)` the
+unique channel is `3` and `κ_3 = -1 ≠ 1 = κ_2 κ_1`.  Through
+`dimMult_iff_dimEigen_kappa_of_J_eq_one` this is `M_fails` seen on the pivotal
+side, and it is what refutes ENO 8.23 for the false twist. -/
+theorem not_dimEigen_kappa : ¬ DimEigen system system.kappa :=
+  fun h => not_dimMult
+    ((dimMult_iff_dimEigen_kappa_of_J_eq_one (S := system)
+      (fun a b c _ => J_apply a b c)).mpr h)
+
+/-- **Pseudo-unitarity alone does not give ENO 8.23**: the `J ≡ 1` witness
+satisfies `IsPseudoUnitary` and fails (M).  The companion statement for the
+other half of the pair ((M) without `IsPseudoUnitary`) is Yang–Lee's. -/
+theorem pseudoUnitary_and_not_dimMult :
+    IsPseudoUnitary system fpData ∧ ¬ DimMultiplicative system :=
+  ⟨isPseudoUnitary, not_dimMult⟩
+
+/-- **On this datum, (M) *is* `J_match`.**  Since the channel of `a ⊗ b` is
+unique (`sum_N_eq_one`), the sum identity `DimMultiplicative` is equivalent to
+the per-channel identity `J a b c = κ_a κ_b / κ_c` on every channel: forward is
+`M_forces_J_match` (via the forcing theorem `J_eq_delta_of_M`), backward is the
+engine `sum_N_mul_J_kappa_of_eq_ratio`.  So the `J_match` qualification of WP3
+Task 3.3, at the hypothesis level, is precisely `DimMultiplicative`. -/
+theorem dimMult_iff_J_match (J : Fin 4 → Fin 4 → Fin 4 → ℝ) :
+    (∀ a b : Fin 4,
+        (∑ c : Fin 4, (ring.N a b c : ℝ) * J a b c * system.kappa c) =
+          system.kappa a * system.kappa b) ↔
+      (∀ a b c : Fin 4, 0 < ring.N a b c →
+        J a b c = system.kappa a * system.kappa b / system.kappa c) := by
+  constructor
+  · intro hM a b c hc
+    exact M_forces_J_match J hM a b c hc
+  · intro hJ
+    exact sum_N_mul_J_kappa_of_eq_ratio (S := system) (fun a b => sum_N_eq_one a b) J
+      (fun a b c hc => hJ a b c hc)
+
+/-! ## The pivotal side: which dimension functions are characters -/
+
+/-- **No pivotal structure of the `J ≡ 1` datum has a multiplicative
+dimension.**  Through the bridge `dimMult_iff_dimEigen`: `¬ DimMultiplicative`
+discharges `¬ DimEigen` at *every* pivotal structure at once.  This is m4's
+`not_mult` re-derived from the hypothesis. -/
+theorem not_dimEigen_falseJ (P : PivotalStructure system) :
+    ¬ DimEigen system (dim P) :=
+  fun h => not_dimMult ((dimMult_iff_dimEigen P).mpr h)
+
+/-- The dimension function of the honest datum's pivotal structure `p = 1/κ` is
+a character of the fusion ring. -/
+theorem dimEigen_pivotalH : DimEigen systemH (dim pivotalH) :=
+  dimEigen_of_dimMult dimMultH pivotalH
+
+/-- The same, computed directly: `dim pivotalH ≡ 1` and `Σ_c N^c_{ab} = 1`.
+Agreement with `dimEigen_pivotalH` is the consistency of the bridge with the
+explicit dimension function. -/
+theorem dim_pivotalH_is_character (a b : Fin 4) :
+    (∑ c : Fin 4, (systemH.ring.N a b c : ℝ) * dim pivotalH c)
+      = dim pivotalH a * dim pivotalH b := by
+  have hsum : (∑ c : Fin 4, (systemH.ring.N a b c : ℝ)) = 1 := sum_N_eq_one a b
+  have hterm : ∀ c : Fin 4, (systemH.ring.N a b c : ℝ) * dim pivotalH c
+      = (systemH.ring.N a b c : ℝ) := fun c => by rw [dimH c, mul_one]
+  rw [Finset.sum_congr rfl (fun c _ => hterm c), hsum, dimH a, dimH b]
+  norm_num
+
+/-- A second, independent proof of (M) for the honest twist: through the
+character form `dim_pivotalH_is_character` and the bridge
+`dimMult_iff_dimEigen`.  It agrees with `dimMultH`, which was read off
+`M_holds`; both routes are kernel-checked. -/
+theorem dimMultH_via_character : DimMultiplicative systemH :=
+  (dimMult_iff_dimEigen pivotalH).mpr dim_pivotalH_is_character
+
+/-! ## ENO's side: the trace identity `d_i d_j = Σ_c T^{ij}_c d_c` -/
+
+/-- **ENO's trace identity fails for every square root of `(−)****` on the
+`J ≡ 1` datum.**  `trace_iff_dimMult` identifies the trace identity of a
+`SqrtData` with (M), and (M) is false here.  This is WP3's acceptance test
+applied to the false twist: no choice of `a` saves it. -/
+theorem not_trace_identity_falseJ (A : SqrtData system) :
+    ¬ (∀ i j : Fin 4,
+      A.d i * A.d j =
+        ∑ c : Fin 4, (system.ring.N i j c : ℝ) * A.b i j c * A.d c) :=
+  fun h => not_dimMult ((trace_iff_dimMult A).mp h)
+
+/-- ...and it holds for every square root on the honest datum. -/
+theorem trace_identity_H (A : SqrtData systemH) :
+    ∀ i j : Fin 4,
+      A.d i * A.d j =
+        ∑ c : Fin 4, (systemH.ring.N i j c : ℝ) * A.b i j c * A.d c :=
+  (trace_iff_dimMult A).mpr dimMultH
+
+/-! ## ENO 8.23 for the honest twist, through the `DimMult` capstone -/
+
+/-- **ENO Proposition 8.23 for `systemH`, from `(M) + IsPseudoUnitary`** — the
+capstone `eno823Exact_of_dimMult_pseudoUnitary` instantiated at the honest
+twist, with the pivotal structure `p = 1/κ` witnessing the antecedent.  `PFUnique`
+is not used.  `ENO823ExactH` above is the same statement proved by hand. -/
+theorem eno823ExactH_via_dimMult : ENO823Exact systemH fpDataH :=
+  eno823Exact_of_dimMult_pseudoUnitary (S := systemH) (n := 4) fpDataH
+    (by norm_num) dimMultH isPseudoUnitaryH pivotalH
+
+/-- The bare form, through the bare capstone. -/
+theorem eno823H_via_dimMult : ENO823 systemH fpDataH :=
+  eno823_of_dimMult_pseudoUnitary (S := systemH) (n := 4) fpDataH
+    (by norm_num) dimMultH isPseudoUnitaryH pivotalH
+
+/-! ## The two twists live on one datum -/
+
+/-- **`system` and `systemH` differ only in the five `J` fields.**
+Kernel-checked: the fusion ring, the associator and its inverse, `ev`, `coev`
+and `κ` are the same terms; the twist is not.  Together with
+`pseudoUnitary_and_not_dimMult` and `dimMultH` this is WP3 Task 3.3's `J_match`
+statement: same datum, same pseudo-unitarity, opposite (M). -/
+theorem same_datum_except_J :
+    systemH.ring = system.ring ∧ systemH.F = system.F ∧
+      systemH.Finv = system.Finv ∧ systemH.ev = system.ev ∧
+      systemH.coev = system.coev ∧
+      (∀ i : Fin 4, systemH.kappa i = system.kappa i) ∧
+      systemH.J ≠ system.J := by
+  refine ⟨rfl, rfl, rfl, rfl, rfl, (fun _ => rfl), ?_⟩
+  intro h
+  have h2 : systemH.J 2 1 3 = system.J 2 1 3 := by rw [h]
+  rw [Jd_nontrivial, J_apply] at h2
+  norm_num at h2
+
+end Z2SqH
+end FusionCategory
+
 /-! ## Axiom audit (Part 2) -/
 
 #print axioms FusionCategory.Z2SqH.deltaJ_of_pos
@@ -1212,6 +1492,26 @@ end FusionCategory
 #print axioms FusionCategory.Z2SqH.ENO823ExactH
 #print axioms FusionCategory.Z2SqH.pivotalH_unique
 #print axioms FusionCategory.Z2SqH.J_match_fails_false
+
+/-! ## Axiom audit (Part 3, direction d4) -/
+#print axioms FusionCategory.Z2SqH.sum_N_mul_J_kappa_of_eq_ratio
+#print axioms FusionCategory.Z2SqH.dimMult_of_J_eq_kappa_ratio
+#print axioms FusionCategory.Z2SqH.dimMult_iff_dimEigen_kappa_of_J_eq_one
+#print axioms FusionCategory.Z2SqH.dimMultH
+#print axioms FusionCategory.Z2SqH.dimMultH_apply
+#print axioms FusionCategory.Z2SqH.not_dimMult
+#print axioms FusionCategory.Z2SqH.pseudoUnitary_and_not_dimMult
+#print axioms FusionCategory.Z2SqH.not_dimEigen_kappa
+#print axioms FusionCategory.Z2SqH.dimMult_iff_J_match
+#print axioms FusionCategory.Z2SqH.not_dimEigen_falseJ
+#print axioms FusionCategory.Z2SqH.dimEigen_pivotalH
+#print axioms FusionCategory.Z2SqH.dim_pivotalH_is_character
+#print axioms FusionCategory.Z2SqH.dimMultH_via_character
+#print axioms FusionCategory.Z2SqH.not_trace_identity_falseJ
+#print axioms FusionCategory.Z2SqH.trace_identity_H
+#print axioms FusionCategory.Z2SqH.eno823ExactH_via_dimMult
+#print axioms FusionCategory.Z2SqH.eno823H_via_dimMult
+#print axioms FusionCategory.Z2SqH.same_datum_except_J
 
 /-! ## Field-by-field audit of the honest witness
 

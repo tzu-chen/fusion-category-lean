@@ -277,7 +277,31 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary
 #print axioms FusionCategory.twistNorm_sq_of_dimMult_pseudoUnitary
 
--- FusionCategory.DoubleDual (10 declarations)
+-- FusionCategory.DimMultC (21 declarations)
+
+#print axioms FusionCategory.abs_dim_le_fpdim_of_dimMultC
+#print axioms FusionCategory.abs_le_fpdim_of_mult_c
+#print axioms FusionCategory.dimMult_of_J_match_settledJ
+#print axioms FusionCategory.dimMult_of_twistSum
+#print axioms FusionCategory.dim_eq_algebraMap_of_dimMult_pseudoUnitaryC
+#print axioms FusionCategory.eno823C_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.eno823ExactC_of_J_match_settledJ
+#print axioms FusionCategory.eno823ExactC_of_derivedJ
+#print axioms FusionCategory.eno823ExactC_of_dimMult
+#print axioms FusionCategory.eno823ExactC_of_dimMult.match_1_1
+#print axioms FusionCategory.eq_norm_of_sum_mul_dual
+#print axioms FusionCategory.eq_one_of_re_eq_one_of_norm_eq_one
+#print axioms FusionCategory.isSpherical_of_dimMult_pseudoUnitaryC
+#print axioms FusionCategory.norm_algebraMap_complex
+#print axioms FusionCategory.norm_dim_eq_fpdim_of_dimMult_pseudoUnitaryC
+#print axioms FusionCategory.norm_le_fpdim_of_char
+#print axioms FusionCategory.norm_twistNorm_of_dimMult_pseudoUnitaryC
+#print axioms FusionCategory.pivotal_ext_c
+#print axioms FusionCategory.sum_fpdimRatio_general
+#print axioms FusionCategory.sum_twistNorm_of_dimMult_general
+#print axioms FusionCategory.twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary_c
+
+-- FusionCategory.DoubleDual (9 declarations)
 
 #print axioms FusionCategory.DoubleDual.derivedTwist
 #print axioms FusionCategory.DoubleDual.derivedTwist_coherent
@@ -288,7 +312,6 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.DoubleDual.vecZ2_ev
 #print axioms FusionCategory.DoubleDual.vecZ2_twist_derived
 #print axioms FusionCategory.DoubleDual.vecZ2_twist_eq_one
-#print axioms FusionCategory.VecZ2.system.eq_1
 
 -- FusionCategory.DoubleDualTensorator (62 declarations)
 
@@ -437,7 +460,7 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Examples.fibRightUnit
 #print axioms FusionCategory.phi.eq_1
 
--- FusionCategory.Examples.FibonacciIsing (148 declarations)
+-- FusionCategory.Examples.FibonacciIsing (166 declarations)
 
 #print axioms FusionCategory.FPdimFibonacci
 #print axioms FusionCategory.FPdimIsing
@@ -493,9 +516,16 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Fibonacci.unitR_pair
 #print axioms FusionCategory.FibonacciPivotal
 #print axioms FusionCategory.FibonacciSystem
+#print axioms FusionCategory.FibonacciSystemFPData
+#print axioms FusionCategory.FibonacciSystem_J
 #print axioms FusionCategory.FibonacciSystem_dim
+#print axioms FusionCategory.FibonacciSystem_dimMultiplicative
 #print axioms FusionCategory.FibonacciSystem_dim_explicit
+#print axioms FusionCategory.FibonacciSystem_dual
 #print axioms FusionCategory.FibonacciSystem_kappa
+#print axioms FusionCategory.FibonacciSystem_kappa_fpData
+#print axioms FusionCategory.FibonacciSystem_pivotal_unique
+#print axioms FusionCategory.FibonacciSystem_pseudoUnitary
 #print axioms FusionCategory.FibonacciSystem_spherical
 #print axioms FusionCategory.Ising.F
 #print axioms FusionCategory.Ising.F.eq_1
@@ -558,9 +588,16 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Ising.unitR_pair
 #print axioms FusionCategory.IsingPivotal
 #print axioms FusionCategory.IsingSystem
+#print axioms FusionCategory.IsingSystemFPData
+#print axioms FusionCategory.IsingSystem_J
 #print axioms FusionCategory.IsingSystem_dim
+#print axioms FusionCategory.IsingSystem_dimMultiplicative
 #print axioms FusionCategory.IsingSystem_dim_explicit
+#print axioms FusionCategory.IsingSystem_dual
 #print axioms FusionCategory.IsingSystem_kappa
+#print axioms FusionCategory.IsingSystem_kappa_fpData
+#print axioms FusionCategory.IsingSystem_pivotal_unique
+#print axioms FusionCategory.IsingSystem_pseudoUnitary
 #print axioms FusionCategory.IsingSystem_spherical
 #print axioms FusionCategory.ZP.Zmul
 #print axioms FusionCategory.ZP.Zmul.eq_1
@@ -585,6 +622,10 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.ZP.zval_zzero
 #print axioms FusionCategory.ZP.zzero
 #print axioms FusionCategory.ZP.zzero.eq_1
+#print axioms FusionCategory.eno823Exact_FibonacciSystem
+#print axioms FusionCategory.eno823Exact_IsingSystem
+#print axioms FusionCategory.eno823_FibonacciSystem
+#print axioms FusionCategory.eno823_IsingSystem
 #print axioms FusionCategory.ising_psi_not_mem_sigma_tensor_psi
 #print axioms FusionCategory.ising_sigma_not_mem_sigma_tensor_sigma
 
@@ -677,8 +718,15 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Examples.VecZ2Tw.pTriv_dim_one
 #print axioms FusionCategory.PivotalStructure.mk.congr_simp
 
--- FusionCategory.Examples.YangLee (47 declarations)
+-- FusionCategory.Examples.YangLee (73 declarations)
 
+#print axioms FusionCategory.VecZ2.dimMult
+#print axioms FusionCategory.VecZ2.kappa_char
+#print axioms FusionCategory.VecZ2.kappa_val
+#print axioms FusionCategory.VecZ2.system.eq_1
+#print axioms FusionCategory.VecZ2Twisted.dimMult
+#print axioms FusionCategory.VecZ2Twisted.kappa_char
+#print axioms FusionCategory.VecZ2Twisted.kappa_val
 #print axioms FusionCategory.YangLee.F
 #print axioms FusionCategory.YangLee.F.eq_1
 #print axioms FusionCategory.YangLee.F_comp_inv
@@ -692,20 +740,34 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.YangLee.Fpair
 #print axioms FusionCategory.YangLee.Fpair.eq_1
 #print axioms FusionCategory.YangLee.N
+#print axioms FusionCategory.YangLee.abs_dim_le_fpdim
 #print axioms FusionCategory.YangLee.coevPair
 #print axioms FusionCategory.YangLee.coevPair.eq_1
 #print axioms FusionCategory.YangLee.coevPair_one
 #print axioms FusionCategory.YangLee.coevPair_zero
 #print axioms FusionCategory.YangLee.compInv_pair
+#print axioms FusionCategory.YangLee.dimEigen_pivotal
+#print axioms FusionCategory.YangLee.dimMult
+#print axioms FusionCategory.YangLee.dimMult_alone_insufficient
+#print axioms FusionCategory.YangLee.dimMult_and_not_pseudoUnitary
+#print axioms FusionCategory.YangLee.dim_pivotal_one
+#print axioms FusionCategory.YangLee.dim_pivotal_one_ne_fpdim
 #print axioms FusionCategory.YangLee.dual
 #print axioms FusionCategory.YangLee.evPair
 #print axioms FusionCategory.YangLee.evPair.eq_1
 #print axioms FusionCategory.YangLee.finvComp_pair
+#print axioms FusionCategory.YangLee.kappaPair
+#print axioms FusionCategory.YangLee.kappa_char
 #print axioms FusionCategory.YangLee.kappa_one
+#print axioms FusionCategory.YangLee.kappa_one_sq
 #print axioms FusionCategory.YangLee.kappa_val
 #print axioms FusionCategory.YangLee.kappa_zero
+#print axioms FusionCategory.YangLee.mulPair
+#print axioms FusionCategory.YangLee.mulPair.eq_1
+#print axioms FusionCategory.YangLee.mul_pair
 #print axioms FusionCategory.YangLee.mult_free
 #print axioms FusionCategory.YangLee.not_eno823
+#print axioms FusionCategory.YangLee.not_pos_dim_pivotal
 #print axioms FusionCategory.YangLee.not_pseudoUnitary
 #print axioms FusionCategory.YangLee.pentL
 #print axioms FusionCategory.YangLee.pentL.eq_1
@@ -713,6 +775,7 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.YangLee.pentR.eq_1
 #print axioms FusionCategory.YangLee.pent_pair
 #print axioms FusionCategory.YangLee.pentagon
+#print axioms FusionCategory.YangLee.pivotal
 #print axioms FusionCategory.YangLee.s5
 #print axioms FusionCategory.YangLee.s5.eq_1
 #print axioms FusionCategory.YangLee.s5_sq
@@ -726,6 +789,10 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.YangLee.twisted_norm_one_one_zero
 #print axioms FusionCategory.YangLee.unitL_pair
 #print axioms FusionCategory.YangLee.unitR_pair
+#print axioms FusionCategory.YangLee.zval_kappaPair
+#print axioms FusionCategory.YangLee.zval_mulPair
+#print axioms FusionCategory.YangLee.zval_nsmul
+#print axioms FusionCategory.dimMultiplicative_iff_kappa_char
 
 -- FusionCategory.Examples.Z2SqFalseJ (84 declarations)
 
@@ -814,7 +881,7 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2Sq.w_unit_left
 #print axioms FusionCategory.Z2Sq.w_unit_right
 
--- FusionCategory.Examples.Z2SqHonest (145 declarations)
+-- FusionCategory.Examples.Z2SqHonest (163 declarations)
 
 #print axioms FusionCategory.Z2SqH.ENO823ExactH
 #print axioms FusionCategory.Z2SqH.ENO823H
@@ -872,9 +939,19 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.deltaJ_of_pos
 #print axioms FusionCategory.Z2SqH.deltaJ_unit_left
 #print axioms FusionCategory.Z2SqH.deltaJ_unit_right
+#print axioms FusionCategory.Z2SqH.dimEigen_pivotalH
 #print axioms FusionCategory.Z2SqH.dimH
 #print axioms FusionCategory.Z2SqH.dimH_eq_fpdim
 #print axioms FusionCategory.Z2SqH.dimH_pos
+#print axioms FusionCategory.Z2SqH.dimMultH
+#print axioms FusionCategory.Z2SqH.dimMultH_apply
+#print axioms FusionCategory.Z2SqH.dimMultH_via_character
+#print axioms FusionCategory.Z2SqH.dimMult_iff_J_match
+#print axioms FusionCategory.Z2SqH.dimMult_iff_dimEigen_kappa_of_J_eq_one
+#print axioms FusionCategory.Z2SqH.dimMult_of_J_eq_kappa_ratio
+#print axioms FusionCategory.Z2SqH.dim_pivotalH_is_character
+#print axioms FusionCategory.Z2SqH.eno823ExactH_via_dimMult
+#print axioms FusionCategory.Z2SqH.eno823H_via_dimMult
 #print axioms FusionCategory.Z2SqH.ev
 #print axioms FusionCategory.Z2SqH.ev.eq_1
 #print axioms FusionCategory.Z2SqH.fpData
@@ -909,9 +986,13 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.kappa_zero
 #print axioms FusionCategory.Z2SqH.no_dim_one_of_false_J
 #print axioms FusionCategory.Z2SqH.no_pivotal_dim_fpdim
+#print axioms FusionCategory.Z2SqH.not_dimEigen_falseJ
+#print axioms FusionCategory.Z2SqH.not_dimEigen_kappa
+#print axioms FusionCategory.Z2SqH.not_dimMult
 #print axioms FusionCategory.Z2SqH.not_eno823
 #print axioms FusionCategory.Z2SqH.not_eno823Exact
 #print axioms FusionCategory.Z2SqH.not_mult
+#print axioms FusionCategory.Z2SqH.not_trace_identity_falseJ
 #print axioms FusionCategory.Z2SqH.pH
 #print axioms FusionCategory.Z2SqH.pH.eq_1
 #print axioms FusionCategory.Z2SqH.pH_val
@@ -925,15 +1006,18 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.pivotalH_val_one
 #print axioms FusionCategory.Z2SqH.pivotalH_val_three
 #print axioms FusionCategory.Z2SqH.pivotalH_val_zero
+#print axioms FusionCategory.Z2SqH.pseudoUnitary_and_not_dimMult
 #print axioms FusionCategory.Z2SqH.ring
 #print axioms FusionCategory.Z2SqH.same_datum_F
 #print axioms FusionCategory.Z2SqH.same_datum_F_list
 #print axioms FusionCategory.Z2SqH.same_datum_coev
+#print axioms FusionCategory.Z2SqH.same_datum_except_J
 #print axioms FusionCategory.Z2SqH.snake_left
 #print axioms FusionCategory.Z2SqH.snake_right
 #print axioms FusionCategory.Z2SqH.sphericalH
 #print axioms FusionCategory.Z2SqH.sum_N_eq_one
 #print axioms FusionCategory.Z2SqH.sum_N_mul
+#print axioms FusionCategory.Z2SqH.sum_N_mul_J_kappa_of_eq_ratio
 #print axioms FusionCategory.Z2SqH.sum_N_mul_right
 #print axioms FusionCategory.Z2SqH.system
 #print axioms FusionCategory.Z2SqH.systemH
@@ -941,6 +1025,7 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.systemH_dual
 #print axioms FusionCategory.Z2SqH.systemH_kappa
 #print axioms FusionCategory.Z2SqH.systemH_ring
+#print axioms FusionCategory.Z2SqH.trace_identity_H
 #print axioms FusionCategory.Z2SqH.trivialPivotal
 #print axioms FusionCategory.Z2SqH.trivialPivotal_dim_one
 #print axioms FusionCategory.Z2SqH.trivialPivotal_dim_three
@@ -962,28 +1047,36 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Z2SqH.w_unit_left
 #print axioms FusionCategory.Z2SqH.w_unit_right
 
--- FusionCategory.Gauge (20 declarations)
+-- FusionCategory.Gauge (28 declarations)
 
+#print axioms FusionCategory.IsPseudoUnitary.eq_1
 #print axioms FusionCategory.gauge
 #print axioms FusionCategory.gauge.congr_simp
 #print axioms FusionCategory.gauge.eq_1
 #print axioms FusionCategory.gaugePivotal
+#print axioms FusionCategory.gaugePivotal_ungaugePivotal
 #print axioms FusionCategory.gauge_coev_comp
 #print axioms FusionCategory.gauge_coev_mul_ev
 #print axioms FusionCategory.gauge_dim
+#print axioms FusionCategory.gauge_dimMult_iff
+#print axioms FusionCategory.gauge_eno823Exact_iff
 #print axioms FusionCategory.gauge_eno823_iff
 #print axioms FusionCategory.gauge_ev_comp
 #print axioms FusionCategory.gauge_ev_dual_iff
 #print axioms FusionCategory.gauge_exists_pivotal_iff
 #print axioms FusionCategory.gauge_isPseudoUnitaryC_iff
 #print axioms FusionCategory.gauge_isPseudoUnitaryPivotal_iff
+#print axioms FusionCategory.gauge_isPseudoUnitary_iff
 #print axioms FusionCategory.gauge_isSpherical_iff
 #print axioms FusionCategory.gauge_kappa
 #print axioms FusionCategory.gauge_ring
 #print axioms FusionCategory.gauge_sum_kappa
+#print axioms FusionCategory.gauge_sum_kappa_of_field
 #print axioms FusionCategory.ungaugePivotal
+#print axioms FusionCategory.ungaugePivotal_gaugePivotal
 #print axioms FusionCategory.ungauge_dim
 #print axioms FusionCategory.ungauge_isSpherical_iff
+#print axioms FusionCategory.ungauge_pivotal_solution_iff
 
 -- FusionCategory.Grading (56 declarations)
 
@@ -2271,10 +2364,13 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.VecZ2Twisted.system.eq_1
 #print axioms FusionRing.mk.congr_simp
 
--- FusionCategory.Transport (41 declarations)
+-- FusionCategory.Transport (51 declarations)
 
+#print axioms FusionCategory.Transport.dimMult_of_mapSystem
 #print axioms FusionCategory.Transport.eno823_of_algebraMap
+#print axioms FusionCategory.Transport.isPseudoUnitaryC_iff
 #print axioms FusionCategory.Transport.isPseudoUnitaryC_of_algebraMap
+#print axioms FusionCategory.Transport.isPseudoUnitary_of_algebraMap
 #print axioms FusionCategory.Transport.isPseudoUnitary_of_kappa_eq_fpdim
 #print axioms FusionCategory.Transport.mapPivotal
 #print axioms FusionCategory.Transport.mapPivotal_dim
@@ -2285,16 +2381,23 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.Transport.mapSystem_J
 #print axioms FusionCategory.Transport.mapSystem_TriangleLaw
 #print axioms FusionCategory.Transport.mapSystem_coev
+#print axioms FusionCategory.Transport.mapSystem_dimMult
+#print axioms FusionCategory.Transport.mapSystem_dimMult_iff
 #print axioms FusionCategory.Transport.mapSystem_ev
 #print axioms FusionCategory.Transport.mapSystem_kappa
 #print axioms FusionCategory.Transport.mapSystem_qualified
 #print axioms FusionCategory.Transport.mapSystem_retained
 #print axioms FusionCategory.Transport.mapSystem_ring
+#print axioms FusionCategory.Transport.mapSystem_sum_eq
 #print axioms FusionCategory.Transport.sum_kappa_map
 #print axioms FusionCategory.Transported.FibonacciC
 #print axioms FusionCategory.Transported.IsingC
 #print axioms FusionCategory.Transported.VecZ2R
 #print axioms FusionCategory.Transported.YangLeeC
+#print axioms FusionCategory.Transported.dimMult_fibonacciC
+#print axioms FusionCategory.Transported.dimMult_isingC
+#print axioms FusionCategory.Transported.dimMult_vecZ2R
+#print axioms FusionCategory.Transported.dimMult_yangLeeC
 #print axioms FusionCategory.Transported.eno823_fibonacci
 #print axioms FusionCategory.Transported.eno823_fibonacciC
 #print axioms FusionCategory.Transported.eno823_ising

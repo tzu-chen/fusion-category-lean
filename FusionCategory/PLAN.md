@@ -358,6 +358,120 @@ kernel-checked solutions (m1 — landed; m6, m7 — verified post-hoc), each wit
 diff-audited every artefact before acceptance.
 
 
+## The multiplicativity fork landed: `DimMultiplicative` (swarm `smw7b5fyh`)
+
+The person directed work on the multiplicativity fork to open a route to
+WP3/WP4.  It is landed, in the fork's second route — the proposal's own
+fallback form, the theorem stated with the `J`-side content as an explicit
+hypothesis — and it opens both packages.
+
+* **`DimMult.lean`** — (M) `Σ_c N a b c · J a b c · κ_c = κ_a κ_b` as a named
+  `Prop` on the system (`DimMultiplicative`), deliberately *not* a field of
+  `FusionSystem`: a field would destroy `Z2SqH.system`, the kernel-checked
+  witness that (M) is not derivable (`Z2SqH.not_dimMult`), and WP3's endgame
+  (replacing the `J` field by the derived `J`) would force removing the field
+  again.  The bridge network around it: `dimMult_iff_dimEigen` ((M) ⟺ the
+  dimension of *every* pivotal structure is a character of the fusion ring —
+  all-or-nothing; the field-generic `mult_iff_twist`),
+  `dimMult_of_perChannel` ((K) ⟹ (M)), and `kappaD_eq_kappa` +
+  `trace_iff_dimMult`: the `ev_dual` field makes `kappaD = kappa`, so ENO's
+  trace identity for a `SqrtData` *is* `DimMultiplicative` — WP3's acceptance
+  test, WP4's input and this hypothesis are one condition.
+* **The analytic half** — `eno823Exact_of_dimMult_pseudoUnitary`: over `ℝ`,
+  (M) + `IsPseudoUnitary` + one pivotal structure give ENO 8.23's *exact*
+  statement (a unique spherical pivotal structure with positive dimensions
+  equal to the FP-dimensions), with no `PFUnique`.  The route: (M) discharges
+  `DimEigen` for every `P` at once (8.21's bound,
+  `abs_dim_le_fpdim_of_dimMult`); the dual-paired equality case
+  (`eq_abs_of_sum_mul_dual`, the form `IsPseudoUnitary` actually delivers via
+  `dim_mul_dim_dual`) gives `|dim P i| = FPdim_i` for every `P`; the
+  normalised twist is then pinned up to sign per channel
+  (`twistNorm_sq_of_dimMult_pseudoUnitary` — WP4 Task 4.5(a)'s "only the
+  squares of the ratios are determined"); and the sign is forced by (M)
+  itself, read as the channel sum `Σ_c N a b c · twistNorm = 1` and compared
+  with `fpdim_char` termwise — a single minus sign would drop the sum
+  strictly below `FPdim_a · FPdim_b`
+  (`twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary`, the per-channel
+  identity (K)) — after which `exists_spherical_of_twistNorm` at
+  `d = FPdim` plus `pivotal_ext` close the theorem.  Over `ℝ` this replaces
+  ENO's σ/τ normalisation by one comparison.
+* **`DimMultC.lean`** — the `ℂ` port (S2's scalar contract):
+  `norm_le_fpdim_of_char` (8.21 from the character form over any normed
+  ring, no dual-invariance), `eq_norm_of_sum_mul_dual` (the dual-paired
+  equality case at `ℂ`, no `Pos`, no sphericity),
+  `norm_dim_eq_fpdim_of_dimMult_pseudoUnitaryC` (`‖dim P i‖ = FPdim_i`),
+  the deliverable `twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary_c` ((K)
+  at `ℂ`, by the phase argument — `‖s_c‖ = 1` and real parts of the channel
+  sum force `s_c = 1`), and `eno823ExactC_of_dimMult` (the `∃!` form under
+  the frozen `Pos` contract).  Non-vacuity kernel-checked: instantiated at
+  `FibonacciC`/`IsingC`, the predicted unique structure *is* the transported
+  `p ≡ 1` witness.
+
+**The instances** (exact arithmetic throughout — `ℤ[√d]` integer pairs or
+`decide`, never floats): `DimMultiplicative` for Fibonacci, Ising, Yang–Lee
+(the *non-PF* character `(1, -1/φ)`), `Vec_{Z/2}`, `Vec^ω_{Z/2}`, and the
+honest-twist `Z2SqH.systemH`; `¬ DimMultiplicative` for the false-twist
+`Z2SqH.system`; transported to every scalar copy (`FibonacciC`, `IsingC`,
+`YangLeeC`, `VecZ2R`) through `mapSystem_dimMult_iff`; gauge-invariant
+(`gauge_dimMult_iff`, `gauge_isPseudoUnitary_iff`, `gauge_eno823Exact_iff`).
+The capstone's first end-to-end runs: `eno823Exact_FibonacciSystem` and
+`eno823Exact_IsingSystem` (the first non-pointed instances of ENO 8.23's
+exact statement — the round also discharges the old "instantiate on
+Fibonacci/Ising" item) and `Z2SqH.eno823ExactH_via_dimMult`.  Sharpness of
+both halves of the antecedent: `YangLee.dimMult_and_not_pseudoUnitary` and
+`YangLee.dimMult_alone_insufficient` ((M) alone does not give `ENO823`);
+`Z2SqH.pseudoUnitary_and_not_dimMult` (pseudo-unitarity alone does not give
+(M)).  On the pointed `(Z/2)²` datum `Z2SqH.dimMult_iff_J_match`
+kernel-checks that (M) *is* `J_match` (WP3 Task 3.3): the two systems differ
+only in `J` (`same_datum_except_J`).
+
+**The adversarial audit** (m5; `Audit.lean`/`AuditIndep.lean` under
+`.ultramath/smw7b5fyh/`, scratch): the chain re-derived by an independent
+route (through `twistNorm`, never `p_mon`; the equality case by
+`2ab ≤ a² + b²`; `AuditIndep.lean` imports only `Prop821`+`Coboundary`, not
+`DimMult`) — **no defect found**.  Three strength findings, kernel-checked
+and recorded rather than landed (the landed signatures mirror the source's
+hypothesis structure): `hfσ` in `eq_abs_of_sum_mul_dual` is removable
+(`Bijective σ` and `0 ≤ f` suffice); `hPU` in the capstone is removable
+(`ENO823Exact` is itself an implication, so `eno823Exact_of_dimMult_pivotal`
+is strictly stronger); `hn : 0 < n` is removable (`n = 0` is vacuous).  The
+slot-2/slot-3 convention clash is made precise: the character form and
+`IsPseudoUnitaryPivotal.mult` agree exactly for `*`-invariant dimension
+functions (`char_form_iff_mult_form_of_dual_invariant`).  The pivotal
+structure in the antecedent is used only as `Nonempty (PivotalStructure S)`,
+confirming the WP4 Tasks 4.1–4.2 boundary.
+
+**A name-capture defect, caught by the global build and fixed at landing**:
+m1's new `FibonacciFPData`/`IsingFPData` (at the `FusionCategory` root)
+shadowed `FusionCategory.Examples.FibonacciFPData` for the bare name inside
+`namespace FusionCategory`, breaking two pre-existing theorems of
+`YangLee.lean` (`not_eno823`, `not_pseudoUnitary`) and one of m3's.  The
+per-file `lake env lean` checks had all passed because they ran against
+*stale* oleans, in which the new name was not yet visible — the shared-tree
+hazard of parallel members, in the exact form the record warned about.  Fixed
+by renaming to `FibonacciSystemFPData`/`IsingSystemFPData` (matching the
+round's own `FibonacciSystem_*` convention); the "declaration uses `sorry`"
+warnings in the failing build were Lean's error-recovery artifacts of those
+three type mismatches, not real `sorry`s.
+
+**What the fork leaves open, now cleanly separated** — the WP3/WP4 entry
+points:
+
+* (M) for the *derived* twist — WP3 Tasks 3.2/3.3/3.6: `J_match` per
+  instance in the interim (on pointed data `J = δ(κ)` and (M) *is*
+  `J_match`, `Z2SqH.dimMult_iff_J_match`; `DerivedJPointed` carries the
+  pointed half), the closed form of `ψ` and (M) for it in general;
+* the pivotal structure in the antecedent — WP4 Tasks 4.1–4.2 (`SqrtData`,
+  the quadruple dual): `SqrtData.toPivotal` supplies it once the defect
+  vanishes, ENO's rescaling `a ↦ a · FPdim/d` being what kills the defect;
+* the `ℂ` side being now in place (`DimMultC.lean`), WP4's remaining analytic
+  content is exactly the input side.
+
+Verification: swarm `smw7b5fyh` (6 members, 6 accepted), every artefact
+re-elaborated by the coordinator before acceptance; the tree builds green,
+the audit regenerated, Gate 4 and the self-test pass.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

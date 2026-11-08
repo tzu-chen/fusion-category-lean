@@ -26,6 +26,7 @@ import FusionCategory.Prop821CNorm
 import FusionCategory.Prop821CEq
 import FusionCategory.Transport
 import FusionCategory.DimMult
+import FusionCategory.DimMultC
 import FusionCategory.Recon
 import FusionCategory.ReconTensor
 import FusionCategory.ReconTensorApply

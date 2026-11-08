@@ -38,6 +38,19 @@ primitive cube root of unity) is additive and multiplicative, and let `decide`
 check every associator identity in `ℤ`.  The `zval`/`Zmul`/`peq` layer of that
 file ports verbatim, with `zval` landing in `ℂ` instead of `ℝ`.
 
+## Status of the multiplicity hypothesis (M) here
+
+This file contains no `FusionSystem` inhabitant, so `DimMultiplicative`
+(`DimMult.lean`) is not even *stateable* for `Vec^ω_{Z/3}`: there is no `system`
+to apply it to (and `DimMult.lean` is downstream of `System.lean`, so the
+hypothesis cannot be stated at the point where the witness would be built
+either).  Once the datum exists, (M) is a check on it like any other, and for a
+pointed category with `J ≡ 1` it reduces to multiplicativity of `κ`,
+`Σ_c N a b c · κ_c = κ_a κ_b` — the form in which (M) is verified for
+`Vec_{Z/2}` and `Vec^ω_{Z/2}` in `Examples/YangLee.lean` (`VecZ2.dimMult`,
+`VecZ2Twisted.dimMult`); for the non-trivial `Z/3` cocycle the twist `J` is not
+trivial and (M) would be a genuine additional test of the datum.
+
 Axiom budget for whatever replaces this note: `[propext, Classical.choice,
 Quot.sound]`, no `sorry`.
 -/

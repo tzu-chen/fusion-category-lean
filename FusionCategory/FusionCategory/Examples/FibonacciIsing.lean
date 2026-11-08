@@ -1,4 +1,5 @@
 import FusionCategory.Pivotal
+import FusionCategory.DimMult
 
 /-!
 # Fibonacci and Ising as skeletal `FusionSystem`s over `ℝ`
@@ -950,4 +951,222 @@ theorem ising_sigma_not_mem_sigma_tensor_sigma : Ising.N 1 1 1 = 0 := rfl
 /-- Likewise `F σ ψ σ ψ ψ ψ` is off support: `σ ⊗ ψ = σ` does not contain `ψ`. -/
 theorem ising_psi_not_mem_sigma_tensor_psi : Ising.N 1 2 2 = 0 := rfl
 
+/-! ## ENO 8.23 end-to-end: `DimMultiplicative` and pseudo-unitarity
+
+Both systems have `J ≡ 1` and `κ = FPdim` (`Fibonacci.kappa_val`,
+`Ising.kappa_val`), so the multiplicativity identity (M) — `DimMultiplicative`
+from `DimMult.lean`, `Σ_c N a b c · J a b c · κ_c = κ_a κ_b` — collapses to
+the character identity `Σ_c N a b c · f_c = f_a f_b` for the Perron–Frobenius
+dimensions, which is `fpdim_char`.  Pseudo-unitarity (`IsPseudoUnitary`, the
+single scalar equation `Σ_i κ_i κ_{i*} = Σ_i f_i²`, ENO's `dim C = FPdim C`)
+is the same collapse, with `dual = id` supplying `f_{i*} = f_i`.  Both systems
+therefore satisfy the two hypotheses of
+`eno823Exact_of_dimMult_pseudoUnitary`, and ENO 8.23 — existence *and
+uniqueness* of a spherical pivotal structure with positive dimensions equal to
+the FP-dimensions — follows, with no `PFUnique` input.  These are the first
+non-pointed instances of the source's exact statement in the tree.
+
+The FP-data are built here rather than imported: `Examples.FibonacciSystemFPData`
+and `Examples.IsingSystemFPData` attach the same two functions to the *other* copies
+of these fusion rings (`Examples.FibonacciRing`, `Examples.IsingRing`), and
+`FusionRing` is a structure, not a class of extensional data, so a `def` for
+one copy cannot be used for the other. -/
+
+/-- Perron–Frobenius data of this file's Fibonacci ring: `1, φ`. -/
+noncomputable def FibonacciSystemFPData : Fibonacci.ring.FPData where
+  fpdim := FPdimFibonacci
+  pos := by
+    intro i
+    fin_cases i
+    · simp [FPdimFibonacci]
+    · simp only [FPdimFibonacci]
+      have h := Real.sqrt_nonneg 5
+      split_ifs with hh
+      · norm_num
+      · linarith
+  unit_one := by
+    intro hn
+    simp [FPdimFibonacci]
+  eigenvector := by
+    intro i k
+    show (∑ j : Fin 2, (Fibonacci.N i j k : ℝ) * FPdimFibonacci j)
+      = FPdimFibonacci i * FPdimFibonacci k
+    fin_cases i <;> fin_cases k <;> simp [Fibonacci.N, FPdimFibonacci, Fin.sum_univ_two]
+    all_goals try nlinarith [Real.mul_self_sqrt (show (0 : ℝ) ≤ 5 by norm_num)]
+  dual_eq := by
+    intro i
+    show FPdimFibonacci (Fibonacci.dual i) = FPdimFibonacci i
+    fin_cases i <;> simp [Fibonacci.dual, FPdimFibonacci]
+
+/-- Perron–Frobenius data of this file's Ising ring: `1, √2, 1` in the index
+order `1, σ, ψ` of `Ising.N`. -/
+noncomputable def IsingSystemFPData : Ising.ring.FPData where
+  fpdim := FPdimIsing
+  pos := by
+    intro i
+    fin_cases i
+    · simp [FPdimIsing]
+    · simp only [FPdimIsing]
+      split_ifs with hh
+      · exact Real.sqrt_pos.2 (by norm_num)
+      · norm_num
+    · simp [FPdimIsing]
+  unit_one := by
+    intro hn
+    simp [FPdimIsing]
+  eigenvector := by
+    intro i k
+    show (∑ j : Fin 3, (Ising.N i j k : ℝ) * FPdimIsing j)
+      = FPdimIsing i * FPdimIsing k
+    fin_cases i <;> fin_cases k <;> simp [Ising.N, FPdimIsing, Fin.sum_univ_three]
+    all_goals try nlinarith [Real.mul_self_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
+  dual_eq := by
+    intro i
+    show FPdimIsing (Ising.dual i) = FPdimIsing i
+    fin_cases i <;> simp [Ising.dual, FPdimIsing]
+
+/-! ### `κ`, `J` and `dual` against those data -/
+
+/-- `κ` is the Fibonacci FP-dimension (`rfl`-level re-reading of
+`Fibonacci.kappa_val` in the FP-data normalisation). -/
+theorem FibonacciSystem_kappa_fpData (i : Fin 2) :
+    FibonacciSystem.kappa i = FibonacciSystemFPData.fpdim i :=
+  Fibonacci.kappa_val i
+
+/-- `κ` is the Ising FP-dimension. -/
+theorem IsingSystem_kappa_fpData (i : Fin 3) :
+    IsingSystem.kappa i = IsingSystemFPData.fpdim i :=
+  Ising.kappa_val i
+
+/-- The Fibonacci twist is trivial, so (M) is the character identity. -/
+theorem FibonacciSystem_J (a b c : Fin 2) : FibonacciSystem.J a b c = 1 := rfl
+
+/-- The Ising twist is trivial, so (M) is the character identity. -/
+theorem IsingSystem_J (a b c : Fin 3) : IsingSystem.J a b c = 1 := rfl
+
+/-- Every object of the Fibonacci system is self-dual. -/
+theorem FibonacciSystem_dual (i : Fin 2) : FibonacciSystem.ring.dual i = i := rfl
+
+/-- Every object of the Ising system is self-dual. -/
+theorem IsingSystem_dual (i : Fin 3) : IsingSystem.ring.dual i = i := rfl
+
+/-! ### (M): multiplicativity of the twist sum -/
+
+/-- **(M) for Fibonacci**: with `J ≡ 1` and `κ = FPdim`, the sum identity is
+the character identity `fpdim_char`. -/
+theorem FibonacciSystem_dimMultiplicative : DimMultiplicative FibonacciSystem := by
+  have h := fpdim_char FibonacciSystemFPData (n := 2) (by norm_num)
+  intro a b
+  simp only [FibonacciSystem_kappa_fpData, FibonacciSystem_J, mul_one]
+  exact h a b
+
+/-- **(M) for Ising**: likewise. -/
+theorem IsingSystem_dimMultiplicative : DimMultiplicative IsingSystem := by
+  have h := fpdim_char IsingSystemFPData (n := 3) (by norm_num)
+  intro a b
+  simp only [IsingSystem_kappa_fpData, IsingSystem_J, mul_one]
+  exact h a b
+
+/-! ### Pseudo-unitarity: `dim C = FPdim C` -/
+
+/-- **Fibonacci is pseudo-unitary**: `Σ_i κ_i κ_{i*} = 1 + φ² = 1² + φ²`. -/
+theorem FibonacciSystem_pseudoUnitary :
+    IsPseudoUnitary FibonacciSystem FibonacciSystemFPData := by
+  unfold IsPseudoUnitary FusionRing.FPData.globalDim
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [FibonacciSystem_dual, FibonacciSystem_kappa_fpData]
+  ring
+
+/-- **Ising is pseudo-unitary**: `Σ_i κ_i κ_{i*} = 1 + 2 + 1 = 1² + (√2)² + 1²`. -/
+theorem IsingSystem_pseudoUnitary :
+    IsPseudoUnitary IsingSystem IsingSystemFPData := by
+  unfold IsPseudoUnitary FusionRing.FPData.globalDim
+  refine Finset.sum_congr rfl (fun i _ => ?_)
+  rw [IsingSystem_dual, IsingSystem_kappa_fpData]
+  ring
+
+/-! ### ENO 8.23, the source's exact statement, for both systems -/
+
+/-- **ENO Proposition 8.23 for Fibonacci**: a unique spherical pivotal
+structure with positive dimensions `dim 1 = 1`, `dim τ = φ`. -/
+theorem eno823Exact_FibonacciSystem :
+    ENO823Exact FibonacciSystem FibonacciSystemFPData :=
+  eno823Exact_of_dimMult_pseudoUnitary (S := FibonacciSystem) FibonacciSystemFPData
+    (by norm_num) FibonacciSystem_dimMultiplicative FibonacciSystem_pseudoUnitary
+    FibonacciPivotal
+
+/-- **ENO Proposition 8.23 for Ising**: a unique spherical pivotal structure
+with positive dimensions `dim 1 = 1`, `dim σ = √2`, `dim ψ = 1`. -/
+theorem eno823Exact_IsingSystem :
+    ENO823Exact IsingSystem IsingSystemFPData :=
+  eno823Exact_of_dimMult_pseudoUnitary (S := IsingSystem) IsingSystemFPData
+    (by norm_num) IsingSystem_dimMultiplicative IsingSystem_pseudoUnitary
+    IsingPivotal
+
+/-- The bare form for Fibonacci, for comparison with the signature-level
+`ENO823` targets elsewhere in the library. -/
+theorem eno823_FibonacciSystem : ENO823 FibonacciSystem FibonacciSystemFPData :=
+  eno823_of_exact (S := FibonacciSystem) FibonacciSystemFPData eno823Exact_FibonacciSystem
+    FibonacciSystem_pseudoUnitary
+
+/-- The bare form for Ising. -/
+theorem eno823_IsingSystem : ENO823 IsingSystem IsingSystemFPData :=
+  eno823_of_exact (S := IsingSystem) IsingSystemFPData eno823Exact_IsingSystem
+    IsingSystem_pseudoUnitary
+
+/-! ### The unique pivotal structure is the hand-built `p ≡ 1`
+
+`ENO823Exact`'s uniqueness clause is not vacuous on these two systems: the
+structure ENO 8.23 produces is the one written down by hand at the top of this
+file (`Fibonacci.pivotal`, `Ising.pivotal`, `p ≡ 1`). -/
+
+/-- **Concrete uniqueness for Fibonacci**: any spherical pivotal structure
+whose dimensions are positive and equal to the FP-dimensions *is* the `p ≡ 1`
+structure `FibonacciPivotal`. -/
+theorem FibonacciSystem_pivotal_unique (P : PivotalStructure FibonacciSystem)
+    (hsp : P.IsSpherical) (hpos : ∀ i : Fin 2, 0 < dim P i)
+    (hdim : ∀ i : Fin 2, dim P i = FibonacciSystemFPData.fpdim i) :
+    P = FibonacciPivotal := by
+  obtain ⟨P', _hP', huniq⟩ :=
+    eno823Exact_FibonacciSystem FibonacciSystem_pseudoUnitary
+  have h1 : P = P' := huniq P ⟨hsp, hpos, hdim⟩
+  have h2 : FibonacciPivotal = P' :=
+    huniq FibonacciPivotal
+      ⟨FibonacciSystem_spherical,
+        (fun i => by rw [FibonacciSystem_dim]; exact FibonacciSystemFPData.pos i),
+        (fun i => FibonacciSystem_dim i)⟩
+  rw [h1, ← h2]
+
+/-- **Concrete uniqueness for Ising**, likewise. -/
+theorem IsingSystem_pivotal_unique (P : PivotalStructure IsingSystem)
+    (hsp : P.IsSpherical) (hpos : ∀ i : Fin 3, 0 < dim P i)
+    (hdim : ∀ i : Fin 3, dim P i = IsingSystemFPData.fpdim i) :
+    P = IsingPivotal := by
+  obtain ⟨P', _hP', huniq⟩ :=
+    eno823Exact_IsingSystem IsingSystem_pseudoUnitary
+  have h1 : P = P' := huniq P ⟨hsp, hpos, hdim⟩
+  have h2 : IsingPivotal = P' :=
+    huniq IsingPivotal
+      ⟨IsingSystem_spherical,
+        (fun i => by rw [IsingSystem_dim]; exact IsingSystemFPData.pos i),
+        (fun i => IsingSystem_dim i)⟩
+  rw [h1, ← h2]
+
 end FusionCategory
+
+/-! ## Axiom audit (the budget is `[propext, Classical.choice, Quot.sound]`) -/
+
+#print axioms FusionCategory.FibonacciSystemFPData
+#print axioms FusionCategory.IsingSystemFPData
+#print axioms FusionCategory.FibonacciSystem_kappa_fpData
+#print axioms FusionCategory.IsingSystem_kappa_fpData
+#print axioms FusionCategory.FibonacciSystem_dimMultiplicative
+#print axioms FusionCategory.IsingSystem_dimMultiplicative
+#print axioms FusionCategory.FibonacciSystem_pseudoUnitary
+#print axioms FusionCategory.IsingSystem_pseudoUnitary
+#print axioms FusionCategory.eno823Exact_FibonacciSystem
+#print axioms FusionCategory.eno823Exact_IsingSystem
+#print axioms FusionCategory.eno823_FibonacciSystem
+#print axioms FusionCategory.eno823_IsingSystem
+#print axioms FusionCategory.FibonacciSystem_pivotal_unique
+#print axioms FusionCategory.IsingSystem_pivotal_unique
