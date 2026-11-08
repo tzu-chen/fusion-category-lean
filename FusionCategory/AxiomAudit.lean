@@ -255,6 +255,28 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.derivedJ_apply
 #print axioms FusionCategory.j_match_settledJ_of_bridge
 
+-- FusionCategory.DimMult (19 declarations)
+
+#print axioms FusionCategory.DimMultiplicative
+#print axioms FusionCategory.J_eq_fpdim_ratio_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.abs_dim_le_fpdim_of_dimMult
+#print axioms FusionCategory.abs_twistNorm_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.dimEigen_of_dimMult
+#print axioms FusionCategory.dimMult_iff_dimEigen
+#print axioms FusionCategory.dimMult_of_perChannel
+#print axioms FusionCategory.dimMultiplicative_iff
+#print axioms FusionCategory.dim_mul_dim'
+#print axioms FusionCategory.eno823Exact_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.eno823_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.eq_abs_dim_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.eq_abs_of_sum_mul_dual
+#print axioms FusionCategory.kappaD_eq_kappa
+#print axioms FusionCategory.sum_dim_eq'
+#print axioms FusionCategory.sum_twistNorm_of_dimMult
+#print axioms FusionCategory.trace_iff_dimMult
+#print axioms FusionCategory.twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary
+#print axioms FusionCategory.twistNorm_sq_of_dimMult_pseudoUnitary
+
 -- FusionCategory.DoubleDual (10 declarations)
 
 #print axioms FusionCategory.DoubleDual.derivedTwist

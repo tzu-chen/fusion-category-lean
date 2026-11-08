@@ -25,6 +25,7 @@ import FusionCategory.Coverage
 import FusionCategory.Prop821CNorm
 import FusionCategory.Prop821CEq
 import FusionCategory.Transport
+import FusionCategory.DimMult
 import FusionCategory.Recon
 import FusionCategory.ReconTensor
 import FusionCategory.ReconTensorApply

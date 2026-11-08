@@ -187,6 +187,7 @@ FusionCategory.DerivedJ_gauge_covariant
 FusionCategory.DerivedJ_gauge_covariant_holds
 FusionCategory.DerivedJ_pointed
 FusionCategory.DimEigen
+FusionCategory.DimMultiplicative
 FusionCategory.DoubleDual.derivedTwist
 FusionCategory.DoubleDual.derivedTwist_coherent
 FusionCategory.DoubleDual.derivedTwist_dual
@@ -814,6 +815,7 @@ FusionCategory.J_coherent_forms_agree
 FusionCategory.J_coherent_forms_agree_iff
 FusionCategory.J_coherent_qualified
 FusionCategory.J_coherent_retained
+FusionCategory.J_eq_fpdim_ratio_of_dimMult_pseudoUnitary
 FusionCategory.J_match
 FusionCategory.J_match_carried
 FusionCategory.KappaMultiplicative
@@ -1579,6 +1581,7 @@ FusionCategory.ZP.zval_zzero
 FusionCategory.ZP.zzero
 FusionCategory.ZP.zzero.eq_1
 FusionCategory.abs_dim_le_fpdim
+FusionCategory.abs_dim_le_fpdim_of_dimMult
 FusionCategory.abs_dim_le_fpdim_of_pseudoUnitary
 FusionCategory.abs_dim_le_fpdim_of_pseudoUnitaryC
 FusionCategory.abs_le_fpdim_of_char
@@ -1590,6 +1593,7 @@ FusionCategory.abs_le_fpdim_of_eigenvector_real_norm
 FusionCategory.abs_le_fpdim_of_mult
 FusionCategory.abs_le_fpdim_of_multiplicative_c
 FusionCategory.abs_tMatrix
+FusionCategory.abs_twistNorm_of_dimMult_pseudoUnitary
 FusionCategory.algebraMap_ne_zero_of_ne_zero
 FusionCategory.assocEntry
 FusionCategory.assocEntry_apply_matched
@@ -1727,12 +1731,17 @@ FusionCategory.dimENO_eq_lib_dim
 FusionCategory.dimENO_eq_lib_dim_apply
 FusionCategory.dimENO_eq_lib_dim_selfdual
 FusionCategory.dimENO_mul_dimENO_dual
+FusionCategory.dimEigen_of_dimMult
+FusionCategory.dimMult_iff_dimEigen
+FusionCategory.dimMult_of_perChannel
+FusionCategory.dimMultiplicative_iff
 FusionCategory.dim_dual_general
 FusionCategory.dim_eq_algebraMap_of_norm_eq
 FusionCategory.dim_eq_algebraMap_of_pseudoUnitaryC
 FusionCategory.dim_eq_fpdim_of_pseudoUnitaryC
 FusionCategory.dim_eq_twistNorm
 FusionCategory.dim_mul_dim
+FusionCategory.dim_mul_dim'
 FusionCategory.dim_mul_dim_c
 FusionCategory.dim_mul_dim_dual
 FusionCategory.dim_mul_dim_dual_c
@@ -1753,15 +1762,19 @@ FusionCategory.endUnitEquiv_apply
 FusionCategory.end_unit_witness
 FusionCategory.endo_sim_eq_smul
 FusionCategory.eno823ExactC_collapse
+FusionCategory.eno823Exact_of_dimMult_pseudoUnitary
 FusionCategory.eno823_c_of_pseudoUnitaryPivotal
 FusionCategory.eno823_iff_dimENO
+FusionCategory.eno823_of_dimMult_pseudoUnitary
 FusionCategory.eno823_of_exact
 FusionCategory.eno823_of_pseudoUnitary
 FusionCategory.eno823_of_pseudoUnitary_noPF
 FusionCategory.eno823_of_twistNorm
 FusionCategory.eno823_of_twist_coboundary
+FusionCategory.eq_abs_dim_of_dimMult_pseudoUnitary
 FusionCategory.eq_abs_of_pseudoUnitary
 FusionCategory.eq_abs_of_pseudoUnitaryC
+FusionCategory.eq_abs_of_sum_mul_dual
 FusionCategory.eq_abs_of_sum_sq
 FusionCategory.eq_abs_of_sum_sq_c
 FusionCategory.eq_algebraMap_of_pos_of_norm
@@ -1851,6 +1864,7 @@ FusionCategory.isoOfHomInv
 FusionCategory.isoOfHomInv_hom
 FusionCategory.j_match_settledJ_iff
 FusionCategory.j_match_settledJ_of_bridge
+FusionCategory.kappaD_eq_kappa
 FusionCategory.kappa_eq_fpdim_of_pseudoUnitaryC
 FusionCategory.kappa_gauge_invariant
 FusionCategory.kappa_unit
@@ -1994,6 +2008,7 @@ FusionCategory.subsingleton_unitObj_blk
 FusionCategory.sum_channel
 FusionCategory.sum_dimENO_eq_sum_kappa
 FusionCategory.sum_dim_eq
+FusionCategory.sum_dim_eq'
 FusionCategory.sum_dim_eq_c
 FusionCategory.sum_dim_eq_general
 FusionCategory.sum_dim_mul_dim_dual_c
@@ -2003,6 +2018,7 @@ FusionCategory.sum_fin_const_eq
 FusionCategory.sum_fin_const_nsmul
 FusionCategory.sum_kappa_sq_eq_of_pseudoUnitaryC
 FusionCategory.sum_subsingleton_witness
+FusionCategory.sum_twistNorm_of_dimMult
 FusionCategory.swap2
 FusionCategory.swap2.eq_1
 FusionCategory.swap2_mul_swap2
@@ -2080,10 +2096,13 @@ FusionCategory.traceScalarG_eq
 FusionCategory.traceScalar_eq
 FusionCategory.traceScalar_eq_endSimEquiv
 FusionCategory.traceScalar_eq_smul_one
+FusionCategory.trace_iff_dimMult
 FusionCategory.twistNorm
 FusionCategory.twistNorm.eq_1
 FusionCategory.twistNorm_eq_J
+FusionCategory.twistNorm_eq_fpdim_ratio_of_dimMult_pseudoUnitary
 FusionCategory.twistNorm_eq_fpdim_ratio_of_dim_eq
+FusionCategory.twistNorm_sq_of_dimMult_pseudoUnitary
 FusionCategory.twist_eq_coboundary_of_pivotal
 FusionCategory.twist_sum_of_perChannel
 FusionCategory.twist_sum_of_perChannel_c
