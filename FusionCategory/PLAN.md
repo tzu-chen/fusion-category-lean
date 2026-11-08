@@ -587,6 +587,132 @@ acceptance; the tree builds green, the audit regenerated, Gate 4 and the
 self-test pass.
 
 
+## WP3 round 2: the fourth law taken apart (swarm `smw7f657l`)
+
+The person directed the block-matrix route to the general fourth law.  The
+round did not close the law, but it took it apart completely: the obligation
+is now *two named, independent statements*, each with several equivalent
+formulations, the nonvanishing layer is characterised exactly, one natural
+shortcut is refuted, and the empirical base gained non-pointed,
+non-self-dual and `ω ≠ 1` data.  Six solutions accepted; every artefact
+re-elaborated by the coordinator before acceptance.
+
+**The two-obligation reduction** (`DerivedJOmegaPivotal.lean`, promoted from
+m1's scratch): `derivedJGen_coherent_of_omegaCocycle_of_omegaNe` — the
+F-retained fourth law on ALL tuples follows from exactly (i) the
+associator-only cocycle identity for `omegaCoeff`, and (ii) the `OmegaNe`
+bundles on supported `F ≠ 0` tuples.  The two are independent:
+`derivedJGen_eq_zero_of_not_omegaNe` shows that where `OmegaNe` fails,
+`derivedJGen` is `0` (total division) while `omegaCoeff` need not be, so
+neither obligation implies the other, and (ii) is exactly
+`WP2.DerivedJ_ne_zero`-shaped.  `omegaCocycle_rescale_iff` proves the
+cocycle identity depends only on the *cohomology class* of `ω` (rescaling by
+a coboundary changes nothing), and the pointed class supplies the explicit
+pivotal structure `φ = κ`.  The honest limit, drawn with Ng–Schaufenburg:
+the coboundary class is the pivotal class, so a coboundary presentation
+cannot be the general proof.
+
+**The boundary layer** (`DerivedJBlockMatrix.lean`, m4): the unit-composite
+blocks are `1 × 1` on arbitrary data — `F` and `Finv` are mutually inverse
+and *nonzero* there (no pointedness), so the `F`-parts of `OmegaNe` are
+unconditionally fine; `omegaNe_iff_finv` makes `OmegaNe` exactly the
+nonvanishing of two `e = 0`-boundary `Finv` entries;
+`omegaCoeff_eq_OmegaFinv` and `derivedJGen_eq_OmegaFinv` give a closed form
+with no `F` at all (hypothesis-free, the shared zero set handled by total
+division); `OmegaCocycleRetained` is the division-free polynomial form
+(16 `Finv` entries); and `derivedJGen_ne_zero_iff_omegaNe` *characterises*
+the frozen `WP2.DerivedJ_ne_zero` as that two-entry nonvanishing.
+
+**Frobenius reciprocity and the collapse layer** (`DerivedJCocycle.lean`,
+m2): `frobenius_N`/`frobenius_N'` prove Frobenius reciprocity as an
+*equality* of structure constants on arbitrary data (associativity at a unit
+slot collapses both sums through `dual_coeff` — no pointedness; the tree had
+it only as `N_shift`'s pointed positivity); two of the three pointed
+pentagon instances are made pointedness-free
+(`pentagon_composite_unit`, `pentagon_channel_unit`) and eliminated by
+multiplication into `boundary_chain`; the `Finv`-free closed form
+`ω(x,y;z) = loop z · G_x / (loop y · A₃)` is proved conditionally.  The
+residual is pinned exactly: the two non-forced `ω`-entries live on genuinely
+`2 × 2` inverse blocks (no reciprocal lemma applies), the missing statement
+is the cancellation `(B)  Finv y y* x* x* z* 1 · G_y = Finv x* x y y z 1 ·
+G_x`, and the third pointed pentagon provably has no pointedness-free
+collapse (`A₃ = loop x · G_x` is *false* on Fibonacci).
+
+**The mate layer** (`DerivedJMate.lean`, m5): the pairing scalar
+`pairScalar` is primary, `comparisonScalar` its mate (equation +
+uniqueness), and `derivedJGen = omegaCoeff = pairDual/pairScalar` holds with
+NO hypotheses.  `PairCocycle` — each side of the cocycle is the swap-dual
+ratio of a twofold evaluation product — is equivalent to the F-free fourth
+law and gives the retained law and the fixpoint datum.
+`PivotalFactor φ` (pairDual·φ_c = pairScalar·(φ_a φ_b)) is exactly
+"`derivedJGen` is the coboundary `δ(φ)`", i.e. `1/φ` is a pivotal structure
+of the fixpoint datum; it implies the law under `pairScalar`-nonvanishing
+(which is what clearing denominators needs — `PivotalFactor` alone does not
+suffice where a pairing vanishes).  The pointed class is recovered
+independently.  m5's analysis (f11, on the board): the fourth law may be
+*equivalent* to pivotality rather than a pentagon consequence — pivotal
+coefficients are extra data in the anyon literature, all tree data are
+pivotal, so a **non-pivotal multiplicity-free datum** would refute the
+unconditional form; that search (or an explicit `PivotalFactor`) is the next
+probe.
+
+**The functor layer** (`DerivedJFunctor.lean`, m3): `derivedJGen` is
+definitionally the composite-dual tensorator entry, so the fourth law
+follows from the *single-dual antimonoidal coherence with the dual
+associator retained* (`SingleDualCoherent`: the RHS carries
+`F(c*,b*,a*,d*,f*,e*)`).  The nonvanishing is handled sharply: if the dual
+`F`-entry vanished, coherence would annihilate a nonzero `ψ`-product
+(`twistQualified_of_singleDual'`), and `OmegaNe` is exactly
+`ψ`-nonvanishing (`comparisonScalar_ne_zero_of_omegaNe`).  **Refutation**:
+the naive `F`-free single-dual cocycle is FALSE — 6/27 supported tuples on
+`Vec^ω_{Z/3}`, 2/15 on Fibonacci, 132/405 and 216/972 on the two product
+data (all `FusionSystem` fields including snakes verified), while the
+retained form and the target have 0 failures.  The ev-free division-free
+residual is `SingleDualPairCoherent`.
+
+**The audit** (m6, scratch): the round's spine independently re-derived;
+two real hypothesis-hygiene defects found and fixed (the `OmegaNe`
+hypotheses of the landed `derivedJGen_eq_omegaCoeff` are dead weight — the
+unconditional form holds, proved independently by three members; and the
+landed reduction's `OmegaNe`-restriction vs the `hne` the fixpoint needs,
+resolved by the support forms `derivedJGen_coherent_iff_cocycle_on_support`).
+Methodological warning recorded: all seven tree data sets have `F ≠ 0` on
+support, `OmegaNe` always true and `dual = id`, so they cannot distinguish
+the hypothesis-strength questions.  New data close part of that gap: TY(Z₃)
+(non-pointed, non-self-dual), TY((Z/2)²), Fibonacci⊠Vec^α_{(Z/2)²} and
+Vec^ω_{(Z/2)²}⊠Fibonacci (`ω ∈ {1,−1}`, the first multi-channel `ω ≠ 1`),
+plus 539 normalised pointed 3-cocycle data — the cocycle identity holds on
+all of them (0 failures), and `ω` is always a coboundary so far.
+
+**A correction to the previous round's record**: round 1's
+`cohcheck_all.py` read `Finv` as the swapped `F` — correct only on `1 × 1`
+blocks, wrong on Fibonacci/Ising/Yang–Lee.  With the honest block inverse
+the identity still holds (re-checked exactly by m2, and m1's
+`fib_finv_audit.py` documents the reading), so round 1's *verdicts* stand;
+its `derivedJGen` *numbers* on those three data sets did not use the honest
+inverse.  The Lean results were never affected (they use the proved
+`FinvPair` tables).
+
+**Where WP3 stands after this round.**  The fourth law for `derivedJGen` on
+arbitrary data is *equivalent* to each of: the `omegaCoeff` cocycle
+(associator-only, division-free retained form available), `PairCocycle`
+(pairing language), `SingleDualCoherent` (single-dual, dual-associator
+retained), and — under the boundary analysis — the block-matrix statements
+`(B)` plus the `μ`-identity `loop e · μ(b,c;f) · μ(a,f;d) = loop b · μ(a,b;e)
+· μ(e,c;d)`.  None is proved in general; the honest hypotheses are the
+`OmegaNe` bundles (= the frozen `WP2.DerivedJ_ne_zero`, now characterised as
+two inverse-associator entries).  The strategic question the round opened:
+whether the unconditional fourth law is true at all — the pivotality
+analysis says a non-pivotal multiplicity-free datum would refute it, and
+none has been found (all data so far are pivotal with `ω` a coboundary).
+The next probe is either the `(B)`/`μ` block-matrix argument, the
+`SingleDualPairCoherent` residual, or the non-pivotal datum search.
+
+Verification: swarm `smw7f657l` (6 members, 6 accepted), every artefact
+re-elaborated by the coordinator before acceptance; the tree builds green,
+the audit regenerated, Gate 4 and the self-test pass.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

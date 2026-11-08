@@ -235,6 +235,65 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.gaugeRowU_self_inv
 #print axioms FusionCategory.sum_mul_ite_self
 
+-- FusionCategory.DerivedJBlockMatrix (56 declarations)
+
+#print axioms FusionCategory.N_dual_swap
+#print axioms FusionCategory.OmegaCocycle
+#print axioms FusionCategory.OmegaCocycleFinv
+#print axioms FusionCategory.OmegaCocycleRetained
+#print axioms FusionCategory.OmegaFinv
+#print axioms FusionCategory.OmegaFinv.eq_1
+#print axioms FusionCategory.OmegaFinv_eq_Q_div
+#print axioms FusionCategory.boundary_F_eq_inv
+#print axioms FusionCategory.boundary_F_eq_zero
+#print axioms FusionCategory.boundary_F_eq_zero_of_fst
+#print axioms FusionCategory.boundary_F_eq_zero_of_snd
+#print axioms FusionCategory.boundary_F_fst
+#print axioms FusionCategory.boundary_F_mul_Finv
+#print axioms FusionCategory.boundary_F_ne_zero
+#print axioms FusionCategory.boundary_F_snd
+#print axioms FusionCategory.boundary_Finv_eq_inv
+#print axioms FusionCategory.boundary_Finv_eq_zero
+#print axioms FusionCategory.boundary_Finv_mul_F
+#print axioms FusionCategory.boundary_Finv_ne_zero
+#print axioms FusionCategory.cancel_ev
+#print axioms FusionCategory.derivedJGen_cocycle_of_a_unit
+#print axioms FusionCategory.derivedJGen_cocycle_of_b_unit
+#print axioms FusionCategory.derivedJGen_cocycle_of_c_unit
+#print axioms FusionCategory.derivedJGen_cocycle_of_unit
+#print axioms FusionCategory.derivedJGen_coherent_iff_OmegaFinv_cocycle
+#print axioms FusionCategory.derivedJGen_coherent_of_finv_cocycle
+#print axioms FusionCategory.derivedJGen_coherent_of_retained
+#print axioms FusionCategory.derivedJGen_coherent_retained_of_finv_cocycle
+#print axioms FusionCategory.derivedJGen_coherent_retained_of_ne
+#print axioms FusionCategory.derivedJGen_eq_OmegaFinv
+#print axioms FusionCategory.derivedJGen_eq_OmegaFinv_of_omegaNe
+#print axioms FusionCategory.derivedJGen_eq_omegaCoeff_uncond
+#print axioms FusionCategory.derivedJGen_ne_zero_iff_omegaNe
+#print axioms FusionCategory.div_div_same
+#print axioms FusionCategory.div_mul_div_eq_iff
+#print axioms FusionCategory.div_ne_zero_iff'
+#print axioms FusionCategory.div_ratio_of_mul_eq_one
+#print axioms FusionCategory.div_ratio_of_zero
+#print axioms FusionCategory.div_ratio_of_zero'
+#print axioms FusionCategory.eq_dual_of_pos_unit
+#print axioms FusionCategory.eq_dual_of_pos_unit'
+#print axioms FusionCategory.exists_fusionSystem_derivedJGen_of_finv_cocycle
+#print axioms FusionCategory.exists_fusionSystem_derivedJGen_of_retained
+#print axioms FusionCategory.omegaCocycleFinv_of_retained
+#print axioms FusionCategory.omegaCocycleRetained_of_finv
+#print axioms FusionCategory.omegaCocycle_iff_finv
+#print axioms FusionCategory.omegaCocycle_iff_retained
+#print axioms FusionCategory.omegaCoeff_eq_OmegaFinv
+#print axioms FusionCategory.omegaCoeff_eq_OmegaFinv'
+#print axioms FusionCategory.omegaNe_iff_finv
+#print axioms FusionCategory.omegaNe_iff_finv.match_1_1
+#print axioms FusionCategory.omegaQ
+#print axioms FusionCategory.omegaQ.eq_1
+#print axioms FusionCategory.omegaR
+#print axioms FusionCategory.omegaR.eq_1
+#print axioms FusionCategory.quad_of_F_ne_zero
+
 -- FusionCategory.DerivedJBridge (35 declarations)
 
 #print axioms FusionCategory.J_match_withJ_derived
@@ -273,6 +332,26 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.withJ_derived
 #print axioms FusionCategory.withJ_derived_J
 
+-- FusionCategory.DerivedJCocycle (17 declarations)
+
+#print axioms FusionCategory.F_boundary_fst
+#print axioms FusionCategory.F_boundary_snd
+#print axioms FusionCategory.Finv_boundary_fst
+#print axioms FusionCategory.Finv_boundary_snd
+#print axioms FusionCategory.boundary_chain
+#print axioms FusionCategory.boundary_closed_key
+#print axioms FusionCategory.derivedJGen_coherent_of_omegaCoboundary
+#print axioms FusionCategory.derivedJGen_qualified_of_omegaCoboundary
+#print axioms FusionCategory.frobenius_N
+#print axioms FusionCategory.frobenius_N'
+#print axioms FusionCategory.frobenius_N'_pos
+#print axioms FusionCategory.frobenius_N_pos
+#print axioms FusionCategory.omegaCoeff_cocycle_of_coboundary
+#print axioms FusionCategory.omegaCoeff_eq_closed
+#print axioms FusionCategory.omegaCoeff_eq_of_block_inv
+#print axioms FusionCategory.pentagon_channel_unit
+#print axioms FusionCategory.pentagon_composite_unit
+
 -- FusionCategory.DerivedJCoherent (28 declarations)
 
 #print axioms FusionCategory.OmegaNe
@@ -304,6 +383,32 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.pointed_of_ring_eq
 #print axioms FusionCategory.twistQualified_systemJ_iff
 
+-- FusionCategory.DerivedJFunctor (23 declarations)
+
+#print axioms FusionCategory.NaiveSingleDualCoherent
+#print axioms FusionCategory.SingleDualCoherent
+#print axioms FusionCategory.SingleDualPairCoherent
+#print axioms FusionCategory.SingleDualQualified
+#print axioms FusionCategory.comparisonScalar_eq_pair
+#print axioms FusionCategory.comparisonScalar_ne_zero_of_omegaNe
+#print axioms FusionCategory.derivedJGen_coherent_of_singleDual
+#print axioms FusionCategory.div_eq_div_of_cross_mul
+#print axioms FusionCategory.omegaCoeff_cocycle_of_pair
+#print axioms FusionCategory.omegaCoeff_cocycle_of_singleDual
+#print axioms FusionCategory.omegaCoeff_cocycle_of_singleDual_omegaNe
+#print axioms FusionCategory.pair_bridge
+#print axioms FusionCategory.pair_bridge_inv
+#print axioms FusionCategory.singleDualCoherent_of_pair
+#print axioms FusionCategory.singleDualPair
+#print axioms FusionCategory.singleDualPair.eq_1
+#print axioms FusionCategory.singleDualPairCoherent_iff
+#print axioms FusionCategory.singleDualPair_ne_zero_of_omegaNe
+#print axioms FusionCategory.singleDualQualified_derivedJGen
+#print axioms FusionCategory.singleDualQualified_of_omegaNe
+#print axioms FusionCategory.twistQualified_of_singleDual
+#print axioms FusionCategory.twistQualified_of_singleDual'
+#print axioms FusionCategory.twistQualified_of_singleDual_naive
+
 -- FusionCategory.DerivedJLaws (18 declarations)
 
 #print axioms FusionCategory.WP2_DerivedJ_gauge_invariant
@@ -324,6 +429,51 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.unique_left_unit
 #print axioms FusionCategory.unique_right_unit
 #print axioms FusionCategory.withJ
+
+-- FusionCategory.DerivedJMate (31 declarations)
+
+#print axioms FusionCategory.CrossCocycle
+#print axioms FusionCategory.PairCocycle
+#print axioms FusionCategory.PivotalFactor
+#print axioms FusionCategory.comparisonScalar_mul_pairScalar
+#print axioms FusionCategory.crossCocycle_of_pivotalFactor
+#print axioms FusionCategory.derivedJGen_coherent_of_pairCocycle
+#print axioms FusionCategory.derivedJGen_coherent_of_pivotalFactor
+#print axioms FusionCategory.derivedJGen_coherent_of_pointed_mate
+#print axioms FusionCategory.derivedJGen_eq_coboundary_of_pivotalFactor
+#print axioms FusionCategory.derivedJGen_eq_pairDual_div
+#print axioms FusionCategory.derivedJGen_qualified_iff_omegaCoeff_uncond
+#print axioms FusionCategory.derivedJGen_qualified_iff_pairCocycle
+#print axioms FusionCategory.eq_comparisonScalar_of_mul_pairScalar
+#print axioms FusionCategory.eq_of_mul_pairScalar_eq
+#print axioms FusionCategory.exists_fusionSystem_derivedJGen_of_pairCocycle
+#print axioms FusionCategory.exists_fusionSystem_derivedJGen_of_pivotalFactor
+#print axioms FusionCategory.omegaCoeff_eq_pairDual_div
+#print axioms FusionCategory.omegaCoeff_eq_pairScalar_div
+#print axioms FusionCategory.pairCocycle_iff_crossCocycle
+#print axioms FusionCategory.pairDual
+#print axioms FusionCategory.pairDual_dual
+#print axioms FusionCategory.pairDual_dual_right
+#print axioms FusionCategory.pairScalar
+#print axioms FusionCategory.pairScalar_def
+#print axioms FusionCategory.pairScalar_dual_dual
+#print axioms FusionCategory.pairScalar_eq_zero_of_not_chan
+#print axioms FusionCategory.pairScalar_ne_zero
+#print axioms FusionCategory.pairScalar_self
+#print axioms FusionCategory.pivotalFactor_entries
+#print axioms FusionCategory.pivotalFactor_kappa_of_pointed
+#print axioms FusionCategory.pivotalFactor_of_coboundary
+
+-- FusionCategory.DerivedJOmegaPivotal (8 declarations)
+
+#print axioms FusionCategory.derivedJGen_coherent_of_omegaCocycle_of_omegaNe
+#print axioms FusionCategory.derivedJGen_coherent_of_omegaCoeff_coboundary
+#print axioms FusionCategory.derivedJGen_eq_zero_of_not_omegaNe
+#print axioms FusionCategory.derivedJGen_qualified_of_omegaCoeff_coboundary
+#print axioms FusionCategory.exists_omegaCoeff_coboundary_of_pointed
+#print axioms FusionCategory.omegaCocycle_rescale_iff
+#print axioms FusionCategory.omegaCoeff_eq_kappa_of_pointed
+#print axioms FusionCategory.omegaCoeff_ne_zero_of_omegaNe
 
 -- FusionCategory.DerivedJPointed (17 declarations)
 

@@ -50,6 +50,11 @@ import FusionCategory.DerivedJLaws
 import FusionCategory.DerivedJPointed
 import FusionCategory.DerivedJCoherent
 import FusionCategory.DerivedJAssocGauge
+import FusionCategory.DerivedJCocycle
+import FusionCategory.DerivedJBlockMatrix
+import FusionCategory.DerivedJMate
+import FusionCategory.DerivedJFunctor
+import FusionCategory.DerivedJOmegaPivotal
 import FusionCategory.ReconSimpleSim
 import FusionCategory.ReconBiprod
 import FusionCategory.AssocNatural
