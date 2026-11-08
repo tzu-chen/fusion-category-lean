@@ -475,6 +475,62 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.omegaCoeff_eq_kappa_of_pointed
 #print axioms FusionCategory.omegaCoeff_ne_zero_of_omegaNe
 
+-- FusionCategory.DerivedJPivotalCriterion (31 declarations)
+
+#print axioms FusionCategory.RingCharacter
+#print axioms FusionCategory.cohDefect
+#print axioms FusionCategory.cohDefect.eq_1
+#print axioms FusionCategory.defect_reciprocal_iff_ratio_eq
+#print axioms FusionCategory.derivedJGen_congr
+#print axioms FusionCategory.derivedJGen_eq_singleDualPair_div
+#print axioms FusionCategory.derivedJGen_pm_one_of_selfDual_pivotalFactor
+#print axioms FusionCategory.eq_one_or_neg_one_of_mul_self_eq_one
+#print axioms FusionCategory.exists_law_with_nontrivial_defect
+#print axioms FusionCategory.law_iff_defect_reciprocal
+#print axioms FusionCategory.not_exists_pivotalWitness_of_derivedJGen_eq_zero
+#print axioms FusionCategory.not_exists_pivotalWitness_of_pairScalar_eq_zero
+#print axioms FusionCategory.not_exists_pivotalWitness_of_selfDual_twist_ne_pm_one
+#print axioms FusionCategory.not_exists_pivotalWitness_of_singleDualPair_eq_zero
+#print axioms FusionCategory.pairDual.eq_1
+#print axioms FusionCategory.pairScalar_eq_singleDualPair_mul
+#print axioms FusionCategory.pivotalFactor_mul_dual
+#print axioms FusionCategory.pivotalFactor_mul_dual_eq_one
+#print axioms FusionCategory.pivotalFactor_mul_ringCharacter
+#print axioms FusionCategory.pivotalFactor_ratio
+#print axioms FusionCategory.pivotalFactor_sq_eq_one_of_selfDual
+#print axioms FusionCategory.pivotalFactor_unit
+#print axioms FusionCategory.pivotalWitness_iff_pivotalFactor
+#print axioms FusionCategory.pivotalWitness_selfDual_iff_sign
+#print axioms FusionCategory.pivotalWitness_selfDual_iff_sign'
+#print axioms FusionCategory.pivotalWitness_sq_eq_one_of_selfDual
+#print axioms FusionCategory.pivotal_dichotomy
+#print axioms FusionCategory.ringCharacter_one
+#print axioms FusionCategory.ringCharacter_ratio_of_pivotalFactor
+#print axioms FusionCategory.sign_div
+#print axioms FusionCategory.singleDualPair_ne_zero_iff_pairScalar
+
+-- FusionCategory.DerivedJPivotalDichotomy (19 declarations)
+
+#print axioms FusionCategory.TwistCoboundary
+#print axioms FusionCategory.TwistNowhereZero
+#print axioms FusionCategory.TwistVanishes
+#print axioms FusionCategory.derivedJGen_ne_zero_of_twistCoboundary
+#print axioms FusionCategory.exists_derivedJGen_zero_iff_not_omegaNe
+#print axioms FusionCategory.not_twistCoboundary_iff
+#print axioms FusionCategory.omegaNe_of_pointed
+#print axioms FusionCategory.omegaQ_ne_zero_of_pointed
+#print axioms FusionCategory.omegaQ_ne_zero_of_unique_col
+#print axioms FusionCategory.pairScalar_ne_zero_of_twistCoboundary
+#print axioms FusionCategory.pivotalFactor_of_twistCoboundary
+#print axioms FusionCategory.pointed_unit_mem
+#print axioms FusionCategory.twistCoboundary_iff
+#print axioms FusionCategory.twistCoboundary_iff_nowhereZero
+#print axioms FusionCategory.twistCoboundary_iff_of_pointed
+#print axioms FusionCategory.twistCoboundary_of_pivotalFactor
+#print axioms FusionCategory.twistNowhereZero_of_twistCoboundary
+#print axioms FusionCategory.twistVanishes_iff_boundaryFinv_zero
+#print axioms FusionCategory.twistVanishes_not_nowhereZero
+
 -- FusionCategory.DerivedJPointed (17 declarations)
 
 #print axioms FusionCategory.F_ne_zero_of_pointed
@@ -1420,6 +1476,19 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.pivotal_of_no2Torsion
 #print axioms FusionCategory.torsorAction
 
+-- FusionCategory.NonPivotalTarget (10 declarations)
+
+#print axioms FusionCategory.HasPivotalTwist
+#print axioms FusionCategory.derivedJGen_eq_zero_of_pairScalar_eq_zero
+#print axioms FusionCategory.hasPivotalTwist_iff_exists_pivotalFactor
+#print axioms FusionCategory.not_hasPivotalTwist_of_derivedJGen_eq_zero
+#print axioms FusionCategory.not_hasPivotalTwist_of_not_omegaNe
+#print axioms FusionCategory.not_hasPivotalTwist_of_omegaQ_eq_zero
+#print axioms FusionCategory.not_hasPivotalTwist_of_pairScalar_eq_zero
+#print axioms FusionCategory.omegaNe_of_hasPivotalTwist
+#print axioms FusionCategory.pairScalar_ne_zero_iff_omegaQ_ne_zero
+#print axioms FusionCategory.pivotalFactor_ratio_character
+
 -- FusionCategory.NoteFormula (11 declarations)
 
 #print axioms FusionCategory.fixedBlock
@@ -1552,6 +1621,13 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.pivotalDimSimple_unit
 #print axioms FusionCategory.squaredNorm
 #print axioms FusionCategory.squaredNorm_eq
+
+-- FusionCategory.PointedPair (4 declarations)
+
+#print axioms FusionCategory.Finv_ne_zero_of_pointed
+#print axioms FusionCategory.exists_coboundary_of_pointed
+#print axioms FusionCategory.pairCocycle_of_pointed
+#print axioms FusionCategory.pairScalar_ne_zero_of_pointed
 
 -- FusionCategory.Prop821 (22 declarations)
 
@@ -2843,3 +2919,82 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms CensusZ3sqTwisted.pentagon
 #print axioms CensusZ3sqTwisted.snake_left
 #print axioms CensusZ3sqTwisted.snake_right
+
+-- FusionCategory.Z3Omega (76 declarations)
+
+#print axioms FusionCategory.pairScalar.eq_1
+#print axioms Z3Omega.F
+#print axioms Z3Omega.F.eq_1
+#print axioms Z3Omega.F_comp_inv
+#print axioms Z3Omega.F_pentagon
+#print axioms Z3Omega.F_support
+#print axioms Z3Omega.F_unit_left
+#print axioms Z3Omega.F_unit_right
+#print axioms Z3Omega.Finv
+#print axioms Z3Omega.Finv.eq_1
+#print axioms Z3Omega.Finv_comp
+#print axioms Z3Omega.Finv_support
+#print axioms Z3Omega.J
+#print axioms Z3Omega.J.eq_1
+#print axioms Z3Omega.J_coherent
+#print axioms Z3Omega.J_dual
+#print axioms Z3Omega.J_ne_zero
+#print axioms Z3Omega.J_unit_left
+#print axioms Z3Omega.J_unit_right
+#print axioms Z3Omega.N
+#print axioms Z3Omega.N.eq_1
+#print axioms Z3Omega.N_pos_iff
+#print axioms Z3Omega.coev
+#print axioms Z3Omega.coev_ne_zero
+#print axioms Z3Omega.derivedJGen_coherent
+#print axioms Z3Omega.derivedJGen_eq_kappa
+#print axioms Z3Omega.derivedJGen_eq_one
+#print axioms Z3Omega.derivedJGen_ne_zero
+#print axioms Z3Omega.dual
+#print axioms Z3Omega.dual.eq_1
+#print axioms Z3Omega.dual_ne_id
+#print axioms Z3Omega.dual_one
+#print axioms Z3Omega.dual_two
+#print axioms Z3Omega.dual_zero
+#print axioms Z3Omega.ev
+#print axioms Z3Omega.ev.eq_1
+#print axioms Z3Omega.ev_dual
+#print axioms Z3Omega.exists_fixpoint
+#print axioms Z3Omega.exists_pivotalFactor
+#print axioms Z3Omega.instFactPrimeOfNatNat_fusionCategory
+#print axioms Z3Omega.k
+#print axioms Z3Omega.kap
+#print axioms Z3Omega.kapInv
+#print axioms Z3Omega.kapInv.eq_1
+#print axioms Z3Omega.kapInv_ne_zero
+#print axioms Z3Omega.kap_dual_mul
+#print axioms Z3Omega.kap_mul
+#print axioms Z3Omega.kap_mul_kapInv
+#print axioms Z3Omega.kap_ne_zero
+#print axioms Z3Omega.kap_not_const
+#print axioms Z3Omega.kap_one
+#print axioms Z3Omega.kap_two
+#print axioms Z3Omega.kap_zero
+#print axioms Z3Omega.loop_entries
+#print axioms Z3Omega.om
+#print axioms Z3Omega.om.eq_1
+#print axioms Z3Omega.omInv
+#print axioms Z3Omega.omInv.eq_1
+#print axioms Z3Omega.pairScalar_ne_zero
+#print axioms Z3Omega.pivotalFactor_one
+#print axioms Z3Omega.pointed
+#print axioms Z3Omega.ring
+#print axioms Z3Omega.ring.eq_1
+#print axioms Z3Omega.snake_left
+#print axioms Z3Omega.snake_right
+#print axioms Z3Omega.system
+#print axioms Z3Omega.system.eq_1
+#print axioms Z3Omega.system_N
+#print axioms Z3Omega.system_dual
+#print axioms Z3Omega.system_kappa
+#print axioms Z3Omega.zeta
+#print axioms Z3Omega.zeta.eq_1
+#print axioms Z3Omega.zeta_cube
+#print axioms Z3Omega.zeta_ne_one
+#print axioms Z3Omega.zeta_ne_zero
+#print axioms Z3Omega.zeta_sq

@@ -713,6 +713,106 @@ re-elaborated by the coordinator before acceptance; the tree builds green,
 the audit regenerated, Gate 4 and the self-test pass.
 
 
+## The non-pivotal datum search: closed without a datum (swarm `smw84hi3m`)
+
+The person directed the search for a non-pivotal multiplicity-free datum —
+one on which the computed twist `derivedJGen` is not a coboundary — which
+would refute the unconditional fourth law.  Six solutions accepted; every
+artefact re-elaborated by the coordinator before acceptance.  **No datum was
+found, and the round established why finding one would be extraordinary:**
+
+* **The target over an algebraically closed field IS ENO Conjecture 2.8**
+  (m1, m3, m6, independently): `derivedJGen` is Bartlett's *pivotal operator*
+  `T^i_{jk}` (*Fusion categories via string diagrams*, arXiv:1502.02882,
+  Thm 4.17 and Thm 5.4 — the `PivotalFactor` equation is verbatim his
+  characterisation of pivotal structures), so `¬∃φ` is "the datum has no
+  pivotal structure".  Whether every fusion category admits one is open;
+  the rank-3 classification (arXiv:1309.4822) had to *assume* it, all known
+  examples are spherical, and the quadruple-dual obstruction is 2-torsion.
+  Vercleyen–Slingerland (CMP 407 (2026) 231) have all 989 multiplicity-free
+  complex fusion categories of rank ≤ 7 solved, with `FR^{9,0}_38` the only
+  rank ≤ 9 ring that could refute pivotality (its categorifiability is
+  open): **no characteristic-0 refutation exists below rank 8**, and a
+  non-algebraically-closed field buys only lattice torsion.
+
+* **The funnel terminates** (`DerivedJPivotalCriterion.lean`, m2): the
+  fourth law at a tuple *is* the reciprocity `λ·λ' = 1` of the two
+  single-dual coherence defects `λ`, `λ'` of the tuple and its dual twin
+  (`law_iff_defect_reciprocal`) — the law is blind to their common value,
+  while `SingleDualCoherent` needs both `= 1`.  The kernel-checked field
+  separation `exists_law_with_nontrivial_defect` (scalars
+  `(2,1,1,2,1,1)`) proves the gap is real algebra, not a weak proof search.
+  The target is `ev`/`coev`-free (`derivedJGen_eq_singleDualPair_div`,
+  `derivedJGen_ext`: a function of `(ring, F, Finv)` alone), and on
+  self-dual data the witness is `Z/2`-valued (a channel value outside
+  `{0, ±1}` refutes).
+
+* **The target's logical shape is settled**
+  (`DerivedJPivotalDichotomy.lean`, m5): `TwistCoboundary ⟺ (OmegaNe
+  everywhere) ∧ PivotalFactor`, with the `pairScalar`-nonvanishing *derived*
+  rather than assumed — the two obligations the previous round carried
+  separately are the two halves of the target.  A refutation has exactly two
+  *disjoint* shapes: **degenerate** (`derivedJGen = 0` on a supported
+  channel — a failure of the frozen `WP2.DerivedJ_ne_zero`, not literature
+  non-pivotality) or **proper** (twist nowhere zero, no pivotal factor).
+  Pointed data are never degenerate (`omegaNe_of_pointed`: `y ⊗ y*` is a
+  single simple containing the unit, the block has one column,
+  `Finv_comp` makes the entries reciprocals), and rank ≤ 3 is closed
+  against the degenerate shape by exact pentagon solves (Fibonacci: the
+  snakes pin the free entry to `d = −a ≠ 0`; Ising: every entry a nonzero
+  monomial).
+
+* **The three refutation shapes are one obstruction**
+  (`NonPivotalTarget.lean`, m1): a target witness forces `OmegaNe`
+  everywhere (`omegaNe_of_hasPivotalTwist`), so the degenerate shape *is*
+  the frozen nonvanishing, decided by the single inverse-associator entry
+  `Finv a* a b b c 0` (`pairScalar_ne_zero_iff_omegaQ_ne_zero`); two pivotal
+  factors differ by a monoidal character
+  (`pivotalFactor_ratio_character`).  The ring-structure enumeration (7
+  multiplicity-free rings at `n = 3`, 34 at `n = 4`) shows `pairScalar`'s
+  `F`-factor never dies on a legal ring structure at `n ≤ 4`.
+
+* **The pointed class is closed unconditionally** (`PointedPair.lean`, m4,
+  promoted from scratch): `Finv_ne_zero_of_pointed` at composite `d = y`
+  (beyond the boundary lemma), `pairScalar_ne_zero_of_pointed`,
+  `pairCocycle_of_pointed`, `exists_coboundary_of_pointed` — a vanishing
+  pairing on a supported channel is impossible on pointed data, so the
+  degenerate escape is non-pointed-only.
+
+* **A new legal witness** (`Z3Omega.lean`, m4, promoted from scratch):
+  `Vec^ω_{Z/3}` over `ZMod 7` (`ζ = 2`, `ω(a,b,c) = ζ^{a·⌊(b+c)/3⌋}`), all
+  24 fields by `decide` — the **first legal datum with `dual ≠ id`** (the
+  two snake entries in different blocks), on which
+  `derivedJGen_eq_kappa` instantiates the pointed `δ(κ)` theorem off the
+  self-dual locus for the first time, with `exists_pivotalFactor`,
+  `derivedJGen_coherent` and `exists_fixpoint`.
+
+* **The empirical closure** (m3, exact `F_p` sweeps with Gröbner pentagon
+  solves over all gauge representatives and all 24 axioms re-checked from
+  the transcribed definitions): every legal datum on Fibonacci (`p = 5,
+  11`), `Z/2`, `Z/3` (two and four associator classes), Ising (`p = 7, 17`),
+  the near-group `ρ² = 1 + g + ρ`, Ostrik `K(1,0,1)`, `TY(Z/3)`,
+  `TY((Z/2)²)` and a rank-4 product is **pivotal with `φ ∈ F_p` itself**,
+  and `pairScalar` never vanishes on a supported channel (the degeneracy
+  would need a vanishing cofactor; none exists).
+
+**What the search leaves.**  The unconditional fourth law for `derivedJGen`
+is, over `ℂ`, exactly as hard as ENO 2.8 — a counterexample would be a
+counterexample to a conjecture, and the branch is closed in the literature
+below rank 8 and empirically at every family tested.  The honest WP3
+targets that remain are the *conditional* forms (all landed: coboundary,
+`PairCocycle`, `SingleDualCoherent`, the two-obligation assembly) and the
+frozen `WP2.DerivedJ_ne_zero` — now a single arithmetic scalar (one
+inverse-associator entry), impossible on pointed data, its `F`-part closed
+at `n ≤ 4`.  A refutation, if one ever exists, needs rank ≥ 10 (or
+`FR^{9,0}_38`), characteristic ≠ 0, and a non-pointed multiplicity-free
+associator with a singular inverse-block minor.
+
+Verification: swarm `smw84hi3m` (6 members, 6 accepted), every artefact
+re-elaborated by the coordinator before acceptance; the tree builds green,
+the audit regenerated, Gate 4 and the self-test pass.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

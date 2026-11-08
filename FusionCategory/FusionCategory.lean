@@ -55,6 +55,11 @@ import FusionCategory.DerivedJBlockMatrix
 import FusionCategory.DerivedJMate
 import FusionCategory.DerivedJFunctor
 import FusionCategory.DerivedJOmegaPivotal
+import FusionCategory.DerivedJPivotalCriterion
+import FusionCategory.DerivedJPivotalDichotomy
+import FusionCategory.NonPivotalTarget
+import FusionCategory.PointedPair
+import FusionCategory.Z3Omega
 import FusionCategory.ReconSimpleSim
 import FusionCategory.ReconBiprod
 import FusionCategory.AssocNatural
