@@ -1,5 +1,6 @@
 import FusionCategory.Pivotal
 import FusionCategory.DimMult
+import FusionCategory.DerivedJScalar
 
 /-!
 # Fibonacci and Ising as skeletal `FusionSystem`s over `ℝ`
@@ -26,6 +27,19 @@ to `ℝ`.  `decide` then verifies the pentagon, the two inverse laws and the two
 snakes exactly — no `norm_num` over the reals, no `native_decide`.  The file is
 therefore expensive to compile (several minutes); build it on its own with
 `lake build FusionCategory.Examples.FibonacciIsing` when iterating on it.
+
+## The derived twist (`WP3`)
+
+Both systems have `J ≡ 1`, and the *computed* twist `derivedJGen` of
+`DerivedJScalar.lean` — a function of `(ring, F, Finv, ev)` only — is also `1` on
+every fusion channel, which is `J_match` for both: `FibonacciSystem_J_match` and
+`IsingSystem_J_match` at the end of the file.  Both systems have `dual = id` and
+`ev ≡ 1`, so the comparison scalar's denominator is the single pair product
+`F y x z 1 z y · Finv x x y y z 1`; everything then reduces to two kernel checks
+in `ℤ[√d]`: that product is symmetric in `x, y` (`psiDen_comm`), and its norm
+form `p² - d q²` is non-zero on supported channels (`psiDen_norm_ne`), which is
+what makes the comparison scalar non-zero.  The `2 × 2` blocks at `τ ⊗ τ ∋ τ`
+(Fibonacci) and `σ ⊗ σ ∋ σ` (Ising) enter through exactly these pair products.
 -/
 
 open Matrix Finset BigOperators
@@ -114,6 +128,27 @@ theorem zval_three (hs : s * s = (d : ℝ)) (x y z : ℤ × ℤ) :
 theorem zval_of_peq {x y : ℤ × ℤ} (h : peq x y = true) : zval s x = zval s y := by
   simp only [peq, Bool.and_eq_true, beq_iff_eq] at h
   rw [show x = y from Prod.ext h.1 h.2]
+
+/-- A pair whose norm form `p² - d q²` does not vanish denotes a non-zero real
+number: `zval s (p, q) · zval s (p, -q) = (p² - d q²)/4`, so `zval s (p, q) = 0`
+would force `p² = d q²` in `ℤ`.  This is how the exact computations below turn a
+checked integer inequality into a non-vanishing statement over `ℝ`. -/
+theorem zval_ne_zero_of_norm_ne (hs : s * s = (d : ℝ)) {p q : ℤ}
+    (h : p ^ 2 ≠ d * q ^ 2) : zval s (p, q) ≠ 0 := by
+  intro h0
+  have hzm := zval_zmul (s := s) (d := d) hs (p, q) (p, -q)
+  have hz : zval s (Zmul d (p, q) (p, -q)) =
+      ((p : ℝ) ^ 2 - (d : ℝ) * (q : ℝ) ^ 2) / 2 := by
+    simp only [Zmul, zval]
+    push_cast
+    ring
+  rw [hz] at hzm
+  rw [h0, zero_mul] at hzm
+  have h2 : (p : ℝ) ^ 2 = (d : ℝ) * (q : ℝ) ^ 2 := by linarith
+  have h3 : p ^ 2 = d * q ^ 2 := by
+    have h4 : ((p ^ 2 : ℤ) : ℝ) = ((d * q ^ 2 : ℤ) : ℝ) := by push_cast; linarith
+    exact_mod_cast h4
+  exact h h3
 
 end ZP
 
@@ -482,6 +517,75 @@ theorem dim_val : ∀ i : Fin 2,
 theorem dim_val_explicit :
     dim pivotal 0 = 1 ∧ dim pivotal 1 = (1 + Real.sqrt 5) / 2 := by
   constructor <;> rw [dim_val] <;> simp
+
+/-! ### The derived twist `derivedJGen` of the Fibonacci system
+
+`derivedJGen` (`DerivedJScalar.lean`) is computed from `(ring, F, Finv, ev)`,
+never from the carried `J`.  Here every object is self-dual and `ev ≡ 1`, so on
+a channel `z` of `x ⊗ y` the comparison scalar is
+
+  `comparisonScalar x y z = ev z / (F y x z 1 z y · Finv x x y y z 1 · ev x · ev y)`
+
+and, with `ev = 1`, its denominator is the value of a single pair product
+`psiDen x y z` of `ℤ[√5]`.  Everything below is decided on those pairs: the
+denominator is symmetric in `x, y` (`psiDen_comm`), and its norm form is non-zero
+on supported channels (`psiDen_norm_ne`), so the comparison scalar is non-zero
+there and `derivedJGen a b c = ψ a b c / ψ b a c = 1`. -/
+
+/-- `ev = 1` in the pair model. -/
+theorem evPair_zval (i : Fin 2) : ZP.zval s5 (evPair i) = 1 := by
+  simp only [evPair, ZP.zval]
+  norm_num
+
+/-- The pair for the denominator `F y x z 1 z y · Finv x x y y z 1` of the
+comparison scalar (here `dual = id`), in `ℤ[√5]`. -/
+def psiDen (x y z : Fin 2) : ℤ × ℤ :=
+  ZP.Zmul 5 (Fpair y x z 0 z y) (FinvPair x x y y z 0)
+
+/-- The comparison scalar is `1` over the value of `psiDen` halved. -/
+theorem comparisonScalar_eq_psiDen (x y z : Fin 2) :
+    comparisonScalar system x y z = 1 / (ZP.zval s5 (psiDen x y z) / 2) := by
+  unfold comparisonScalar
+  rw [dif_pos (show 0 < 2 by norm_num)]
+  show ZP.zval s5 (evPair z) / (ZP.zval s5 (Fpair y x z 0 z y) *
+      ZP.zval s5 (FinvPair x x y y z 0) * ZP.zval s5 (evPair x) *
+      ZP.zval s5 (evPair y)) = 1 / (ZP.zval s5 (psiDen x y z) / 2)
+  rw [evPair_zval, evPair_zval, evPair_zval, psiDen,
+    ZP.zval_two (s := s5) (d := 5) s5_sq]
+  simp only [mul_one]
+
+/-- The denominator pair is symmetric in `x, y` — checked on all `2³` triples. -/
+theorem psiDen_comm : ∀ x y z : Fin 2, ZP.peq (psiDen x y z) (psiDen y x z) = true := by
+  decide
+
+/-- Hence the comparison scalar is symmetric in `x, y`. -/
+theorem comparisonScalar_comm (x y z : Fin 2) :
+    comparisonScalar system x y z = comparisonScalar system y x z := by
+  rw [comparisonScalar_eq_psiDen, comparisonScalar_eq_psiDen,
+    ZP.zval_of_peq (s := s5) (psiDen_comm x y z)]
+
+/-- On a supported channel the norm form of the denominator pair is non-zero:
+checked on the five channels of `1 ⊗ 1 = 1`, `1 ⊗ τ = τ`, `τ ⊗ 1 = τ`,
+`τ ⊗ τ = 1 ⊕ τ`. -/
+theorem psiDen_norm_ne : ∀ (x y z : Fin 2), 0 < N x y z →
+    (psiDen x y z).1 ^ 2 ≠ 5 * (psiDen x y z).2 ^ 2 := by
+  decide
+
+/-- The comparison scalar does not vanish on a supported channel. -/
+theorem comparisonScalar_ne_zero_derived (x y z : Fin 2) (h : 0 < N x y z) :
+    comparisonScalar system x y z ≠ 0 := by
+  rw [comparisonScalar_eq_psiDen]
+  exact div_ne_zero one_ne_zero
+    (div_ne_zero (ZP.zval_ne_zero_of_norm_ne s5_sq (psiDen_norm_ne x y z h)) two_ne_zero)
+
+/-- **The derived twist of the Fibonacci system is trivial on every channel.** -/
+theorem derivedJGen_eq_one (a b c : Fin 2) (h : 0 < N a b c) :
+    derivedJGen system a b c = 1 := by
+  rw [derivedJGen_def]
+  rw [show comparisonScalar system (system.ring.dual b) (system.ring.dual a)
+      (system.ring.dual c) = comparisonScalar system b a c from rfl]
+  rw [← comparisonScalar_comm a b c]
+  exact div_self (comparisonScalar_ne_zero_derived a b c h)
 
 end Fibonacci
 
@@ -885,6 +989,68 @@ theorem dim_val_explicit :
     dim pivotal 0 = 1 ∧ dim pivotal 1 = Real.sqrt 2 ∧ dim pivotal 2 = 1 := by
   refine ⟨?_, ?_, ?_⟩ <;> rw [dim_val] <;> simp
 
+/-! ### The derived twist `derivedJGen` of the Ising system
+
+The same computation as for Fibonacci, in `ℤ[√2]`: `dual = id` and `ev ≡ 1`, so
+the comparison scalar's denominator is the pair product `psiDen`, whose symmetry
+in `x, y` and non-degenerate norm form on the ten supported channels give
+`derivedJGen = 1`.  The `2 × 2` block at `σ ⊗ σ ∋ σ` enters through `psiDen`. -/
+
+/-- `ev = 1` in the pair model. -/
+theorem evPair_zval (i : Fin 3) : ZP.zval s2 (evPair i) = 1 := by
+  simp only [evPair, ZP.zval]
+  norm_num
+
+/-- The pair for the denominator `F y x z 1 z y · Finv x x y y z 1` of the
+comparison scalar (here `dual = id`), in `ℤ[√2]`. -/
+def psiDen (x y z : Fin 3) : ℤ × ℤ :=
+  ZP.Zmul 2 (Fpair y x z 0 z y) (FinvPair x x y y z 0)
+
+/-- The comparison scalar is `1` over the value of `psiDen` halved. -/
+theorem comparisonScalar_eq_psiDen (x y z : Fin 3) :
+    comparisonScalar system x y z = 1 / (ZP.zval s2 (psiDen x y z) / 2) := by
+  unfold comparisonScalar
+  rw [dif_pos (show 0 < 3 by norm_num)]
+  show ZP.zval s2 (evPair z) / (ZP.zval s2 (Fpair y x z 0 z y) *
+      ZP.zval s2 (FinvPair x x y y z 0) * ZP.zval s2 (evPair x) *
+      ZP.zval s2 (evPair y)) = 1 / (ZP.zval s2 (psiDen x y z) / 2)
+  rw [evPair_zval, evPair_zval, evPair_zval, psiDen,
+    ZP.zval_two (s := s2) (d := 2) s2_sq]
+  simp only [mul_one]
+
+/-- The denominator pair is symmetric in `x, y` — checked on all `3³` triples. -/
+theorem psiDen_comm : ∀ x y z : Fin 3, ZP.peq (psiDen x y z) (psiDen y x z) = true := by
+  decide
+
+/-- Hence the comparison scalar is symmetric in `x, y`. -/
+theorem comparisonScalar_comm (x y z : Fin 3) :
+    comparisonScalar system x y z = comparisonScalar system y x z := by
+  rw [comparisonScalar_eq_psiDen, comparisonScalar_eq_psiDen,
+    ZP.zval_of_peq (s := s2) (psiDen_comm x y z)]
+
+/-- On a supported channel the norm form of the denominator pair is non-zero:
+checked on the ten channels of `1 ⊗ a = a`, `σ ⊗ σ = 1 ⊕ ψ`, `σ ⊗ ψ = σ`,
+`ψ ⊗ σ = σ`, `ψ ⊗ ψ = 1`. -/
+theorem psiDen_norm_ne : ∀ (x y z : Fin 3), 0 < N x y z →
+    (psiDen x y z).1 ^ 2 ≠ 2 * (psiDen x y z).2 ^ 2 := by
+  decide
+
+/-- The comparison scalar does not vanish on a supported channel. -/
+theorem comparisonScalar_ne_zero_derived (x y z : Fin 3) (h : 0 < N x y z) :
+    comparisonScalar system x y z ≠ 0 := by
+  rw [comparisonScalar_eq_psiDen]
+  exact div_ne_zero one_ne_zero
+    (div_ne_zero (ZP.zval_ne_zero_of_norm_ne s2_sq (psiDen_norm_ne x y z h)) two_ne_zero)
+
+/-- **The derived twist of the Ising system is trivial on every channel.** -/
+theorem derivedJGen_eq_one (a b c : Fin 3) (h : 0 < N a b c) :
+    derivedJGen system a b c = 1 := by
+  rw [derivedJGen_def]
+  rw [show comparisonScalar system (system.ring.dual b) (system.ring.dual a)
+      (system.ring.dual c) = comparisonScalar system b a c from rfl]
+  rw [← comparisonScalar_comm a b c]
+  exact div_self (comparisonScalar_ne_zero_derived a b c h)
+
 end Ising
 
 /-! ## The two systems, under the names requested
@@ -1072,7 +1238,10 @@ theorem IsingSystem_dimMultiplicative : DimMultiplicative IsingSystem := by
 /-- **Fibonacci is pseudo-unitary**: `Σ_i κ_i κ_{i*} = 1 + φ² = 1² + φ²`. -/
 theorem FibonacciSystem_pseudoUnitary :
     IsPseudoUnitary FibonacciSystem FibonacciSystemFPData := by
-  unfold IsPseudoUnitary FusionRing.FPData.globalDim
+  -- `simp only`, not `unfold`: importing `DerivedJScalar` brings
+  -- `FusionRing.FPData.globalDim.eq_def` into the environment (via `Prop821CNorm`),
+  -- and `unfold` then fails on the concrete `FPData` below.
+  simp only [IsPseudoUnitary, FusionRing.FPData.globalDim]
   refine Finset.sum_congr rfl (fun i _ => ?_)
   rw [FibonacciSystem_dual, FibonacciSystem_kappa_fpData]
   ring
@@ -1080,7 +1249,10 @@ theorem FibonacciSystem_pseudoUnitary :
 /-- **Ising is pseudo-unitary**: `Σ_i κ_i κ_{i*} = 1 + 2 + 1 = 1² + (√2)² + 1²`. -/
 theorem IsingSystem_pseudoUnitary :
     IsPseudoUnitary IsingSystem IsingSystemFPData := by
-  unfold IsPseudoUnitary FusionRing.FPData.globalDim
+  -- `simp only`, not `unfold`: importing `DerivedJScalar` brings
+  -- `FusionRing.FPData.globalDim.eq_def` into the environment (via `Prop821CNorm`),
+  -- and `unfold` then fails on the concrete `FPData` below.
+  simp only [IsPseudoUnitary, FusionRing.FPData.globalDim]
   refine Finset.sum_congr rfl (fun i _ => ?_)
   rw [IsingSystem_dual, IsingSystem_kappa_fpData]
   ring
@@ -1152,6 +1324,27 @@ theorem IsingSystem_pivotal_unique (P : PivotalStructure IsingSystem)
         (fun i => IsingSystem_dim i)⟩
   rw [h1, ← h2]
 
+/-! ## WP3 Task 3.3: `J_match` for both systems, through the *derived* twist
+
+`derivedJGen` is a function of `(ring, F, Finv, ev)` alone, and both systems carry
+`J ≡ 1` (`FibonacciSystem_J`, `IsingSystem_J` are `rfl`).  The two theorems below
+therefore say: the computed double-dual twist is `1` on every fusion channel, so
+the carried twist is the derived one.  Nothing is assumed: the computation is on
+the datum's own `F`, `Finv`, `ev` tables, and the `2 × 2` associator blocks at
+`τ ⊗ τ ∋ τ` and `σ ⊗ σ ∋ σ` are part of the checked pair products. -/
+
+/-- **WP3 Task 3.3 for Fibonacci**: `J_match` at the derived twist. -/
+theorem FibonacciSystem_J_match : J_match FibonacciSystem (derivedJGen FibonacciSystem) := by
+  intro a b c h
+  rw [FibonacciSystem_J]
+  exact (Fibonacci.derivedJGen_eq_one a b c h).symm
+
+/-- **WP3 Task 3.3 for Ising**: `J_match` at the derived twist. -/
+theorem IsingSystem_J_match : J_match IsingSystem (derivedJGen IsingSystem) := by
+  intro a b c h
+  rw [IsingSystem_J]
+  exact (Ising.derivedJGen_eq_one a b c h).symm
+
 end FusionCategory
 
 /-! ## Axiom audit (the budget is `[propext, Classical.choice, Quot.sound]`) -/
@@ -1170,3 +1363,25 @@ end FusionCategory
 #print axioms FusionCategory.eno823_IsingSystem
 #print axioms FusionCategory.FibonacciSystem_pivotal_unique
 #print axioms FusionCategory.IsingSystem_pivotal_unique
+
+/-! ## Axiom audit of the derived-twist block -/
+
+#print axioms FusionCategory.ZP.zval_ne_zero_of_norm_ne
+#print axioms FusionCategory.Fibonacci.evPair_zval
+#print axioms FusionCategory.Fibonacci.psiDen
+#print axioms FusionCategory.Fibonacci.comparisonScalar_eq_psiDen
+#print axioms FusionCategory.Fibonacci.psiDen_comm
+#print axioms FusionCategory.Fibonacci.comparisonScalar_comm
+#print axioms FusionCategory.Fibonacci.psiDen_norm_ne
+#print axioms FusionCategory.Fibonacci.comparisonScalar_ne_zero_derived
+#print axioms FusionCategory.Fibonacci.derivedJGen_eq_one
+#print axioms FusionCategory.Ising.evPair_zval
+#print axioms FusionCategory.Ising.psiDen
+#print axioms FusionCategory.Ising.comparisonScalar_eq_psiDen
+#print axioms FusionCategory.Ising.psiDen_comm
+#print axioms FusionCategory.Ising.comparisonScalar_comm
+#print axioms FusionCategory.Ising.psiDen_norm_ne
+#print axioms FusionCategory.Ising.comparisonScalar_ne_zero_derived
+#print axioms FusionCategory.Ising.derivedJGen_eq_one
+#print axioms FusionCategory.FibonacciSystem_J_match
+#print axioms FusionCategory.IsingSystem_J_match

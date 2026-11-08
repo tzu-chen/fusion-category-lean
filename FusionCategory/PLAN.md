@@ -472,6 +472,121 @@ re-elaborated by the coordinator before acceptance; the tree builds green,
 the audit regenerated, Gate 4 and the self-test pass.
 
 
+## WP3 round 1: the derived twist gets its laws, its matches and its gauges (swarm `smw7dod9a`)
+
+The person directed WP3 after the multiplicativity round.  The computation
+(`derivedJGen`, the `(c,c)`-entry of the `(−)**` tensorator, a function of
+`(ring, F, Finv, ev, coev)` that never reads the carried `J`) already existed;
+this round gives it the missing structure.  Five solutions accepted, two
+members ended without submissions but left findings on the board; every
+artefact re-elaborated by the coordinator before acceptance.
+
+* **`DerivedJCoherent.lean`** — the fourth law (`J_coherent`) for the derived
+  twist: proved on ALL pointed data (general `n`), via the new *coboundary
+  class* (`coherent_of_coboundary`: a nowhere-vanishing `δ(g)` is always a
+  qualified twist — the two products telescope to `g_a g_b g_c / g_d`), which
+  also covers every datum with `derivedJGen ≡ 1` and, through
+  `derivedJGen_coherent_of_J_match`, every datum whose `J_match` lands;
+  unconditional per instance on the four pointed systems.  `exists_fusionSystem_derivedJGen`
+  is the fixpoint datum (carried twist = computation) modulo nonvanishing and
+  the fourth law.  The general case is NOT proved and the gap is isolated
+  exactly: `derivedJGen_coherent_iff_omegaCoeff_cocycle` reduces it to the
+  associator-only cocycle identity, and the pointed route cannot extend
+  because every sum-free consequence of the axioms needs unique fusion
+  channels — Fibonacci/Ising have genuine two-term sums, so the passage must
+  be made at block-matrix level, and no lemma in the tree composes F-blocks.
+  Two negative results on record: no counterexample is to be expected under
+  the nonvanishing hypotheses (`comparisonScalar_spec` pins `ψ` to the honest
+  comparison, and `(−)**` monoidal is classical), and the natural `Pi·Rho`
+  splitting of `omegaCoeff` fails (12 cancelling factors each on `Z2SqH`).
+* **`DerivedJBridge.lean`** — the consumption layer: `dimMult_derived_of_match`
+  and its iff ((M) transfers to the computed table through `J_match` — WP3
+  Task 3.6's form); the conditional `settledJ` bridge
+  (`derivedJ_eq_settledJ_of_dimMult_pseudoUnitary`: `(M) + IsPseudoUnitaryC +
+  P + J_match`, through the ℂ capstone of the previous round, no circularity);
+  the scalar-extension transport of the computed twist; per-instance
+  `DerivedJ_eq_settledJ` and `ENO823ExactC derivedJ` at `FibonacciC`/`IsingC`;
+  `withJ_derived` (the fixpoint, taking d1/d2 verbatim as hypotheses).
+  Kernel-checked finding: the frozen `ENO823ExactC derivedJ S hFP`'s own
+  `J_match` antecedent is redundant given `(M)` — the exact statement needs
+  only `(M)`, a pivotal structure and pseudo-unitarity, which is the previous
+  round's thesis made concrete in the frozen interface.
+* **`DerivedJAssocGauge.lean`** — the second gauge freedom: the associator
+  (F-cochain) gauge `assocGauge S g` (blockwise conjugation of `F`, reciprocal
+  on `Finv`, everything else kept; all 24 fields).  Main theorem:
+  `derivedJGen_assocGauge` — the computed twist is INVARIANT under it, with no
+  dual-invariance hypothesis (both comparison scalars of the ratio pick up the
+  same `g`-factor).  Consequences: the frozen `DerivedJ_ne_zero` and
+  `DerivedJ_pointed` are gauge-class statements; the vanishing pattern of
+  `F`/`Finv` is gauge-invariant (so this gauge cannot manufacture a
+  nonvanishing counterexample — a dead-end marker); and canonicity:
+  `finv_eq_of_same_F` — `Finv` is determined by `(ring, F)`, so `derivedJGen`
+  is a function of `(ring, F, ev)` alone and the carried inverse associator is
+  a presentation artefact.  Correction of record: the covariant gauge law first
+  guessed for this direction is FALSE (a mis-tracked `dual (dual c)`); Lean
+  refused it, and the invariant statement is what is proved.
+* **`Examples/FibonacciIsing.lean`** — `J_match` for both non-pointed systems:
+  on the self-dual, `ev ≡ 1` data the comparison scalar is `1` over a
+  `ℤ[√d]`-pair product `psiDen`; `psiDen_comm` (decide, all triples) makes the
+  denominator symmetric in `x, y`, so the ratio defining `derivedJGen` is `1`
+  on every channel — `derivedJGen_eq_one`, hence `FibonacciSystem_J_match` and
+  `IsingSystem_J_match` against the `rfl` twists.  Bonus beyond the remit: the
+  norm-form criterion (`ZP.zval_ne_zero_of_norm_ne` + `psiDen_norm_ne`) gives
+  the per-instance nonvanishing for both systems — with the pointed case this
+  covers six of the seven data sets, and suggests the obstruction to the
+  frozen `WP2.DerivedJ_ne_zero` is arithmetic (`p² = d q²`), not categorical.
+* **`docs/bartlett_check.py`** — Task 3.5, the independent confirmation: our
+  closed form EQUALS Bartlett's Theorem 4.17 index by index (apex associator
+  `S_ijk = F i j k 0 (k*) (i*)`, monodromy `A = S_jki S_kij S_ijk`,
+  `T^c_ab = p_a p_b p_c A_{c*ab}`, reciprocal convention against `p_mon`) on
+  every supported channel of all data sets plus a non-self-dual control —
+  0 mismatches — and his Corollary 3.26 F-free law holds on every pentagon
+  instance with `F ≠ 0`; his published Yang–Lee values reproduced.  The paper
+  is **arXiv:1502.02882** (*Fusion categories via string diagrams*; the
+  `Bartlett1502` citation resolves there, not to 1502.04582).  Finding: on
+  Yang–Lee the derived twist is `1` on both `τ⊗τ` channels while `settledJ`
+  is not — the universal reading of `DerivedJ_eq_settledJ`'s docstring ("on a
+  datum with PF dimensions") is refuted; the docstring now carries the
+  pseudo-unitarity qualification and points at the honest conditional bridge.
+
+The adversarial audit (m7, `AUDIT.md` on the board, budget-ended before
+submission): HEAD kernel-green (2315/2315 in budget), the three new modules
+independently green, the bridges confirmed sound and non-circular
+(`derivedJ_eq_settledJ_of_dimMult_pseudoUnitary` carries exactly the
+hypotheses the Yang–Lee counterexample requires), d1 correctly NOT
+unconditional; warning that d1's law cannot be non-trivially validated on
+tree inhabitants (all six satisfy it trivially), and that the d9 direction's
+initially-stated covariant law was false — already corrected by m3.
+
+A Lean landmine, recorded with a reproducer (`.ultramath/smw7dod9a/m4/`):
+`unfold FusionRing.FPData.globalDim` is not stable under imports that
+reference the `.eq_def` equation lemma (DerivedJScalar/Prop821CNorm/PFDim) —
+`unfold` then fails on a concrete `FPData`, and a failed tactic makes the
+enclosing proof `sorryAx` while the file still "elaborates".  The robust form
+is `simp only [IsPseudoUnitary, FusionRing.FPData.globalDim]` (now used in
+`FibonacciIsing.lean`).  Rule: in files importing those modules, never
+`unfold` a def whose `.eq_def` is referenced elsewhere.
+
+**Still open in WP3, in order:**
+
+* the general fourth law — the block-matrix route (compose F-blocks as
+  matrices; the scalar pentagon instances do not suffice), with the
+  `omegaCoeff` cocycle identity as the precise target;
+* the general `WP2.DerivedJ_ne_zero` (six of seven data sets done; the
+  obstruction appears arithmetic — the norm form — and the associator gauge
+  cannot move it);
+* the remaining `J_match` instances: the three pointed systems (near-instances
+  of `derivedJGen_eq_delta_kappa_of_pointed` plus the systems' carried
+  `δ(κ)`) and Yang–Lee (script-checked `derivedJ = 1`, not yet in Lean);
+* the tensorator as an isomorphism at morphism level (m2's unfinished
+  direction: the inverse block matrix on pointed data).
+
+Verification: swarm `smw7dod9a` (7 members, 5 accepted, 2 ended with findings
+on the board), every artefact re-elaborated by the coordinator before
+acceptance; the tree builds green, the audit regenerated, Gate 4 and the
+self-test pass.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

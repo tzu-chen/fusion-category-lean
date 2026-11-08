@@ -274,11 +274,16 @@ theorem derivedJGen_gauge (S : FusionSystem n k) (lam : Fin n → kˣ)
 Statements only, no proofs: they are WP3's (Task 3.3) and WP4's targets, and
 they are the form in which the programme consumes `derivedJ`. -/
 
-/-- **The bridge to the settled twist**: on a datum with Perron–Frobenius
+/-- **The bridge to the settled twist**: on a *pseudo-unitary* datum with Perron–Frobenius
 dimensions the derived twist is the per-channel table `settledJ`
 (`Prop821CNorm.lean`), of which `j_match_settledJ_iff` says `J_match` is the
 per-channel law (K).  This is the WP3 target; it is *not* an assumption
-anywhere in this file.  Both sides are gauge-invariant (`settledJ` through the
+anywhere in this file.  The pseudo-unitarity is necessary: on Yang–Lee
+(`docs/bartlett_check.py`, exact) the derived twist is `1` on both `τ ⊗ τ`
+channels while `settledJ` is not, so the bridge without that hypothesis is
+refuted — the honest theorem is `DerivedJBridge.derivedJ_eq_settledJ_of_dimMult_pseudoUnitary`,
+which carries `(M)`, `IsPseudoUnitaryC`, a pivotal structure and `J_match` as
+hypotheses.  Both sides are gauge-invariant (`settledJ` through the
 gauge-invariant `κ`, `derivedJ` by `derivedJGen_gauge`), so the statement is a
 property of the gauge orbit and not of a normalisation. -/
 noncomputable def DerivedJ_eq_settledJ (S : FusionSystem n ℂ) (hFP : S.ring.FPData) :
