@@ -139,6 +139,77 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms CoherenceCheck.retained_of_coherent
 #print axioms CoherenceCheck.retained_of_qualified
 
+-- FusionCategory.ConditionalFormsCensus (68 declarations)
+
+#print axioms FusionCategory.Fibonacci.crossCocycle
+#print axioms FusionCategory.Fibonacci.fourthLaw_via_assembly
+#print axioms FusionCategory.Fibonacci.omegaCoeff_cocycle
+#print axioms FusionCategory.Fibonacci.omegaNe_all
+#print axioms FusionCategory.Fibonacci.pairCocycle
+#print axioms FusionCategory.Fibonacci.pairFactor2_eq
+#print axioms FusionCategory.Fibonacci.pairFactor_eq_psiDen
+#print axioms FusionCategory.Fibonacci.pairScalar_ne_zero_all
+#print axioms FusionCategory.Fibonacci.pivotalFactor_one
+#print axioms FusionCategory.Fibonacci.psiDen2
+#print axioms FusionCategory.Fibonacci.psiDen2.eq_1
+#print axioms FusionCategory.Fibonacci.psiDen2_norm_ne
+#print axioms FusionCategory.Fibonacci.quadruple_supported_nonempty
+#print axioms FusionCategory.Fibonacci.sdp_pair
+#print axioms FusionCategory.Fibonacci.singleDualCoherent
+#print axioms FusionCategory.Fibonacci.singleDualPairCoherent
+#print axioms FusionCategory.Fibonacci.singleDualPair_eq
+#print axioms FusionCategory.Fibonacci.singleDualPair_ne_zero_all
+#print axioms FusionCategory.Fibonacci.tri
+#print axioms FusionCategory.Fibonacci.tri.eq_1
+#print axioms FusionCategory.Fibonacci.twistCoboundary
+#print axioms FusionCategory.Ising.crossCocycle
+#print axioms FusionCategory.Ising.fourthLaw_via_assembly
+#print axioms FusionCategory.Ising.omegaCoeff_cocycle
+#print axioms FusionCategory.Ising.omegaNe_all
+#print axioms FusionCategory.Ising.pairCocycle
+#print axioms FusionCategory.Ising.pairFactor2_eq
+#print axioms FusionCategory.Ising.pairFactor_eq_psiDen
+#print axioms FusionCategory.Ising.pairScalar_ne_zero_all
+#print axioms FusionCategory.Ising.pivotalFactor_one
+#print axioms FusionCategory.Ising.psiDen2
+#print axioms FusionCategory.Ising.psiDen2.eq_1
+#print axioms FusionCategory.Ising.psiDen2_norm_ne
+#print axioms FusionCategory.Ising.quadruple_supported_nonempty
+#print axioms FusionCategory.Ising.sdp_pair
+#print axioms FusionCategory.Ising.singleDualCoherent
+#print axioms FusionCategory.Ising.singleDualPairCoherent
+#print axioms FusionCategory.Ising.singleDualPair_eq
+#print axioms FusionCategory.Ising.singleDualPair_ne_zero_all
+#print axioms FusionCategory.Ising.tri
+#print axioms FusionCategory.Ising.tri.eq_1
+#print axioms FusionCategory.Ising.twistCoboundary
+#print axioms FusionCategory.YangLeeCensus.crossCocycle
+#print axioms FusionCategory.YangLeeCensus.fourthLaw_via_assembly
+#print axioms FusionCategory.YangLeeCensus.omegaCoeff_cocycle
+#print axioms FusionCategory.YangLeeCensus.pairCocycle
+#print axioms FusionCategory.YangLeeCensus.pairFactor2_eq
+#print axioms FusionCategory.YangLeeCensus.pairFactor_eq_psiDen
+#print axioms FusionCategory.YangLeeCensus.pairScalar_ne_zero_all
+#print axioms FusionCategory.YangLeeCensus.pivotalFactor_one
+#print axioms FusionCategory.YangLeeCensus.psiDen2
+#print axioms FusionCategory.YangLeeCensus.psiDen2.eq_1
+#print axioms FusionCategory.YangLeeCensus.psiDen2_norm_ne
+#print axioms FusionCategory.YangLeeCensus.quadruple_supported_nonempty
+#print axioms FusionCategory.YangLeeCensus.sdp_pair
+#print axioms FusionCategory.YangLeeCensus.singleDualCoherent
+#print axioms FusionCategory.YangLeeCensus.singleDualPairCoherent
+#print axioms FusionCategory.YangLeeCensus.singleDualPair_eq
+#print axioms FusionCategory.YangLeeCensus.singleDualPair_ne_zero_all
+#print axioms FusionCategory.YangLeeCensus.tri
+#print axioms FusionCategory.YangLeeCensus.tri.eq_1
+#print axioms FusionCategory.YangLeeCensus.twistCoboundary
+#print axioms FusionCategory.conditional_forms_VecZ2
+#print axioms FusionCategory.conditional_forms_VecZ2Twisted
+#print axioms FusionCategory.conditional_forms_Z2SqH_system
+#print axioms FusionCategory.conditional_forms_Z2SqH_systemH
+#print axioms FusionCategory.conditional_forms_Z3Omega
+#print axioms FusionCategory.pointed_conditional_forms
+
 -- FusionCategory.Cover (37 declarations)
 
 #print axioms FusionCategory.CoverObj
@@ -234,6 +305,55 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.gaugeRowU.eq_1
 #print axioms FusionCategory.gaugeRowU_self_inv
 #print axioms FusionCategory.sum_mul_ite_self
+
+-- FusionCategory.DerivedJBartlett (46 declarations)
+
+#print axioms FusionCategory.BartlettPair.e8
+#print axioms FusionCategory.BartlettPair.e8.eq_1
+#print axioms FusionCategory.BartlettPair.zval_e8
+#print axioms FusionCategory.Fibonacci.bartlett
+#print axioms FusionCategory.Fibonacci.bartlettD_ne_zero
+#print axioms FusionCategory.Fibonacci.bartlettD_pair_norm_ne
+#print axioms FusionCategory.Fibonacci.bartlettF
+#print axioms FusionCategory.Fibonacci.bartlettF_pair
+#print axioms FusionCategory.Ising.bartlett
+#print axioms FusionCategory.Ising.bartlettD_ne_zero
+#print axioms FusionCategory.Ising.bartlettD_pair_norm_ne
+#print axioms FusionCategory.Ising.bartlettF
+#print axioms FusionCategory.Ising.bartlettF_pair
+#print axioms FusionCategory.VecZ2.bartlett
+#print axioms FusionCategory.VecZ2.bartlettD_ne_zero
+#print axioms FusionCategory.VecZ2.bartlettF
+#print axioms FusionCategory.VecZ2Twisted.bartlett
+#print axioms FusionCategory.VecZ2Twisted.bartlettD_ne_zero
+#print axioms FusionCategory.VecZ2Twisted.bartlettF
+#print axioms FusionCategory.YangLee.bartlett
+#print axioms FusionCategory.YangLee.bartlettD_ne_zero
+#print axioms FusionCategory.YangLee.bartlettD_pair_norm_ne
+#print axioms FusionCategory.YangLee.bartlettF
+#print axioms FusionCategory.YangLee.bartlettF_pair
+#print axioms FusionCategory.YangLee.evPair_zval_yang
+#print axioms FusionCategory.Z2SqH.F_eq_Fint
+#print axioms FusionCategory.Z2SqH.Fint
+#print axioms FusionCategory.Z2SqH.Fint.eq_1
+#print axioms FusionCategory.Z2SqH.Finv_eq_Finvint
+#print axioms FusionCategory.Z2SqH.Finvint
+#print axioms FusionCategory.Z2SqH.Finvint.eq_1
+#print axioms FusionCategory.Z2SqH.bartlett
+#print axioms FusionCategory.Z2SqH.bartlettD_int
+#print axioms FusionCategory.Z2SqH.bartlettD_ne_zero
+#print axioms FusionCategory.Z2SqH.bartlettF
+#print axioms FusionCategory.Z2SqH.bartlettF_int
+#print axioms FusionCategory.apexAssoc
+#print axioms FusionCategory.apexAssoc.eq_1
+#print axioms FusionCategory.apexMonodromy
+#print axioms FusionCategory.apexMonodromy.congr_simp
+#print axioms FusionCategory.apexMonodromy.eq_1
+#print axioms FusionCategory.apexMonodromy_eq
+#print axioms FusionCategory.bartlett_transfer
+#print axioms FusionCategory.derivedJGen_eq_raw
+#print axioms FusionCategory.derivedJGen_mul_apexMonodromy
+#print axioms FusionCategory.zval_mul_eq
 
 -- FusionCategory.DerivedJBlockMatrix (56 declarations)
 
@@ -572,6 +692,88 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.derivedJ_apply
 #print axioms FusionCategory.j_match_settledJ_of_bridge
 
+-- FusionCategory.DerivedJSelfDual (16 declarations)
+
+#print axioms FusionCategory.YangLee.system.eq_1
+#print axioms FusionCategory.YangLeeSelfDual.comparisonScalar_ne_zero_diag
+#print axioms FusionCategory.YangLeeSelfDual.derivedJGen_eq_one
+#print axioms FusionCategory.comparisonScalar_ne_zero_diag_of_pointed
+#print axioms FusionCategory.derivedJGen_eq_settledJ_selfDual_diag_iff
+#print axioms FusionCategory.derivedJGen_mul_swapDual
+#print axioms FusionCategory.derivedJGen_selfDual_diag
+#print axioms FusionCategory.derivedJGen_selfDual_diag_of_pointed
+#print axioms FusionCategory.derivedJGen_selfDual_swap
+#print axioms FusionCategory.derivedJGen_selfDual_swap_of_pointed
+#print axioms FusionCategory.div_mul_div_swap
+#print axioms FusionCategory.j_match_selfDual_diag
+#print axioms FusionCategory.not_j_match_of_selfDual_diag
+#print axioms FusionCategory.not_j_match_of_selfDual_swap
+#print axioms FusionCategory.settledJ_selfDual_diag
+#print axioms FusionCategory.settledJ_selfDual_diag_eq_one_iff
+
+-- FusionCategory.DerivedJTwistGroup (33 declarations)
+
+#print axioms FusionCategory.derivedJGen_twistInv
+#print axioms FusionCategory.derivedJGen_twistMul
+#print axioms FusionCategory.j_match_iff_quotient_trivial
+#print axioms FusionCategory.j_match_twistInv_iff
+#print axioms FusionCategory.j_match_twistInv_iff_inv
+#print axioms FusionCategory.j_match_twistMul_iff
+#print axioms FusionCategory.twistInv
+#print axioms FusionCategory.twistInvTab
+#print axioms FusionCategory.twistInvTab.eq_1
+#print axioms FusionCategory.twistInvTab_apply
+#print axioms FusionCategory.twistInvTab_involutive
+#print axioms FusionCategory.twistInvTwistInv_J
+#print axioms FusionCategory.twistInv_J
+#print axioms FusionCategory.twistInv_coherent
+#print axioms FusionCategory.twistInv_dual
+#print axioms FusionCategory.twistInv_ne_zero
+#print axioms FusionCategory.twistInv_ring
+#print axioms FusionCategory.twistInv_unit_left
+#print axioms FusionCategory.twistInv_unit_right
+#print axioms FusionCategory.twistMul
+#print axioms FusionCategory.twistMul.congr_simp
+#print axioms FusionCategory.twistMulTab
+#print axioms FusionCategory.twistMulTab.eq_1
+#print axioms FusionCategory.twistMulTab_apply
+#print axioms FusionCategory.twistMul_J
+#print axioms FusionCategory.twistMul_coherent
+#print axioms FusionCategory.twistMul_dual
+#print axioms FusionCategory.twistMul_inv_J
+#print axioms FusionCategory.twistMul_ne_zero
+#print axioms FusionCategory.twistMul_one_J
+#print axioms FusionCategory.twistMul_ring
+#print axioms FusionCategory.twistMul_unit_left
+#print axioms FusionCategory.twistMul_unit_right
+
+-- FusionCategory.DerivedJYangLee (24 declarations)
+
+#print axioms FusionCategory.Transported.YangLeeC_J_match
+#print axioms FusionCategory.Transported.YangLeeC_derivedJ_ne_zero
+#print axioms FusionCategory.Transported.not_derivedJ_eq_settledJ_yangLeeC
+#print axioms FusionCategory.Transported.settledJ_yangLeeC_one_one_zero
+#print axioms FusionCategory.YangLee.YangLeeSystem_J_match
+#print axioms FusionCategory.YangLee.comparisonScalar_dual
+#print axioms FusionCategory.YangLee.comparisonScalar_eq_psiDen
+#print axioms FusionCategory.YangLee.comparisonScalar_ne_zero_derived
+#print axioms FusionCategory.YangLee.derived
+#print axioms FusionCategory.YangLee.derivedJGen_coherent
+#print axioms FusionCategory.YangLee.derivedJGen_derived
+#print axioms FusionCategory.YangLee.derivedJGen_eq_one
+#print axioms FusionCategory.YangLee.derivedJGen_ne_zero
+#print axioms FusionCategory.YangLee.derived_J_match
+#print axioms FusionCategory.YangLee.evPair_zval
+#print axioms FusionCategory.YangLee.exists_derived_twist
+#print axioms FusionCategory.YangLee.omegaNe
+#print axioms FusionCategory.YangLee.psiDen
+#print axioms FusionCategory.YangLee.psiDen.eq_1
+#print axioms FusionCategory.YangLee.psiDen_dual_comm
+#print axioms FusionCategory.YangLee.psiDen_norm_ne
+#print axioms FusionCategory.YangLee.settledJ_ne_derivedJGen
+#print axioms FusionCategory.YangLee.settledJ_one_one_zero
+#print axioms FusionCategory.YangLee.settledJ_one_one_zero_ne_one
+
 -- FusionCategory.DimMult (19 declarations)
 
 #print axioms FusionCategory.DimMultiplicative
@@ -694,6 +896,39 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.FusionMat.tensorator_ne_naive_Z2SqH
 #print axioms FusionCategory.FusionMat.tensorator_ne_naive_of_coeff_ne_one
 #print axioms FusionCategory.Z2SqH.pointed
+
+-- FusionCategory.DoubleDualTensoratorIso (30 declarations)
+
+#print axioms FusionCategory.FusionMat.TwistNonzero
+#print axioms FusionCategory.FusionMat.ddEquiv
+#print axioms FusionCategory.FusionMat.fiberEquiv
+#print axioms FusionCategory.FusionMat.finEquivCast
+#print axioms FusionCategory.FusionMat.isIso_tensorator
+#print axioms FusionCategory.FusionMat.isIso_tensorator_pointed
+#print axioms FusionCategory.FusionMat.tensorCoeff_pointed
+#print axioms FusionCategory.FusionMat.tensorIdxEquiv
+#print axioms FusionCategory.FusionMat.tensorIdxEquiv_apply
+#print axioms FusionCategory.FusionMat.tensoratorInv
+#print axioms FusionCategory.FusionMat.tensoratorInv.eq_1
+#print axioms FusionCategory.FusionMat.tensoratorInv_apply_of_ne
+#print axioms FusionCategory.FusionMat.tensoratorInv_apply_pointed
+#print axioms FusionCategory.FusionMat.tensoratorInv_apply_self
+#print axioms FusionCategory.FusionMat.tensoratorInv_apply_sim
+#print axioms FusionCategory.FusionMat.tensoratorInv_entry_sim
+#print axioms FusionCategory.FusionMat.tensoratorInv_entry_sim_pointed
+#print axioms FusionCategory.FusionMat.tensoratorInv_mul_tensorator
+#print axioms FusionCategory.FusionMat.tensoratorIso
+#print axioms FusionCategory.FusionMat.tensoratorIso_hom
+#print axioms FusionCategory.FusionMat.tensoratorIso_inv
+#print axioms FusionCategory.FusionMat.tensoratorIso_pointed
+#print axioms FusionCategory.FusionMat.tensorator_apply_pointed
+#print axioms FusionCategory.FusionMat.tensorator_isIso_iff
+#print axioms FusionCategory.FusionMat.tensorator_mul_tensoratorInv
+#print axioms FusionCategory.FusionMat.twistNonzero_of_pointed
+#print axioms FusionCategory.inv_mul_monomial
+#print axioms FusionCategory.isIso_tensorator_Z2SqH
+#print axioms FusionCategory.monomial_mul_inv
+#print axioms FusionCategory.tensoratorInv_entry_Z2SqH
 
 -- FusionCategory.Duality (15 declarations)
 
@@ -1475,6 +1710,24 @@ Axiom budget: `[propext, Classical.choice, Quot.sound]`; no `sorry`, no
 #print axioms FusionCategory.pivotal_iff_square
 #print axioms FusionCategory.pivotal_of_no2Torsion
 #print axioms FusionCategory.torsorAction
+
+-- FusionCategory.JMatchPointed (15 declarations)
+
+#print axioms FusionCategory.J_match_iff_delta_kappa
+#print axioms FusionCategory.J_match_of_delta_kappa
+#print axioms FusionCategory.Transported.VecZ2C
+#print axioms FusionCategory.Transported.VecZ2C_J_match
+#print axioms FusionCategory.Transported.VecZ2TwistedC
+#print axioms FusionCategory.Transported.VecZ2TwistedC_J_match
+#print axioms FusionCategory.VecZ2.J_eq_delta_kappa
+#print axioms FusionCategory.VecZ2.kappa_eq_one
+#print axioms FusionCategory.VecZ2.system_J_match
+#print axioms FusionCategory.VecZ2Twisted.J_eq_delta_kappa
+#print axioms FusionCategory.VecZ2Twisted.kappa_eq
+#print axioms FusionCategory.VecZ2Twisted.system_J_match
+#print axioms FusionCategory.Z2SqH.systemH_J_match
+#print axioms FusionCategory.Z3Omega.J_eq_delta_kappa
+#print axioms FusionCategory.Z3Omega.system_J_match
 
 -- FusionCategory.NonPivotalTarget (10 declarations)
 

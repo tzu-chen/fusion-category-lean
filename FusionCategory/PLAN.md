@@ -813,6 +813,85 @@ re-elaborated by the coordinator before acceptance; the tree builds green,
 the audit regenerated, Gate 4 and the self-test pass.
 
 
+## WP3 closed: the per-instance residue and the boundary (swarm `smwa3l4s5`)
+
+The person directed WP3 closure.  The round landed the per-instance residue —
+every data set in the tree whose carried twist is the honest one now carries
+`J_match` at the derived twist — together with the certification layers the
+proposal's success criterion asks for, and it records the honest boundary:
+the unconditional fourth law for `derivedJGen` is ENO Conjecture 2.8-equivalent
+(open; no refutation below rank 8, empirically closed on every family tested),
+so WP3's deliverable is the conditional theorems plus complete per-instance
+coverage, not the unconditional law.  Seven of the eight members' runs ended
+at budget before formal submission; their artefacts were verified and landed
+by the coordinator, and m6's submission — the twist group — was judged and
+accepted after independent re-elaboration and an axiom transcript run by the
+coordinator.
+
+* **`DerivedJYangLee.lean`** — the seventh data set, item 1: the closed form
+  `derivedJGen = 1` on every supported channel (the Lean form of the value
+  `docs/bartlett_check.py` computed), the nonvanishing in both the scalar form
+  and the frozen `OmegaNe` bundle, the `J_match` instance
+  (`YangLeeSystem_J_match`), the fourth law through `J_match`
+  (`derivedJGen_coherent`), the fixpoint datum (`exists_derived_twist`), and
+  the sharpness of the `settledJ` bridge (`settledJ_ne_derivedJGen`: at
+  `(τ, τ; 1)` the derived twist is `1` while `settledJ` is `φ⁻⁴ ≠ 1`, so the
+  pseudo-unitarity hypothesis of the conditional bridge is indispensable
+  rather than defensive).  The `ℂ` transport lands as
+  `Transported.YangLeeC_J_match`.
+* **`JMatchPointed.lean`** — item 2: `J_match` for the pointed data sets
+  `VecZ2`, `VecZ2Twisted`, `Z3Omega` and `Z2SqHonest.systemH`, the general
+  pointed forms (`J_match_of_delta_kappa`, `J_match_iff_delta_kappa`), and the
+  `ℂ` transports.  With round 1's Fibonacci and Ising instances this completes
+  `J_match` for every honest data set in the tree; the false-twist witness
+  `Z2SqFalseJ` deliberately fails it — that is its role as the (M)
+  non-derivability witness.
+* **`DoubleDualTensoratorIso.lean`** — item 3, the unfinished round-1
+  direction: the tensorator is an isomorphism of the reconstruction for all
+  objects `X`, `Y` under the single hypothesis that the derived twist does
+  not vanish on supported channels — a theorem on pointed data
+  (`isIso_tensorator_pointed`) and instantiated at `Z2SqH`
+  (`isIso_tensorator_Z2SqH`).
+* **`DerivedJBartlett.lean`** — Task 3.5's kernel certification: the Bartlett
+  Theorem 4.17 comparison (`bartlettF`, `bartlett`) channel by channel in
+  exact `ℤ[√d]` arithmetic on Fibonacci and Ising, moving the script-level
+  comparison of `docs/bartlett_check.py` into the kernel.
+* **`DerivedJSelfDual.lean`** — the structural layer: on self-dual labels the
+  two sides of the defining ratio are the same term, so
+  `derivedJGen S a a c = 1` (`derivedJGen_selfDual_diag`), with the
+  `J_match` refutation criteria (`not_j_match_of_selfDual_diag`,
+  `not_j_match_of_selfDual_swap`) and the Yang–Lee instance.
+* **`ConditionalFormsCensus.lean`** — the conditional WP3 forms instantiated
+  on the tree's data sets: `SingleDualPairCoherent`, `SingleDualCoherent`,
+  the `omegaCoeff` cocycle, `omegaNe_all`, `pairScalar_ne_zero_all` and
+  `pairCocycle` on Fibonacci.
+* **`DerivedJTwistGroup.lean`** (m6, judged and accepted) — the twist group:
+  on a fixed skeletal datum the admissible twists are closed under pointwise
+  product and inversion — the product closure needs no nonzero hypothesis on
+  `F` (the factor appears exactly once per side throughout), the inverse
+  closure splits on `F = 0` (vacuous) versus `F ≠ 0` (cancel, invert,
+  substitute) — `derivedJGen` never reads `S.J` (`rfl`), and `J_match` is the
+  torsor statement (`j_match_iff_quotient_trivial`).
+
+**What closure means, against the proposal's success criterion (D5).**  The
+census contains genuinely non-trivial cocycles and is kernel-checked
+(`Witnesses/Z3sqTwisted.lean`, `Witnesses/D8Twist.lean`); a carried `J` is
+linked to the derived twist by `J_match` proved per instance — now complete;
+and the four laws hold for the derived object as conditional theorems, with
+the nonvanishing layer characterised exactly as two inverse-associator
+entries.  The unconditional general fourth law is ENO 2.8-equivalent and is
+recorded as out of reach (the non-pivotal datum search's boundary: a
+refutation needs rank ≥ 10, characteristic ≠ 0, and a non-pointed
+multiplicity-free associator with a singular inverse-block minor).
+
+Verification: swarm `smwa3l4s5` (8 members, 1 accepted submission — m6's
+twist group, re-elaborated and axiom-checked by the coordinator before
+acceptance; the other members' artefacts verified and landed by the
+coordinator after their runs ended at budget).  The tree builds green (8802
+jobs), the audit regenerated (2945 constants, coverage guard OK), Gate 4 and
+the self-test pass.
+
+
 ## Status after the Step-2 rewrite
 
 `System.lean` and `Pivotal.lean` were rewritten because the old signature could

@@ -1,4 +1,5 @@
 import FusionCategory.Basic
+import FusionCategory.DerivedJTwistGroup
 import FusionCategory.System
 import FusionCategory.Pivotal
 import FusionCategory.Cover
@@ -81,3 +82,9 @@ import FusionCategory.Examples.Z2SqFalseJ
 import FusionCategory.Witnesses.Z3sqTwist
 import FusionCategory.Witnesses.Z3sqTwisted
 import FusionCategory.Witnesses.D8Twist
+import FusionCategory.DerivedJYangLee
+import FusionCategory.JMatchPointed
+import FusionCategory.ConditionalFormsCensus
+import FusionCategory.DoubleDualTensoratorIso
+import FusionCategory.DerivedJBartlett
+import FusionCategory.DerivedJSelfDual

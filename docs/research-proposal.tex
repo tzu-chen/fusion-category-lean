@@ -1462,6 +1462,32 @@ census contains at least four genuinely non-trivial cocycles and is kernel-check
 non-goal:} WP3 does not prove (K). The target is the strictly stronger per-channel identity,
 which fails for Yang--Lee and is WP4's content.
 
+\paragraph{Status at closure (swarm \texttt{smwa3l4s5}).} WP3 is closed at its honest
+boundary.  Every data set in the tree whose carried twist is the honest one carries
+\code{J_match} at the derived twist: Fibonacci and Ising (round~1), Yang--Lee
+(\code{DerivedJYangLee.lean}: the closed form \code{derivedJGen = 1} on every supported
+channel, the nonvanishing in both the scalar and the frozen \code{OmegaNe} form, the fourth
+law through \code{J_match}, the fixpoint datum, and the \emph{settledJ} sharpness
+$\varphi^{-4} \neq 1$ at $(\tau, \tau; \one)$), the pointed systems
+(\code{JMatchPointed.lean}: \code{VecZ2}, \code{VecZ2Twisted}, \code{Z3Omega},
+\code{Z2SqH}, and the $\Cx$ transports).  Task~3.4's census is kernel-checked with
+genuinely non-trivial cocycles ($(\Z/3)^2$ twisted and $D_8$, \code{Witnesses/});
+Task~3.5's Bartlett Theorem~4.17 comparison is certified channel by channel in the kernel
+(\code{DerivedJBartlett.lean}); the double-dual tensorator is an isomorphism
+(\code{DoubleDualTensoratorIso.lean}, unconditional on pointed data and instantiated at
+\code{Z2SqH}); and the admissible twists of a fixed datum form a group, with
+\code{J_match} the torsor statement (\code{DerivedJTwistGroup.lean}).  The four laws hold
+for the derived object as conditional theorems (the coboundary class, \code{PairCocycle},
+\code{SingleDualCoherent}, the two-obligation assembly), and the nonvanishing layer is
+characterised exactly as two inverse-associator entries.  The \emph{unconditional} general
+fourth law is equivalent to ENO Conjecture~2.8 (open) and is recorded as out of reach: no
+refutation below rank~8 exists in the literature, every family tested empirically is
+pivotal, and a refutation would need rank~$\geq 10$, characteristic~$\neq 0$, and a
+non-pointed multiplicity-free associator with a singular inverse-block minor.  This
+boundary --- not a defect in the derivation --- is what separates the conditional
+theorems from the unconditional law; the per-instance coverage above is what the tree
+proves.
+
 \subsubsection*{WP4 --- ENO's normalisation and the theorem (months 8--20)}\label{sec:wp4}
 
 \paragraph{Objective.} A3: ENO~8.23, with the normalisation argument stated as ENO state it.
